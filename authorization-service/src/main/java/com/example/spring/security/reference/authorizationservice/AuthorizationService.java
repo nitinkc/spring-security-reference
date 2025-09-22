@@ -1,4 +1,4 @@
-package com.example.authorizationservice;
+package com.example.spring.security.reference.authorizationservice;
 
 import org.springframework.stereotype.Service;
 

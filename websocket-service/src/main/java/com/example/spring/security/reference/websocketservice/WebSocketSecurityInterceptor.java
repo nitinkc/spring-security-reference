@@ -1,4 +1,4 @@
-package com.example.websocketservice;
+package com.example.spring.security.reference.websocketservice;
 
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;

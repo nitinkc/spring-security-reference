@@ -2,7 +2,6 @@ package com.example.spring.security.reference.commonsecurity;
 
 import com.example.spring.security.reference.commonauth.CustomAuthenticationProvider;
 import com.example.spring.security.reference.commonauth.JwtAuthenticationFilter;
-import com.example.spring.security.reference.oauth2auth.OAuth2AuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,8 +13,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -44,11 +41,11 @@ public class MultiAuthSecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Autowired(required = false)
-    private OAuth2UserService<?, OAuth2User> oauth2UserService;
-
-    @Autowired(required = false)
-    private OAuth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler;
+//    @Autowired(required = false)
+//    private OAuth2UserService<?, OAuth2User> oauth2UserService;
+//
+//    @Autowired(required = false)
+//    private OAuth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
@@ -93,15 +90,15 @@ public class MultiAuthSecurityConfig {
             http.authenticationProvider(ldapAuthenticationProvider);
         }
 
-        // Configure OAuth2 if available
-        if (oauth2UserService != null) {
-            http.oauth2Login(oauth2 -> {
-                oauth2.userInfoEndpoint(userInfo -> userInfo.userService(oauth2UserService));
-                if (oauth2AuthenticationSuccessHandler != null) {
-                    oauth2.successHandler(oauth2AuthenticationSuccessHandler);
-                }
-            });
-        }
+//        // Configure OAuth2 if available
+//        if (oauth2UserService != null) {
+//            http.oauth2Login(oauth2 -> {
+//                oauth2.userInfoEndpoint(userInfo -> userInfo.userService(oauth2UserService));
+//                if (oauth2AuthenticationSuccessHandler != null) {
+//                    oauth2.successHandler(oauth2AuthenticationSuccessHandler);
+//                }
+//            });
+//        }
 
         // Add JWT filter
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -121,14 +118,15 @@ public class MultiAuthSecurityConfig {
                 .requestMatchers("/", "/login", "/oauth2/**", "/login/oauth2/**").permitAll()
                 .anyRequest().authenticated()
             )
-            .oauth2Login(oauth2 -> {
-                if (oauth2UserService != null) {
-                    oauth2.userInfoEndpoint(userInfo -> userInfo.userService(oauth2UserService));
-                }
-                if (oauth2AuthenticationSuccessHandler != null) {
-                    oauth2.successHandler(oauth2AuthenticationSuccessHandler);
-                }
-            });
+//            .oauth2Login(oauth2 -> {
+//                if (oauth2UserService != null) {
+//                    oauth2.userInfoEndpoint(userInfo -> userInfo.userService(oauth2UserService));
+//                }
+//                if (oauth2AuthenticationSuccessHandler != null) {
+//                    oauth2.successHandler(oauth2AuthenticationSuccessHandler);
+//                }
+//            })
+              ;
 
         return http.build();
     }

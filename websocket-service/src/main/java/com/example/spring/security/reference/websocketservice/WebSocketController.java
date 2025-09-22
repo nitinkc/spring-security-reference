@@ -1,4 +1,4 @@
-package com.example.websocketservice;
+package com.example.spring.security.reference.websocketservice;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;

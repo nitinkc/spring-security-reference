@@ -1,6 +1,6 @@
-package com.example.restapi;
+package com.example.spring.security.reference.api;
 
-import com.example.commonauth.JwtTokenUtil;
+import com.example.spring.security.reference.commonauth.JwtTokenUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -174,7 +174,7 @@ public class ApiController {
             OAuth2User oauth2User = (OAuth2User) auth.getPrincipal();
             logger.debug("🔒 [REST-API] OAuth2 user details:");
             logger.debug("   • Name: {}", oauth2User.getName());
-            logger.debug("   • Email: {}", oauth2User.getAttribute("email"));
+            //logger.debug("   • Email: {}", oauth2User.getAttribute("email"));
             logger.debug("   • Attributes: {}", oauth2User.getAttributes().keySet());
             logger.debug("📚 [LEARNING] OAuth2 user has provider-specific attributes");
             

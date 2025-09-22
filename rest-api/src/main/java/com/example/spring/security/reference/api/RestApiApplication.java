@@ -1,4 +1,4 @@
-package com.example.restapi;
+package com.example.spring.security.reference.api;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
