@@ -138,27 +138,15 @@ sequenceDiagram
 This diagram visualizes the key filters in the Spring Security chain and their order of execution.
 
 ```mermaid
-graph TD
-    subgraph "Incoming HTTP Request"
-        direction LR
-        Req(Request)
-    end
-
-    subgraph "Spring Security Filter Chain"
-        direction TB
-        F1[CsrfFilter] --> F2[HeaderWriterFilter]
+graph LR
+    subgraph "Flow"
+        Req(Request) --> F1[CsrfFilter]
+        F1 --> F2[HeaderWriterFilter]
         F2 --> F3[JwtAuthenticationFilter]
         F3 --> F4[UsernamePasswordAuthenticationFilter]
         F4 --> F5[AuthorizationFilter]
+        F5 --> Controller(Controller Endpoint)
     end
-
-    subgraph "Controller"
-        direction LR
-        Controller(Controller Endpoint)
-    end
-
-    Req --> F1
-    F5 --> Controller
 
     style F1 fill:#F8CECC,stroke:#B85450
     style F2 fill:#F8CECC,stroke:#B85450
