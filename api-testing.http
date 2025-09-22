@@ -1,0 +1,137 @@
+### Spring Security Reference - REST Client File
+### Use with VS Code REST Client extension or similar tools
+
+### Variables
+@baseUrl = http://localhost:8080
+@jwtToken = eyJhbGciOiJIUzUxMiJ9... # Update after login
+
+### ======================
+### JWT Authentication
+### ======================
+
+### 1. Login & Get JWT Token
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=password
+
+### 2. Admin Access with JWT
+GET {{baseUrl}}/api/admin/secure
+Authorization: Bearer {{jwtToken}}
+
+### 3. User Access with JWT  
+GET {{baseUrl}}/api/user/secure
+Authorization: Bearer {{jwtToken}}
+
+### 4. Get Auth Info
+GET {{baseUrl}}/api/auth/info
+Authorization: Bearer {{jwtToken}}
+
+### ======================
+### JDBC Authentication
+### ======================
+
+### 1. JDBC Admin User
+GET {{baseUrl}}/api/jdbc/users
+Authorization: Basic amRiY2FkbWluOnBhc3N3b3Jk
+
+### 2. JDBC Regular User
+GET {{baseUrl}}/api/jdbc/users  
+Authorization: Basic amRiY3VzZXI6cGFzc3dvcmQ=
+
+### 3. JDBC User Protected Access
+GET {{baseUrl}}/api/user/secure
+Authorization: Basic amRiY3VzZXI6cGFzc3dvcmQ=
+
+### ======================
+### LDAP Authentication
+### ======================
+
+### 1. LDAP Admin User
+GET {{baseUrl}}/api/ldap/users
+Authorization: Basic bGRhcGFkbWluOnBhc3N3b3Jk
+
+### 2. LDAP Regular User
+GET {{baseUrl}}/api/ldap/users
+Authorization: Basic bGRhcHVzZXI6cGFzc3dvcmQ=
+
+### 3. LDAP User Protected Access
+GET {{baseUrl}}/api/user/secure
+Authorization: Basic bGRhcHVzZXI6cGFzc3dvcmQ=
+
+### ======================
+### OAuth2 Social Login (Browser Required)
+### ======================
+
+### 1. Google OAuth2 Login
+GET {{baseUrl}}/oauth2/authorization/google
+
+### 2. GitHub OAuth2 Login
+GET {{baseUrl}}/oauth2/authorization/github
+
+### 3. OAuth2 User Profile (After Login)
+GET {{baseUrl}}/api/oauth2/profile
+
+### ======================
+### Public & Utility APIs
+### ======================
+
+### 1. Public Hello (No Auth)
+GET {{baseUrl}}/api/public/hello
+
+### 2. Health Check
+GET {{baseUrl}}/actuator/health
+
+### 3. Application Info
+GET {{baseUrl}}/actuator/info
+
+### 4. H2 Database Console (Browser)
+GET {{baseUrl}}/h2-console
+
+### ======================
+### Advanced Testing
+### ======================
+
+### 1. Test Invalid JWT Token
+GET {{baseUrl}}/api/user/secure
+Authorization: Bearer invalid-token-here
+
+### 2. Test Invalid Basic Auth
+GET {{baseUrl}}/api/jdbc/users
+Authorization: Basic aW52YWxpZDppbnZhbGlk
+
+### 3. Test User Access to Admin Endpoint (Should Fail)
+GET {{baseUrl}}/api/admin/secure
+Authorization: Basic amRiY3VzZXI6cGFzc3dvcmQ=
+
+### ======================
+### Profile-Specific Testing
+### ======================
+
+### JDBC-Only Profile Login (Browser)
+# Start: mvn spring-boot:run -pl api-service -Dspring-boot.run.profiles=jdbc-only
+GET {{baseUrl}}/login
+
+### LDAP-Only Profile Login (Browser)  
+# Start: mvn spring-boot:run -pl api-service -Dspring-boot.run.profiles=ldap-only
+GET {{baseUrl}}/login
+
+### OAuth2-Only Profile (Browser)
+# Start: mvn spring-boot:run -pl api-service -Dspring-boot.run.profiles=oauth2-only
+GET {{baseUrl}}/oauth2/authorization/google
+
+### ======================
+### Cross-Authentication Testing  
+### ======================
+
+### Use JDBC credentials with JWT endpoint
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=jdbcadmin&password=password
+
+### Use LDAP credentials with JWT endpoint
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=ldapadmin&password=password

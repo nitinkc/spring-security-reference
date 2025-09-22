@@ -1,0 +1,66 @@
+# LDAP Directory Data (LDIF format)
+# This file contains sample users and groups for the embedded LDAP server
+
+dn: dc=springframework,dc=org
+objectclass: top
+objectclass: domain
+objectclass: extensibleObject
+dc: springframework
+
+# People organizational unit
+dn: ou=people,dc=springframework,dc=org
+objectclass: top
+objectclass: organizationalUnit
+ou: people
+
+# Groups organizational unit  
+dn: ou=groups,dc=springframework,dc=org
+objectclass: top
+objectclass: organizationalUnit
+ou: groups
+
+# LDAP Admin User
+dn: uid=ldapadmin,ou=people,dc=springframework,dc=org
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: LDAP Admin
+sn: Admin
+uid: ldapadmin
+userPassword: password
+mail: ldapadmin@example.com
+
+# LDAP Regular User
+dn: uid=ldapuser,ou=people,dc=springframework,dc=org
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: LDAP User
+sn: User
+uid: ldapuser
+userPassword: password
+mail: ldapuser@example.com
+
+# Admin Group
+dn: cn=administrators,ou=groups,dc=springframework,dc=org
+objectclass: top
+objectclass: groupOfNames
+cn: administrators
+member: uid=ldapadmin,ou=people,dc=springframework,dc=org
+
+# User Group
+dn: cn=users,ou=groups,dc=springframework,dc=org
+objectclass: top
+objectclass: groupOfNames
+cn: users
+member: uid=ldapadmin,ou=people,dc=springframework,dc=org
+member: uid=ldapuser,ou=people,dc=springframework,dc=org
+
+# Developer Group (example of multiple group membership)
+dn: cn=developers,ou=groups,dc=springframework,dc=org
+objectclass: top
+objectclass: groupOfNames
+cn: developers
+member: uid=ldapuser,ou=people,dc=springframework,dc=org

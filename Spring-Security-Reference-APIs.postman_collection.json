@@ -1,0 +1,351 @@
+{
+  "info": {
+    "name": "Spring Security Reference - Authentication APIs",
+    "description": "Complete API collection for testing all authentication methods in the Spring Security Reference project",
+    "version": "1.0.0"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "jwtToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "JWT Authentication",
+      "item": [
+        {
+          "name": "1. Login & Get JWT Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "username",
+                  "value": "admin"
+                },
+                {
+                  "key": "password",
+                  "value": "password"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "2. Admin Access with JWT",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/secure",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "secure"]
+            }
+          }
+        },
+        {
+          "name": "3. User Access with JWT",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/secure",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "secure"]
+            }
+          }
+        },
+        {
+          "name": "4. Get Auth Info",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/info",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "info"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "JDBC Database Authentication",
+      "item": [
+        {
+          "name": "1. JDBC Admin User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Basic amRiY2FkbWluOnBhc3N3b3Jk"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/jdbc/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "jdbc", "users"]
+            }
+          }
+        },
+        {
+          "name": "2. JDBC Regular User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Basic amRiY3VzZXI6cGFzc3dvcmQ="
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/jdbc/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "jdbc", "users"]
+            }
+          }
+        },
+        {
+          "name": "3. JDBC User Protected Access",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Basic amRiY3VzZXI6cGFzc3dvcmQ="
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/secure",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "secure"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "LDAP Authentication",
+      "item": [
+        {
+          "name": "1. LDAP Admin User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Basic bGRhcGFkbWluOnBhc3N3b3Jk"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/ldap/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ldap", "users"]
+            }
+          }
+        },
+        {
+          "name": "2. LDAP Regular User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Basic bGRhcHVzZXI6cGFzc3dvcmQ="
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/ldap/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ldap", "users"]
+            }
+          }
+        },
+        {
+          "name": "3. LDAP User Protected Access",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Basic bGRhcHVzZXI6cGFzc3dvcmQ="
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/secure",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "secure"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "OAuth2 Social Login",
+      "item": [
+        {
+          "name": "1. Google OAuth2 Login (Browser)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/oauth2/authorization/google",
+              "host": ["{{baseUrl}}"],
+              "path": ["oauth2", "authorization", "google"]
+            }
+          }
+        },
+        {
+          "name": "2. GitHub OAuth2 Login (Browser)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/oauth2/authorization/github",
+              "host": ["{{baseUrl}}"],
+              "path": ["oauth2", "authorization", "github"]
+            }
+          }
+        },
+        {
+          "name": "3. OAuth2 User Profile",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/oauth2/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "oauth2", "profile"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Public & Utility APIs",
+      "item": [
+        {
+          "name": "1. Public Hello",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/public/hello",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "public", "hello"]
+            }
+          }
+        },
+        {
+          "name": "2. Health Check",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["actuator", "health"]
+            }
+          }
+        },
+        {
+          "name": "3. Application Info",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/actuator/info",
+              "host": ["{{baseUrl}}"],
+              "path": ["actuator", "info"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Advanced Testing",
+      "item": [
+        {
+          "name": "1. Test Invalid JWT Token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer invalid-token-here"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/secure",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "secure"]
+            }
+          }
+        },
+        {
+          "name": "2. Test Invalid Basic Auth",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Basic aW52YWxpZDppbnZhbGlk"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/jdbc/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "jdbc", "users"]
+            }
+          }
+        },
+        {
+          "name": "3. Test User Access to Admin Endpoint (Should Fail)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Basic amRiY3VzZXI6cGFzc3dvcmQ="
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/secure",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "secure"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

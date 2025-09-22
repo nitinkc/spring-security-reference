@@ -1,0 +1,36 @@
+# Exclude all Maven/Gradle build output
+**/target/
+**/build/
+
+# IDE/project files
+*.iml
+.idea/
+.vscode/
+
+# OS/Editor temp files
+*.log
+*.tmp
+*.swp
+.DS_Store
+
+# Other module-specific generated files
+**/generated-sources/
+**/maven-status/
+**/maven-archiver/
+
+# Miscellaneous
+*.class
+*.jar
+*.war
+*.ear
+
+# Node/npm artifacts (if any JS tooling is used)
+node_modules/
+
+# Python artifacts
+__pycache__/
+*.pyc
+
+# MacOS system files
+.Spotlight-V100
+.Trashes
