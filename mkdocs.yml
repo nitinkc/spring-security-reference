@@ -110,6 +110,7 @@ extra:
 # Navigation
 nav:
   - Home: index.md
+  - README: README.md
   - Getting Started:
     - Overview: getting-started/overview.md
     - Quick Setup: getting-started/quick-setup.md
