@@ -6,6 +6,7 @@ Welcome to the **Spring Security Reference Project** - a comprehensive education
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.1+-blue.svg)
 ![Java](https://img.shields.io/badge/Java-17+-orange.svg)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
+[View License](https://github.com/nitinkc/spring-security-reference/blob/main/LICENSE)
 
 ## 🎯 Project Overview
 
