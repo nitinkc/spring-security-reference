@@ -86,3 +86,6 @@ This codebase prioritizes **clear demonstration of concepts** over production re
 - Maintain educational comments explaining Spring Security concepts
 - Keep examples simple and focused on the security pattern being demonstrated
 - Preserve the modular structure to show proper separation of security concerns
+
+## Code Focus
+- Use Lombok as much as possible for boilerplate reduction

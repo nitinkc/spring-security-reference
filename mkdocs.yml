@@ -131,3 +131,4 @@ nav:
     - REST Endpoints: api/rest-endpoints.md
     - Authentication Flow: api/auth-flow.md
     - Error Handling: api/error-handling.md
+    - Live API (Swagger): api/swagger.md
