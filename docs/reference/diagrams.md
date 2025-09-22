@@ -169,18 +169,18 @@ graph LR
 This flowchart explains how the system determines if a user has permission to access a secured resource.
 
 ```mermaid
-graph TD
-  A[User requests secured endpoint] --> B{Is user authenticated}
-  B -- No --> C[Access Denied (401 Unauthorized)]
-  B -- Yes --> D{Endpoint requires role}
-  D -- No --> E[Access Granted]
-  D -- Yes --> F{User has required role}
-  F -- No --> G[Access Denied (403 Forbidden)]
-  F -- Yes --> H{Endpoint requires permission}
-  H -- No --> E
-  H -- Yes --> I{Role includes permission}
-  I -- No --> G
-  I -- Yes --> E
+flowchart TD;
+  A[User requests secured endpoint] --> B{Is user authenticated?};
+  B -- No --> C[Access Denied (401 Unauthorized)];
+  B -- Yes --> D{Endpoint requires role?};
+  D -- No --> E[Access Granted];
+  D -- Yes --> F{User has required role?};
+  F -- No --> G[Access Denied (403 Forbidden)];
+  F -- Yes --> H{Endpoint requires permission?};
+  H -- No --> E;
+  H -- Yes --> I{Role includes permission?};
+  I -- No --> G;
+  I -- Yes --> E;
 ```
 
 ### Logic Explanation:
