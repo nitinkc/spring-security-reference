@@ -110,6 +110,7 @@ extra:
 # Navigation
 nav:
   - Home: index.md
+  - Architecture & Diagrams: reference/diagrams.md
   - Getting Started:
     - Overview: getting-started/overview.md
     - Quick Setup: getting-started/quick-setup.md
