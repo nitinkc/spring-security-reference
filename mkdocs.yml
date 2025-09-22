@@ -53,8 +53,8 @@ plugins:
   - search:
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
   - mermaid2:
-      # Use a recent stable mermaid bundle; update if newer version is desired
-      javascript: https://unpkg.com/mermaid@10.13.6/dist/mermaid.esm.min.mjs
+    # Use the UMD bundle so mermaid is available on window for our init script
+    javascript: https://unpkg.com/mermaid@10.13.6/dist/mermaid.min.js
   - minify:
       minify_html: true
 
