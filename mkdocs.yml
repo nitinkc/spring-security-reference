@@ -53,7 +53,8 @@ plugins:
   - search:
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
   - mermaid2:
-      javascript: https://unpkg.com/mermaid@10.4.0/dist/mermaid.esm.min.mjs
+      # Use a recent stable mermaid bundle; update if newer version is desired
+      javascript: https://unpkg.com/mermaid@10.13.6/dist/mermaid.esm.min.mjs
   - minify:
       minify_html: true
 
@@ -106,6 +107,9 @@ extra:
       link: https://github.com/nitinkc
   version:
     provider: mike
+  # Include custom mermaid initializer
+  extra_javascript:
+    - js/mermaid-init.js
 
 # Navigation
 nav:
