@@ -53,23 +53,24 @@ graph LR
 
 | Method | Module | Use Case | Educational Focus |
 |--------|---------|----------|-------------------|
-| **JDBC** | `jdbc-auth` | Database-backed users | User stores, password encoding |
+| **Custom/Session** | `common-auth` | Simple hardcoded users | `CustomAuthenticationProvider`, `AuthService` |
+| **JWT** | `common-auth` | Stateless APIs | Token generation with `Keys.secretKeyFor()`, validation, claims |
+| **JDBC** | `jdbc-auth` | Database-backed users | `JdbcUserDetailsManager`, BCrypt password encoding |
 | **LDAP** | `ldap-auth` | Enterprise directories | Directory integration, attribute mapping |
 | **OAuth2** | `oauth2-auth` | Social login, SSO | Modern identity protocols, token handling |
-| **JWT** | `common-auth` | Stateless APIs | Token generation, validation, claims |
 
 ### 2. Security Configurations
 
-- **Filter Chain Setup**: Custom security filter ordering
+- **Filter Chain Setup**: `MultiAuthSecurityConfig` with profile-based configuration
 - **Method Security**: Annotation-based authorization
 - **CORS Configuration**: Cross-origin request handling  
 - **Session Management**: Stateful vs stateless strategies
 
 ### 3. Advanced Patterns
 
-- **Multi-Provider Authentication**: Combining different auth methods
+- **Multi-Provider Authentication**: Combining different auth methods via conditional `@Autowired`
 - **Custom Authentication Providers**: Building tailored auth logic
-- **Security Context Management**: Handling authenticated users
+- **Security Context Management**: Handling authenticated users via `SecurityContextHolder`
 - **Exception Handling**: Graceful security error responses
 
 ## 📊 Request Flow
@@ -80,17 +81,19 @@ Understanding how requests flow through the security system:
 sequenceDiagram
     participant C as Client
     participant F as Security Filter Chain
+    participant J as JWT Filter
     participant A as Auth Provider
-    participant S as Service Layer
-    participant D as Data Layer
+    participant S as ApiController
+    participant D as AuthorizationService
 
     C->>F: HTTP Request
-    F->>F: Extract Credentials
-    F->>A: Authenticate User
-    A->>D: Validate Credentials
-    D-->>A: User Details
+    F->>J: JwtAuthenticationFilter
+    J->>J: Extract & Validate JWT
+    J->>F: Set SecurityContext
+    F->>A: Additional Auth Providers (if needed)
     A-->>F: Authentication Result
     F->>S: Authorized Request
+    S->>D: Check Permissions (optional)
     S-->>C: Response
 ```
 
@@ -112,14 +115,16 @@ Code comments explain Spring Security concepts:
 
 ```java
 /**
- * Educational Logging: This configuration demonstrates directory-based authentication
- * with comprehensive logging for enterprise learning scenarios.
- * 
- * This configuration demonstrates:
- * - Embedded LDAP server setup for development/testing
- * - LDAP bind authentication (user provides credentials, LDAP verifies)
- * - LDAP-based authority/role population from groups
+ * Utility class for JWT token creation and validation.
+ *
+ * Uses cryptographically secure keys for HS512 algorithm.
+ * The signing key is generated using Keys.secretKeyFor() which ensures
+ * the key is at least 512 bits (64 bytes) as required by HS512.
  */
+@Component
+public class JwtTokenUtil {
+    // ...
+}
 ```
 
 ### Testing Examples
@@ -143,16 +148,25 @@ Ready to dive in? Follow these paths based on your learning goals:
 ### For Intermediate Users
 1. **[Security Configuration](../security/index.md)** - Understand security setup
 2. **[JWT Tokens](../authentication/jwt-tokens.md)** - Learn stateless authentication
-3. **[API Testing](../examples/testing-auth.md)** - Practice with endpoints
+3. **[API Testing](../examples/testing-api.md)** - Practice with endpoints
 
 ### For Advanced Users
 1. **[Custom Providers](../examples/custom-providers.md)** - Build custom auth logic
 2. **[Advanced Patterns](../examples/advanced-patterns.md)** - Complex security scenarios
 3. **[Production Setup](../deployment/production.md)** - Deploy securely
 
-## 🔗 Next Steps
+## 📦 Module Summary
 
-Continue your learning journey:
+| Module | Description |
+|--------|-------------|
+| `rest-api` | Main Spring Boot application with REST endpoints |
+| `common-auth` | JWT utilities, authentication filter, custom provider |
+| `common-security` | `MultiAuthSecurityConfig`, gRPC/WebSocket interceptors |
+| `authorization-service` | Role and permission management |
+| `jdbc-auth` | H2 database authentication with BCrypt |
+| `ldap-auth` | Embedded LDAP server authentication |
+| `oauth2-auth` | OAuth2/OIDC social login (GitHub, Google) |
+| `graphql-service` | GraphQL API scaffold |
+| `websocket-service` | WebSocket messaging with STOMP |
 
-- **[Quick Setup →](quick-setup.md)** Set up your development environment
-- **[Project Structure →](project-structure.md)** Explore the codebase organization
+See [Project Structure](project-structure.md) for detailed module information.

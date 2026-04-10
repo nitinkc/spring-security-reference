@@ -1,137 +1,160 @@
-### Spring Security Reference - REST Client File
-### Use with VS Code REST Client extension or similar tools
+### ============================================================
+### Spring Security Reference - REST Client Testing File
+### ============================================================
+### Use with VS Code REST Client extension or IntelliJ HTTP Client
+###
+### HOW TO USE:
+### 1. Start the app: mvn spring-boot:run -pl rest-api
+### 2. Run "Login as Admin" request below
+### 3. Copy the token from response
+### 4. Replace @jwtToken value with your token
+### 5. Run other requests!
+### ============================================================
 
-### Variables
+### Variables - UPDATE THESE!
 @baseUrl = http://localhost:8080
-@jwtToken = eyJhbGciOiJIUzUxMiJ9... # Update after login
+@jwtToken = PASTE_YOUR_TOKEN_HERE
 
-### ======================
-### JWT Authentication
-### ======================
+### ============================================================
+### 🏥 STEP 1: Health Check (Run First!)
+### ============================================================
 
-### 1. Login & Get JWT Token
+### Check if app is running
+GET {{baseUrl}}/api/public/hello
+
+### Health endpoint
+GET {{baseUrl}}/actuator/health
+
+### ============================================================
+### 🔑 STEP 2: JWT Authentication
+### ============================================================
+
+### 2a. Login as ADMIN - Copy the "token" from response!
 POST {{baseUrl}}/api/auth/login
 Content-Type: application/x-www-form-urlencoded
 
 username=admin&password=password
 
-### 2. Admin Access with JWT
-GET {{baseUrl}}/api/admin/secure
-Authorization: Bearer {{jwtToken}}
+### 2b. Login as USER - Copy the "token" from response!
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
 
-### 3. User Access with JWT  
-GET {{baseUrl}}/api/user/secure
-Authorization: Bearer {{jwtToken}}
+username=user&password=password
 
-### 4. Get Auth Info
+### ============================================================
+### 🔑 STEP 3: Use JWT Token (Update @jwtToken above first!)
+### ============================================================
+
+### Check who you are
 GET {{baseUrl}}/api/auth/info
 Authorization: Bearer {{jwtToken}}
 
-### ======================
-### JDBC Authentication
-### ======================
+### Access admin endpoint (needs ROLE_ADMIN)
+GET {{baseUrl}}/api/admin/secure
+Authorization: Bearer {{jwtToken}}
 
-### 1. JDBC Admin User
+### Access user endpoint (needs ROLE_USER or ROLE_ADMIN)
+GET {{baseUrl}}/api/user/secure
+Authorization: Bearer {{jwtToken}}
+
+### ============================================================
+### 🗄️ JDBC Authentication (Database Users)
+### ============================================================
+### Credentials: jdbcadmin/password, jdbcuser/password
+### Base64: echo -n "jdbcadmin:password" | base64
+
+### JDBC Admin - View users
 GET {{baseUrl}}/api/jdbc/users
 Authorization: Basic amRiY2FkbWluOnBhc3N3b3Jk
 
-### 2. JDBC Regular User
-GET {{baseUrl}}/api/jdbc/users  
-Authorization: Basic amRiY3VzZXI6cGFzc3dvcmQ=
-
-### 3. JDBC User Protected Access
-GET {{baseUrl}}/api/user/secure
-Authorization: Basic amRiY3VzZXI6cGFzc3dvcmQ=
-
-### ======================
-### LDAP Authentication
-### ======================
-
-### 1. LDAP Admin User
-GET {{baseUrl}}/api/ldap/users
-Authorization: Basic bGRhcGFkbWluOnBhc3N3b3Jk
-
-### 2. LDAP Regular User
-GET {{baseUrl}}/api/ldap/users
-Authorization: Basic bGRhcHVzZXI6cGFzc3dvcmQ=
-
-### 3. LDAP User Protected Access
-GET {{baseUrl}}/api/user/secure
-Authorization: Basic bGRhcHVzZXI6cGFzc3dvcmQ=
-
-### ======================
-### OAuth2 Social Login (Browser Required)
-### ======================
-
-### 1. Google OAuth2 Login
-GET {{baseUrl}}/oauth2/authorization/google
-
-### 2. GitHub OAuth2 Login
-GET {{baseUrl}}/oauth2/authorization/github
-
-### 3. OAuth2 User Profile (After Login)
-GET {{baseUrl}}/api/oauth2/profile
-
-### ======================
-### Public & Utility APIs
-### ======================
-
-### 1. Public Hello (No Auth)
-GET {{baseUrl}}/api/public/hello
-
-### 2. Health Check
-GET {{baseUrl}}/actuator/health
-
-### 3. Application Info
-GET {{baseUrl}}/actuator/info
-
-### 4. H2 Database Console (Browser)
-GET {{baseUrl}}/h2-console
-
-### ======================
-### Advanced Testing
-### ======================
-
-### 1. Test Invalid JWT Token
-GET {{baseUrl}}/api/user/secure
-Authorization: Bearer invalid-token-here
-
-### 2. Test Invalid Basic Auth
+### JDBC User - View users
 GET {{baseUrl}}/api/jdbc/users
-Authorization: Basic aW52YWxpZDppbnZhbGlk
+Authorization: Basic amRiY3VzZXI6cGFzc3dvcmQ=
 
-### 3. Test User Access to Admin Endpoint (Should Fail)
+### JDBC Admin - Access admin endpoint
+GET {{baseUrl}}/api/admin/secure
+Authorization: Basic amRiY2FkbWluOnBhc3N3b3Jk
+
+### JDBC User - Access user endpoint
+GET {{baseUrl}}/api/user/secure
+Authorization: Basic amRiY3VzZXI6cGFzc3dvcmQ=
+
+### JDBC User - Try admin endpoint (should fail with 403!)
 GET {{baseUrl}}/api/admin/secure
 Authorization: Basic amRiY3VzZXI6cGFzc3dvcmQ=
 
-### ======================
-### Profile-Specific Testing
-### ======================
+### ============================================================
+### 🏢 LDAP Authentication (Directory Users)
+### ============================================================
+### ⚠️ LDAP server disabled by default!
+### Enable with: --spring.ldap.embedded.enabled=true
+### Credentials: ldapadmin/password, ldapuser/password
 
-### JDBC-Only Profile Login (Browser)
-# Start: mvn spring-boot:run -pl api-service -Dspring-boot.run.profiles=jdbc-only
-GET {{baseUrl}}/login
+### LDAP Admin - View users
+GET {{baseUrl}}/api/ldap/users
+Authorization: Basic bGRhcGFkbWluOnBhc3N3b3Jk
 
-### LDAP-Only Profile Login (Browser)  
-# Start: mvn spring-boot:run -pl api-service -Dspring-boot.run.profiles=ldap-only
-GET {{baseUrl}}/login
+### LDAP User - View users
+GET {{baseUrl}}/api/ldap/users
+Authorization: Basic bGRhcHVzZXI6cGFzc3dvcmQ=
 
-### OAuth2-Only Profile (Browser)
-# Start: mvn spring-boot:run -pl api-service -Dspring-boot.run.profiles=oauth2-only
-GET {{baseUrl}}/oauth2/authorization/google
+### LDAP Admin - Access admin endpoint
+GET {{baseUrl}}/api/admin/secure
+Authorization: Basic bGRhcGFkbWluOnBhc3N3b3Jk
 
-### ======================
-### Cross-Authentication Testing  
-### ======================
+### LDAP User - Access user endpoint
+GET {{baseUrl}}/api/user/secure
+Authorization: Basic bGRhcHVzZXI6cGFzc3dvcmQ=
 
-### Use JDBC credentials with JWT endpoint
-POST {{baseUrl}}/api/auth/login
-Content-Type: application/x-www-form-urlencoded
+### ============================================================
+### 🌐 OAuth2 Social Login (Browser Required)
+### ============================================================
+### Open these URLs in your BROWSER, not here!
 
-username=jdbcadmin&password=password
+### Google OAuth2 Login (open in browser)
+# http://localhost:8080/oauth2/authorization/google
 
-### Use LDAP credentials with JWT endpoint
-POST {{baseUrl}}/api/auth/login
-Content-Type: application/x-www-form-urlencoded
+### GitHub OAuth2 Login (open in browser)
+# http://localhost:8080/oauth2/authorization/github
 
-username=ldapadmin&password=password
+### OAuth2 User Profile (after browser login)
+GET {{baseUrl}}/api/oauth2/profile
+
+### ============================================================
+### 🧪 Error Testing
+### ============================================================
+
+### Invalid JWT Token (expect 401)
+GET {{baseUrl}}/api/user/secure
+Authorization: Bearer invalid-token-12345
+
+### Missing Auth Header (expect 401)
+GET {{baseUrl}}/api/admin/secure
+
+### Invalid Basic Auth Credentials (expect 401)
+GET {{baseUrl}}/api/jdbc/users
+Authorization: Basic aW52YWxpZDppbnZhbGlk
+
+### Wrong Role - User accessing Admin (expect 403)
+GET {{baseUrl}}/api/admin/secure
+Authorization: Basic amRiY3VzZXI6cGFzc3dvcmQ=
+
+### ============================================================
+### 📋 Quick Reference
+### ============================================================
+###
+### JWT Users:
+###   admin / password  → ROLE_ADMIN
+###   user / password   → ROLE_USER
+###
+### JDBC Users (Base64 encoded):
+###   jdbcadmin:password → amRiY2FkbWluOnBhc3N3b3Jk
+###   jdbcuser:password  → amRiY3VzZXI6cGFzc3dvcmQ=
+###
+### LDAP Users (Base64 encoded):
+###   ldapadmin:password → bGRhcGFkbWluOnBhc3N3b3Jk
+###   ldapuser:password  → bGRhcHVzZXI6cGFzc3dvcmQ=
+###
+### To encode credentials yourself:
+###   echo -n "username:password" | base64
+### ============================================================

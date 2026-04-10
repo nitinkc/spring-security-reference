@@ -7,68 +7,123 @@ This page explains the modular architecture and folder structure of the Spring S
 The project uses a layered modular architecture for clear separation of concerns:
 
 ```
-api-service → common-auth + common-security + authorization-service
+rest-api → common-auth + common-security + authorization-service + jdbc-auth + ldap-auth + oauth2-auth
 common-security → common-auth
 authorization-service → standalone
 common-auth → standalone
+jdbc-auth → standalone
+ldap-auth → standalone
+oauth2-auth → standalone
 ```
 
 ## 📁 **Folder Layout**
 
 ```
 README.md
-api-service/
-    README.md
-    src/main/java/com/example/apiservice/ApiController.java
+rest-api/
+    pom.xml
+    src/main/java/com/example/spring/security/reference/api/
+        RestApiApplication.java
+        ApiController.java
 authorization-service/
-    README.md
-    src/main/java/com/example/authorizationservice/AuthorizationService.java
+    pom.xml
+    src/main/java/com/example/spring/security/reference/authorizationservice/
+        AuthorizationService.java
 common-auth/
-    README.md
-    src/main/java/com/example/commonauth/
+    pom.xml
+    src/main/java/com/example/spring/security/reference/commonauth/
         AuthService.java
         CustomAuthenticationProvider.java
         JwtAuthenticationFilter.java
         JwtTokenUtil.java
         TwoFactorAuthService.java
 common-security/
-    README.md
-    src/main/java/com/example/commonsecurity/
+    pom.xml
+    src/main/java/com/example/spring/security/reference/commonsecurity/
         GrpcSecurityInterceptor.java
+        MultiAuthSecurityConfig.java
         SecurityConfig.java
         WebSocketSecurityInterceptor.java
+jdbc-auth/
+    pom.xml
+    src/main/java/com/example/spring/security/reference/jdbcauth/
+        JdbcAuthConfig.java
+        JdbcDataInitializer.java
+ldap-auth/
+    pom.xml
+    src/main/java/com/example/spring/security/reference/ldapauth/
+        LdapAuthConfig.java
+        PersonContextMapper.java
+oauth2-auth/
+    pom.xml
+    src/main/java/com/example/spring/security/reference/oauth2auth/
+        OAuth2AuthConfig.java
+        OAuth2AuthenticationSuccessHandler.java
 graphql-service/
-    README.md
-    src/main/java/com/example/graphqlservice/
+    pom.xml
+    src/main/java/com/example/spring/security/reference/graphqlservice/
         GraphQLController.java
         GraphQLSecurityInterceptor.java
+websocket-service/
+    pom.xml
+    src/main/java/com/example/spring/security/reference/websocketservice/
+        WebSocketConfig.java
+        WebSocketController.java
+        WebSocketSecurityInterceptor.java
 ```
 
 ## 🧩 **Module Responsibilities**
 
-- **api-service**: REST endpoints, integrates authentication and authorization
-- **common-auth**: Authentication logic (session, JWT, 2FA)
-- **common-security**: Security configuration, filters, interceptors
-- **authorization-service**: Role and permission management
-- **graphql-service**: Scaffold for future GraphQL API and security integration
+| Module | Purpose |
+|--------|---------|
+| **rest-api** | Main application entry point, REST endpoints, integrates all authentication modules |
+| **common-auth** | Core authentication logic (session-based, JWT, 2FA hooks) |
+| **common-security** | Security configuration, filter chains, protocol interceptors |
+| **authorization-service** | Role and permission management |
+| **jdbc-auth** | Database-backed user authentication with H2 and BCrypt |
+| **ldap-auth** | LDAP/Active Directory authentication |
+| **oauth2-auth** | OAuth2/OpenID Connect social login integration |
+| **graphql-service** | GraphQL API with security integration (scaffold) |
+| **websocket-service** | WebSocket messaging with security |
 
 ## 🔗 **Authentication Methods & API Types**
 
-- **Session-based**: CustomAuthenticationProvider, AuthService
-- **JWT-based**: JwtAuthenticationFilter, JwtTokenUtil
-- **LDAP**: LdapAuthenticationProvider (see authentication/ldap-auth.md)
-- **OAuth2**: OAuth2 client (see authentication/oauth2-auth.md)
-- **SSO**: SAML/OIDC integration (see authentication/sso-integration.md)
-- **WebSocket**: WebSocketSecurityInterceptor (see common-security)
-- **gRPC**: GrpcSecurityInterceptor (see common-security)
-- **GraphQL**: GraphQLController, GraphQLSecurityInterceptor (see graphql-service)
+### Authentication Providers
+- **Session-based**: `CustomAuthenticationProvider` + `AuthService.authenticateSession()`
+- **JWT-based**: `JwtAuthenticationFilter` + `JwtTokenUtil`
+- **JDBC**: `JdbcAuthConfig` with `DaoAuthenticationProvider` and `JdbcUserDetailsManager`
+- **LDAP**: `LdapAuthConfig` with embedded LDAP server
+- **OAuth2**: `OAuth2AuthConfig` for social login (GitHub, Google, etc.)
+
+### Protocol Security
+- **REST**: Configured via `MultiAuthSecurityConfig` filter chain
+- **WebSocket**: `WebSocketSecurityInterceptor` in `ChannelInterceptor.preSend()`
+- **gRPC**: `GrpcSecurityInterceptor` as `ServerInterceptor`
+- **GraphQL**: `GraphQLSecurityInterceptor` (scaffold)
 
 ## 🛡️ **Security Patterns**
 
-- All authentication flows converge through SecurityConfig filter chain
-- Role-based access via AuthorizationService
-- JWT tokens include username and role claims
-- SecurityContextHolder used for downstream authorization
+- All authentication flows converge through `MultiAuthSecurityConfig` filter chain
+- Role-based access via `AuthorizationService.getUserRole()` and `hasPermission()`
+- JWT tokens include `username` (subject) and `role` claims
+- `SecurityContextHolder` used for downstream authorization
+- JWT filter runs **before** `UsernamePasswordAuthenticationFilter` in the chain
+
+## 📦 **Package Naming Convention**
+
+All modules follow the base package: `com.example.spring.security.reference`
+
+| Module | Package |
+|--------|---------|
+| rest-api | `...reference.api` |
+| common-auth | `...reference.commonauth` |
+| common-security | `...reference.commonsecurity` |
+| authorization-service | `...reference.authorizationservice` |
+| jdbc-auth | `...reference.jdbcauth` |
+| ldap-auth | `...reference.ldapauth` |
+| oauth2-auth | `...reference.oauth2auth` |
+| graphql-service | `...reference.graphqlservice` |
+| websocket-service | `...reference.websocketservice` |
 
 ## 🚀 **Next Steps**
 

@@ -1,0 +1,918 @@
+{
+  "info": {
+    "name": "Spring Security Reference - Complete Testing Suite",
+    "description": "Complete API collection with AUTOMATIC JWT token management. Login once and use the token across all requests automatically!\n\n## Quick Start\n1. Run 'JWT Auth > 1. Login as Admin' - token is saved automatically\n2. All other requests will use this token\n3. Switch users by running different login requests\n\n## Authentication Methods\n- JWT: Auto-saved tokens\n- JDBC: Basic Auth (database users)\n- LDAP: Basic Auth (directory users)\n- OAuth2: Browser-based flow",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "jwtToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "currentUser",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "currentRole",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global pre-request script",
+          "console.log('🔐 Request to:', pm.request.url.toString());"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "🏥 Health & Public",
+      "description": "Public endpoints that don't require authentication",
+      "item": [
+        {
+          "name": "1. Health Check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Application is running', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has status', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.exist;",
+                  "});",
+                  "",
+                  "console.log('✅ Health check passed!');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["actuator", "health"]
+            },
+            "description": "Check if the application is running. Run this first!"
+          }
+        },
+        {
+          "name": "2. Public Hello (No Auth)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Public endpoint accessible', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Returns hello message', function() {",
+                  "    pm.expect(pm.response.text()).to.include('Hello');",
+                  "});",
+                  "",
+                  "console.log('✅ Public endpoint works - no auth needed!');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/public/hello",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "public", "hello"]
+            },
+            "description": "Public endpoint - no authentication required"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔑 JWT Authentication",
+      "description": "JWT token-based authentication. Run a login request first - the token is automatically saved and used by all other requests!",
+      "item": [
+        {
+          "name": "1. Login as ADMIN ⭐",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Login successful', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Token received', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.token).to.exist;",
+                  "    pm.expect(jsonData.token.length).to.be.greaterThan(50);",
+                  "});",
+                  "",
+                  "// 🎯 AUTO-SAVE TOKEN - This is the magic!",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set('jwtToken', jsonData.token);",
+                  "pm.collectionVariables.set('currentUser', jsonData.username);",
+                  "pm.collectionVariables.set('currentRole', jsonData.role);",
+                  "",
+                  "console.log('✅ Logged in as:', jsonData.username);",
+                  "console.log('🎫 Role:', jsonData.role);",
+                  "console.log('🔐 Token saved! All requests will now use this token.');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "username",
+                  "value": "admin",
+                  "description": "Admin user"
+                },
+                {
+                  "key": "password",
+                  "value": "password",
+                  "description": "Default password"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "🌟 START HERE! Login as admin and get JWT token.\n\nThe token is automatically saved to `{{jwtToken}}` and will be used by all other requests.\n\nCredentials: admin / password"
+          }
+        },
+        {
+          "name": "2. Login as USER",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Login successful', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set('jwtToken', jsonData.token);",
+                  "pm.collectionVariables.set('currentUser', jsonData.username);",
+                  "pm.collectionVariables.set('currentRole', jsonData.role);",
+                  "",
+                  "console.log('✅ Logged in as:', jsonData.username);",
+                  "console.log('🎫 Role:', jsonData.role);",
+                  "console.log('🔐 Token saved!');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "username",
+                  "value": "user",
+                  "description": "Regular user"
+                },
+                {
+                  "key": "password",
+                  "value": "password",
+                  "description": "Default password"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Login as regular user (ROLE_USER).\n\nCredentials: user / password"
+          }
+        },
+        {
+          "name": "3. Get Auth Info (Who Am I?)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Auth info retrieved', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "console.log('👤 Current User:', jsonData.username);",
+                  "console.log('🎫 Authorities:', JSON.stringify(jsonData.authorities));",
+                  "console.log('🔐 Auth Type:', jsonData.authType);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "description": "JWT token (auto-filled)"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/info",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "info"]
+            },
+            "description": "Check your current authentication status.\n\nShows: username, roles, auth type"
+          }
+        },
+        {
+          "name": "4. Access ADMIN Endpoint",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    pm.test('Admin access granted', function() {",
+                  "        pm.response.to.have.status(200);",
+                  "    });",
+                  "    console.log('✅ Admin endpoint accessible!');",
+                  "} else if (pm.response.code === 403) {",
+                  "    pm.test('Access denied (expected for non-admin)', function() {",
+                  "        pm.response.to.have.status(403);",
+                  "    });",
+                  "    console.log('❌ Access denied - you need ROLE_ADMIN');",
+                  "    console.log('💡 Run \"Login as ADMIN\" first!');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/secure",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "secure"]
+            },
+            "description": "Admin-only endpoint. Requires ROLE_ADMIN.\n\n✅ Works if logged in as: admin\n❌ Fails if logged in as: user"
+          }
+        },
+        {
+          "name": "5. Access USER Endpoint",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('User endpoint accessible', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "console.log('✅ User endpoint accessible!');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/secure",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "secure"]
+            },
+            "description": "User endpoint. Requires ROLE_USER or ROLE_ADMIN.\n\n✅ Works for both admin and user"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🗄️ JDBC Authentication",
+      "description": "Database authentication using Basic Auth. Users are stored in H2 database.\n\nCredentials:\n- jdbcadmin / password (ADMIN)\n- jdbcuser / password (USER)",
+      "item": [
+        {
+          "name": "1. JDBC Admin - View Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('JDBC auth successful', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "console.log('✅ JDBC Admin authenticated');",
+                  "console.log('👤 User:', jsonData.user);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "jdbcadmin",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "password",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/jdbc/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "jdbc", "users"]
+            },
+            "description": "JDBC admin user authentication.\n\nCredentials: jdbcadmin / password"
+          }
+        },
+        {
+          "name": "2. JDBC User - View Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('JDBC auth successful', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "console.log('✅ JDBC User authenticated');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "jdbcuser",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "password",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/jdbc/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "jdbc", "users"]
+            },
+            "description": "JDBC regular user authentication.\n\nCredentials: jdbcuser / password"
+          }
+        },
+        {
+          "name": "3. JDBC Admin - Secure Endpoint",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Admin access with JDBC', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "console.log('✅ JDBC Admin accessed secure endpoint');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "jdbcadmin",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "password",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/secure",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "secure"]
+            },
+            "description": "Access admin endpoint with JDBC credentials"
+          }
+        },
+        {
+          "name": "4. JDBC User - Secure Endpoint",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('User access with JDBC', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "console.log('✅ JDBC User accessed secure endpoint');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "jdbcuser",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "password",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/secure",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "secure"]
+            },
+            "description": "Access user endpoint with JDBC credentials"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏢 LDAP Authentication",
+      "description": "Directory authentication using Basic Auth.\n\n⚠️ LDAP server must be enabled!\nStart app with: --spring.ldap.embedded.enabled=true\n\nCredentials:\n- ldapadmin / password (ADMIN)\n- ldapuser / password (USER)",
+      "item": [
+        {
+          "name": "1. LDAP Admin - View Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    pm.test('LDAP auth successful', function() {",
+                  "        pm.response.to.have.status(200);",
+                  "    });",
+                  "    console.log('✅ LDAP Admin authenticated');",
+                  "} else {",
+                  "    console.log('❌ LDAP auth failed - is LDAP server enabled?');",
+                  "    console.log('💡 Start with: --spring.ldap.embedded.enabled=true');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "ldapadmin",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "password",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/ldap/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ldap", "users"]
+            },
+            "description": "LDAP admin user authentication.\n\nCredentials: ldapadmin / password\n\n⚠️ Requires LDAP server enabled"
+          }
+        },
+        {
+          "name": "2. LDAP User - View Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    pm.test('LDAP auth successful', function() {",
+                  "        pm.response.to.have.status(200);",
+                  "    });",
+                  "    console.log('✅ LDAP User authenticated');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "ldapuser",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "password",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/ldap/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ldap", "users"]
+            },
+            "description": "LDAP regular user authentication.\n\nCredentials: ldapuser / password"
+          }
+        },
+        {
+          "name": "3. LDAP Admin - Secure Endpoint",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "ldapadmin",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "password",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/secure",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "secure"]
+            },
+            "description": "Access admin endpoint with LDAP credentials"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🌐 OAuth2 Social Login",
+      "description": "OAuth2 requires browser interaction.\n\nOpen these URLs in your browser to test:\n- Google: {{baseUrl}}/oauth2/authorization/google\n- GitHub: {{baseUrl}}/oauth2/authorization/github\n\n⚠️ Requires OAuth2 client credentials configured in application.yml",
+      "item": [
+        {
+          "name": "1. OAuth2 Profile (After Login)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('ℹ️ OAuth2 requires browser login first');",
+                  "console.log('Open: {{baseUrl}}/oauth2/authorization/google');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/oauth2/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "oauth2", "profile"]
+            },
+            "description": "View OAuth2 user profile after browser login.\n\n⚠️ Login via browser first!"
+          }
+        },
+        {
+          "name": "INFO: Google Login URL",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/oauth2/authorization/google",
+              "host": ["{{baseUrl}}"],
+              "path": ["oauth2", "authorization", "google"]
+            },
+            "description": "🌐 Open this URL in your BROWSER to login with Google"
+          }
+        },
+        {
+          "name": "INFO: GitHub Login URL",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/oauth2/authorization/github",
+              "host": ["{{baseUrl}}"],
+              "path": ["oauth2", "authorization", "github"]
+            },
+            "description": "🌐 Open this URL in your BROWSER to login with GitHub"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🧪 Error Testing",
+      "description": "Test error scenarios to understand security responses",
+      "item": [
+        {
+          "name": "1. Invalid JWT Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Invalid token rejected', function() {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([401, 403]);",
+                  "});",
+                  "",
+                  "console.log('✅ Invalid token correctly rejected');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer invalid-token-12345"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/secure",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "secure"]
+            },
+            "description": "Test with an invalid JWT token.\n\nExpected: 401 Unauthorized"
+          }
+        },
+        {
+          "name": "2. Missing Auth Header",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Missing auth rejected', function() {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([401, 403]);",
+                  "});",
+                  "",
+                  "console.log('✅ Missing auth correctly rejected');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/secure",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "secure"]
+            },
+            "description": "Access protected endpoint without auth.\n\nExpected: 401 Unauthorized"
+          }
+        },
+        {
+          "name": "3. Invalid Basic Auth",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Invalid credentials rejected', function() {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([401, 403]);",
+                  "});",
+                  "",
+                  "console.log('✅ Invalid credentials correctly rejected');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "wronguser",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "wrongpassword",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/jdbc/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "jdbc", "users"]
+            },
+            "description": "Test with wrong credentials.\n\nExpected: 401 Unauthorized"
+          }
+        },
+        {
+          "name": "4. User Accessing Admin (403)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// First login as regular user",
+                  "console.log('💡 This test shows 403 Forbidden when user accesses admin endpoint');"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Access denied for non-admin', function() {",
+                  "    pm.response.to.have.status(403);",
+                  "});",
+                  "",
+                  "console.log('✅ User correctly denied admin access (403 Forbidden)');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "jdbcuser",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "password",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/secure",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "secure"]
+            },
+            "description": "Regular user trying to access admin endpoint.\n\nExpected: 403 Forbidden"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📊 Run All Tests",
+      "description": "Collection runner will execute all tests in order",
+      "item": [
+        {
+          "name": "Full Test Suite",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "console.log('🚀 Running full test suite...');",
+                  "console.log('Make sure the application is running on {{baseUrl}}');"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Application is accessible', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "console.log('✅ Test suite started successfully');",
+                  "console.log('Use Collection Runner to run all tests!');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/public/hello",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "public", "hello"]
+            },
+            "description": "Starting point for full test suite.\n\nUse Postman Collection Runner to run all tests in sequence!"
+          }
+        }
+      ]
+    }
+  ]
+}
+

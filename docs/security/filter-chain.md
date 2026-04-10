@@ -9,43 +9,62 @@ Understanding Spring Security's filter chain is crucial for implementing custom 
 ```mermaid
 graph TD
     A[HTTP Request] --> B[SecurityContextPersistenceFilter]
-    B --> C[OAuth2LoginAuthenticationFilter]
-    C --> D[JwtAuthenticationFilter - CUSTOM]
-    D --> E[UsernamePasswordAuthenticationFilter]
-    E --> F[BasicAuthenticationFilter]
-    F --> G[AuthorizationFilter]
-    G --> H[ExceptionTranslationFilter]
-    H --> I[FilterSecurityInterceptor]
-    I --> J[Controller]
+    B --> C[JwtAuthenticationFilter - CUSTOM]
+    C --> D[UsernamePasswordAuthenticationFilter]
+    D --> E[BasicAuthenticationFilter]
+    E --> F[AuthorizationFilter]
+    F --> G[ExceptionTranslationFilter]
+    G --> H[FilterSecurityInterceptor]
+    H --> I[Controller]
     
-    B -.-> K[Load SecurityContext from session]
-    C -.-> L[Handle OAuth2 callbacks]
-    D -.-> M[Validate JWT tokens]
-    E -.-> N[Process login forms]
-    F -.-> O[Handle Basic auth headers]
-    G -.-> P[Check permissions]
-    H -.-> Q[Handle security exceptions]
+    B -.-> J[Load SecurityContext]
+    C -.-> K[Validate JWT tokens]
+    D -.-> L[Process login forms]
+    E -.-> M[Handle Basic auth headers]
+    F -.-> N[Check permissions]
+    G -.-> O[Handle security exceptions]
 ```
 
 ### **Filter Chain Configuration**
 
-Our security configuration carefully orchestrates multiple filters to support different authentication methods:
+Our security configuration in `MultiAuthSecurityConfig` orchestrates multiple filters to support different authentication methods:
 
 ```java
 @Bean
+@Profile("!oauth2-only & !jdbc-only & !ldap-only")
 public SecurityFilterChain defaultFilterChain(HttpSecurity http) throws Exception {
-    return http
-        // ... other configuration
-        
-        // JWT Filter positioned BEFORE UsernamePasswordAuthenticationFilter
-        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-        
-        // Multiple authentication providers
-        .authenticationProvider(customAuthenticationProvider)
-        .authenticationProvider(jdbcAuthenticationProvider)  
-        .authenticationProvider(ldapAuthenticationProvider)
-        
-        .build();
+    http
+        .csrf(csrf -> csrf.disable())
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authorizeHttpRequests(authz -> authz
+            // H2 console endpoints (for development)
+            .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
+            // Public endpoints
+            .requestMatchers(new AntPathRequestMatcher("/api/public/**")).permitAll()
+            .requestMatchers(new AntPathRequestMatcher("/api/auth/**")).permitAll()
+            // Role-based endpoints
+            .requestMatchers(new AntPathRequestMatcher("/api/admin/**")).hasRole("ADMIN")
+            .requestMatchers(new AntPathRequestMatcher("/api/user/**")).hasAnyRole("USER", "ADMIN")
+            .requestMatchers(new AntPathRequestMatcher("/api/jdbc/**")).hasAnyRole("USER", "ADMIN")
+            .requestMatchers(new AntPathRequestMatcher("/api/ldap/**")).hasAnyRole("USER", "ADMIN")
+            .requestMatchers(new AntPathRequestMatcher("/actuator/health")).permitAll()
+            .anyRequest().authenticated()
+        )
+        // Add authentication providers
+        .authenticationProvider(customAuthenticationProvider);
+
+    // Conditionally add JDBC/LDAP providers if available
+    if (jdbcAuthenticationProvider != null) {
+        http.authenticationProvider(jdbcAuthenticationProvider);
+    }
+    if (ldapAuthenticationProvider != null) {
+        http.authenticationProvider(ldapAuthenticationProvider);
+    }
+
+    // JWT Filter positioned BEFORE UsernamePasswordAuthenticationFilter
+    http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+    return http.build();
 }
 ```
 
@@ -53,7 +72,11 @@ public SecurityFilterChain defaultFilterChain(HttpSecurity http) throws Exceptio
 
 ### **Implementation Details**
 
+The `JwtAuthenticationFilter` in `common-auth` module extracts and validates JWT tokens:
+
 ```java
+package com.example.spring.security.reference.commonauth;
+
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -92,6 +115,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             } catch (Exception e) {
+                // Invalid token - continue without authentication
                 logger.debug("Invalid JWT token: " + e.getMessage());
             }
         }
@@ -110,9 +134,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 ```
 
 **Why this positioning?**
-- JWT tokens should be processed before attempting form-based authentication
-- Allows stateless JWT authentication to take precedence
-- Enables fallback to other authentication methods if JWT is invalid
+
+| Reason | Explanation |
+|--------|-------------|
+| **Priority** | JWT tokens should be processed before attempting form-based authentication |
+| **Stateless** | Allows stateless JWT authentication to take precedence |
+| **Fallback** | Enables fallback to other authentication methods if JWT is invalid/missing |
 
 ## 🛡️ **Filter Chain Execution Flow**
 
@@ -124,7 +151,7 @@ sequenceDiagram
     participant F as JwtAuthenticationFilter
     participant S as SecurityContextHolder
     participant A as AuthorizationFilter
-    participant R as Controller
+    participant R as ApiController
 
     C->>F: Request with Authorization: Bearer <token>
     F->>F: Extract and validate JWT token
@@ -136,225 +163,70 @@ sequenceDiagram
     R->>C: Response
 ```
 
-### **Failed JWT Authentication with Fallback**
+### **Request Without JWT (Fallback)**
 
 ```mermaid
 sequenceDiagram
     participant C as Client
     participant F as JwtAuthenticationFilter
     participant U as UsernamePasswordAuthenticationFilter
-    participant P as AuthenticationProvider
-    participant R as Controller
+    participant P as CustomAuthenticationProvider
+    participant R as ApiController
 
-    C->>F: Request with invalid/missing JWT
-    F->>F: JWT validation fails or no token
+    C->>F: Request without JWT token
+    F->>F: No Authorization header found
     F->>U: Continue to next filter
-    U->>P: Attempt username/password authentication
-    P->>P: Validate credentials
-    P->>R: Continue if successful
-    R->>C: Response
+    U->>P: Attempt other authentication
+    P-->>U: Authentication result
+    U->>R: Forward if authenticated
+    R->>C: Response (or 401/403)
 ```
 
-## 📋 **Filter Configuration by Profile**
+## 🔐 **JwtTokenUtil - Token Generation**
 
-### **Default Profile Filter Chain**
-
-```java
-@Profile("!oauth2-only & !jdbc-only & !ldap-only")
-public SecurityFilterChain defaultFilterChain(HttpSecurity http) {
-    // Supports ALL authentication methods:
-    // 1. JWT tokens (custom filter)
-    // 2. OAuth2 login (built-in filter)  
-    // 3. Database authentication (provider)
-    // 4. LDAP authentication (provider)
-    // 5. Custom authentication (provider)
-}
-```
-
-### **OAuth2-Only Profile Filter Chain**
-
-```java
-@Profile("oauth2-only")  
-public SecurityFilterChain oauth2OnlyFilterChain(HttpSecurity http) {
-    // Only OAuth2 authentication:
-    // - OAuth2LoginAuthenticationFilter (built-in)
-    // - No custom JWT filter
-    // - No other authentication providers
-}
-```
-
-### **JDBC/LDAP-Only Profile Filter Chain**
-
-```java
-@Profile("jdbc-only") // or "ldap-only"
-public SecurityFilterChain jdbcOnlyFilterChain(HttpSecurity http) {
-    // Form-based authentication only:
-    // - UsernamePasswordAuthenticationFilter (built-in)
-    // - Single authentication provider (JDBC or LDAP)
-    // - Session-based security context
-}
-```
-
-## 🔍 **Filter Chain Debugging**
-
-### **Logging Configuration**
-
-Enable detailed filter chain logging:
-
-```yaml
-# application.yml
-logging:
-  level:
-    org.springframework.security: DEBUG
-    org.springframework.security.web.FilterChainProxy: DEBUG
-    com.example.commonauth.JwtAuthenticationFilter: DEBUG
-```
-
-### **Filter Chain Analysis**
-
-Spring Security provides filter chain information at startup:
-
-```
-2024-01-15 10:30:15.123  INFO 12345 --- [main] o.s.s.web.DefaultSecurityFilterChain     
-: Will secure any request with filters:
-  SecurityContextPersistenceFilter
-  OAuth2LoginAuthenticationFilter  
-  JwtAuthenticationFilter (CUSTOM)
-  UsernamePasswordAuthenticationFilter
-  DefaultLoginPageGeneratingFilter
-  DefaultLogoutPageGeneratingFilter  
-  BasicAuthenticationFilter
-  RequestCacheAwareFilter
-  SecurityContextHolderAwareRequestFilter
-  AnonymousAuthenticationFilter
-  SessionManagementFilter
-  ExceptionTranslationFilter
-  AuthorizationFilter
-```
-
-## 🎯 **Custom Filter Best Practices**
-
-### **1. Extend OncePerRequestFilter**
+The `JwtTokenUtil` class uses secure key generation:
 
 ```java
 @Component
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    // Ensures filter runs only once per request
-    // Handles async dispatches properly
-}
-```
+public class JwtTokenUtil {
+    // Secure 512-bit key for HS512 algorithm
+    private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    private static final long EXPIRATION_TIME = 86400000; // 24 hours
 
-### **2. Null-Safe Authentication Checks**
+    public String generateToken(String username, String role) {
+        return Jwts.builder()
+                .setSubject(username)
+                .claim("role", role)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
+                .compact();
+    }
 
-```java
-// Only set authentication if none exists
-if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-    // Set authentication
-}
-```
-
-### **3. Proper Exception Handling**
-
-```java
-try {
-    // Token validation logic
-} catch (Exception e) {
-    // Log but don't fail - let other filters try
-    logger.debug("Invalid JWT token: " + e.getMessage());
-}
-// Always continue filter chain
-chain.doFilter(request, response);
-```
-
-### **4. Security Context Management**
-
-```java
-// Create authentication with proper details
-UsernamePasswordAuthenticationToken authToken =
-        new UsernamePasswordAuthenticationToken(username, null, authorities);
-authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-// Set in SecurityContextHolder for this request
-SecurityContextHolder.getContext().setAuthentication(authToken);
-```
-
-## 🔒 **Multi-Protocol Filter Integration**
-
-### **gRPC Security Interceptor**
-
-```java
-@Component
-public class GrpcSecurityInterceptor implements ServerInterceptor {
-    
-    @Override
-    public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(
-            ServerCall<ReqT, RespT> call,
-            Metadata headers,
-            ServerCallHandler<ReqT, RespT> next) {
-        
-        // Extract JWT from gRPC metadata
-        String authorization = headers.get(Metadata.Key.of("authorization", ASCII_STRING_MARSHALLER));
-        
-        if (authorization != null && authorization.startsWith("Bearer ")) {
-            // Validate JWT and set security context
-            // Similar to HTTP JWT filter logic
-        }
-        
-        return next.startCall(call, headers);
+    public Claims getClaimsFromToken(String token) {
+        return Jwts.parser()
+                .setSigningKey(SECRET_KEY)
+                .parseClaimsJws(token)
+                .getBody();
     }
 }
 ```
 
-### **WebSocket Security Interceptor**
+!!! warning "Key Regeneration"
+    The secret key is regenerated on each application restart, invalidating all 
+    previously issued tokens. For production, use a persistent key.
 
-```java
-@Component
-public class WebSocketSecurityInterceptor implements ChannelInterceptor {
-    
-    @Override
-    public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        // WebSocket message-level security
-        // Can validate JWT tokens in WebSocket messages
-        return message;
-    }
-}
-```
+## 🎓 **Learning Points**
 
-## 📚 **Educational Concepts**
+| Concept | Description |
+|---------|-------------|
+| **OncePerRequestFilter** | Ensures filter executes only once per request |
+| **SecurityContextHolder** | Thread-local storage for authentication information |
+| **Filter Order** | Critical for correct authentication flow |
+| **Stateless Sessions** | No server-side session storage with JWT |
 
-### **Filter vs Provider**
+## 🔗 **Related Topics**
 
-| Component | Purpose | When to Use |
-|-----------|---------|-------------|
-| **Filter** | Process requests/responses | Custom token validation, header processing |
-| **Provider** | Authenticate credentials | Database lookups, external service calls |
-
-### **Filter Ordering**
-
-```java
-// Critical ordering principles:
-// 1. Authentication filters before authorization
-// 2. Custom filters before built-in equivalents  
-// 3. Token-based before credential-based
-// 4. Stateless before stateful
-
-.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-```
-
-### **SecurityContext Lifecycle**
-
-1. **Request Start**: SecurityContext loaded from session (if exists)
-2. **Filter Chain**: Filters populate authentication
-3. **Authorization**: Access control decisions made
-4. **Request End**: SecurityContext cleared (stateless) or saved (stateful)
-
-## 🚀 **Next Steps**
-
-- **[Authorization →](authorization.md)** - Role-based access control after authentication
-- **[JWT Authentication →](../authentication/jwt-tokens.md)** - Detailed JWT implementation
-- **[Testing Security →](../examples/testing-auth.md)** - How to test filter chains
-- **[API Reference →](../api/auth-flow.md)** - Authentication flow documentation
-
----
-
-**💡 The filter chain is where authentication happens, but authorization decisions are made later in the process. Understanding this separation is key to Spring Security mastery.**
+- [JWT Tokens](../authentication/jwt-tokens.md)
+- [Common Security Configuration](common-security.md)
+- [REST Endpoints](../api/rest-endpoints.md)

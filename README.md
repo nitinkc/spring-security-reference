@@ -12,14 +12,44 @@ A comprehensive educational resource demonstrating advanced Spring Security auth
 # Clone and build
 git clone https://github.com/nitikc/spring-security-reference.git
 cd spring-security-reference
-mvn clean install
+mvn clean install -DskipTests
 
 # Run the application
 mvn spring-boot:run -pl rest-api
 
-# Test authentication
-curl -X POST http://localhost:8080/api/auth/login -d "username=admin&password=password"
+# Test it works
+curl http://localhost:8080/api/public/hello
 ```
+
+## 🔐 Testing Authentication (Step-by-Step)
+
+### JWT Authentication (Recommended)
+
+```bash
+# 1. Get a JWT token
+curl -X POST http://localhost:8080/api/auth/login \
+  -d "username=admin&password=password"
+
+# 2. Copy the "token" from response, then use it:
+curl http://localhost:8080/api/admin/secure \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE"
+```
+
+### JDBC Authentication (Database Users)
+
+```bash
+# Use Basic Auth with database users
+curl http://localhost:8080/api/admin/secure \
+  -H "Authorization: Basic amRiY2FkbWluOnBhc3N3b3Jk"
+```
+
+### 📬 Postman Collection (Easiest Way!)
+
+Import the Postman collection for **automatic JWT token management**:
+
+1. Open Postman → Import → Upload `Spring-Security-Reference-APIs-Enhanced.postman_collection.json`
+2. Run "Login as ADMIN" - token is saved automatically!
+3. All other requests use the token automatically
 
 ## 🔧 What You'll Learn
 
@@ -33,17 +63,33 @@ curl -X POST http://localhost:8080/api/auth/login -d "username=admin&password=pa
 | Method        | Username       | Password        | Role  |
 |:--------------|:---------------|:----------------|:------|
 | **JWT/Basic** | `admin`        | `password`      | Admin |
+| **JWT/Basic** | `user`         | `password`      | User  |
 | **JDBC**      | `jdbcadmin`    | `password`      | Admin |
+| **JDBC**      | `jdbcuser`     | `password`      | User  |
 | **LDAP**      | `ldapadmin`    | `password`      | Admin |
+| **LDAP**      | `ldapuser`     | `password`      | User  |
 | **OAuth2**    | *Social Login* | *Provider Auth* | User  |
+
+## 📋 API Endpoints
+
+| Endpoint                | Auth Required  | Roles                   |
+|:------------------------|:---------------|:------------------------|
+| `GET /api/public/hello` | ❌ None         | Any                     |
+| `POST /api/auth/login`  | ❌ None         | Any (returns JWT)       |
+| `GET /api/auth/info`    | ✅ Yes          | Any authenticated       |
+| `GET /api/admin/secure` | ✅ Yes          | ROLE_ADMIN only         |
+| `GET /api/user/secure`  | ✅ Yes          | ROLE_USER or ROLE_ADMIN |
+| `GET /api/jdbc/users`   | ✅ Yes          | Any authenticated       |
+| `GET /api/ldap/users`   | ✅ Yes          | Any authenticated       |
+| `GET /actuator/health`  | ❌ None         | Any                     |
 
 ## 📖 Local Documentation
 
 To run the documentation site locally:
 
 ```bash
-pip install -r requirements.txt
-python -m mkdocs serve
+pip3 install -r requirements.txt
+python3 -m mkdocs serve
 ```
 
 - Documentation will be available at `http://localhost:8000`
@@ -53,4 +99,6 @@ python -m mkdocs serve
 
 **👉 [Visit the Full Documentation Site](https://nitikc.github.io/spring-security-reference) 👈**
 
+- [API Testing Guide](https://nitikc.github.io/spring-security-reference/examples/testing-api/) - Step-by-step testing
+- [Postman Setup](https://nitikc.github.io/spring-security-reference/examples/postman-setup/) - Collection import guide
 - [Start Learning → Full Documentation](https://nitikc.github.io/spring-security-reference)

@@ -36,144 +36,141 @@ sequenceDiagram
 
 ### **JwtTokenUtil Class**
 
+The `JwtTokenUtil` class handles JWT token generation and validation using cryptographically secure keys:
+
 ```java
+package com.example.spring.security.reference.commonauth;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.stereotype.Component;
+
+import javax.crypto.SecretKey;
+import java.util.Date;
+
+/**
+ * Utility class for JWT token creation and validation.
+ *
+ * Uses cryptographically secure keys for HS512 algorithm.
+ * The signing key is generated using Keys.secretKeyFor() which ensures
+ * the key is at least 512 bits (64 bytes) as required by HS512.
+ */
 @Component
 public class JwtTokenUtil {
     
-    private static final Logger logger = LogManager.getLogger(JwtTokenUtil.class);
-    private static final String SECRET = "MySuperSecretKey";
-    private static final int EXPIRATION_TIME = 86400000; // 24 hours
+    // Generate a secure 512-bit key for HS512 algorithm
+    // This prevents "WeakKeyException: The signing key's size is X bits 
+    // which is not secure enough for the HS512 algorithm"
+    private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    private static final long EXPIRATION_TIME = 86400000; // 24 hours (1 day)
     
     /**
      * Generate JWT token with user claims
      */
     public String generateToken(String username, String role) {
-        logger.info("🎟️ [JWT] Generating token for user: {}", username);
-        logger.debug("📚 [LEARNING] JWT contains encoded user identity and role claims");
-        
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + EXPIRATION_TIME);
-        
-        String token = Jwts.builder()
+        return Jwts.builder()
                 .setSubject(username)
                 .claim("role", role)
-                .setIssuedAt(now)
-                .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS512, SECRET)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
                 .compact();
-                
-        logger.debug("🔐 [JWT] Token generated successfully");
-        logger.debug("   • Subject: {}", username);
-        logger.debug("   • Role: {}", role);
-        logger.debug("   • Expires: {}", expiryDate);
-        logger.debug("📚 [LEARNING] Token is signed with HMAC-SHA512");
-        
-        return token;
     }
     
     /**
      * Extract claims from JWT token
      */
     public Claims getClaimsFromToken(String token) {
-        logger.debug("🔍 [JWT] Extracting claims from token");
-        
-        try {
-            Claims claims = Jwts.parser()
-                    .setSigningKey(SECRET)
-                    .parseClaimsJws(token)
-                    .getBody();
-                    
-            logger.debug("✅ [JWT] Claims extracted successfully");
-            logger.debug("   • Subject: {}", claims.getSubject());
-            logger.debug("   • Role: {}", claims.get("role"));
-            logger.debug("   • Expires: {}", claims.getExpiration());
-            
-            return claims;
-        } catch (ExpiredJwtException e) {
-            logger.warn("⏰ [JWT] Token has expired: {}", e.getMessage());
-            throw e;
-        } catch (JwtException e) {
-            logger.warn("❌ [JWT] Invalid token: {}", e.getMessage());
-            throw e;
-        }
+        return Jwts.parser()
+                .setSigningKey(SECRET_KEY)
+                .parseClaimsJws(token)
+                .getBody();
     }
     
     /**
-     * Check if JWT token is expired
+     * Validate JWT token against username
      */
-    public boolean isTokenExpired(String token) {
-        try {
-            Claims claims = getClaimsFromToken(token);
-            boolean expired = claims.getExpiration().before(new Date());
-            
-            logger.debug("🕒 [JWT] Token expiry check: {}", expired ? "EXPIRED" : "VALID");
-            return expired;
-        } catch (ExpiredJwtException e) {
-            logger.debug("🕒 [JWT] Token is expired");
-            return true;
-        }
+    public boolean validateToken(String token, String username) {
+        Claims claims = getClaimsFromToken(token);
+        return claims.getSubject().equals(username) 
+                && claims.getExpiration().after(new Date());
     }
 }
 ```
 
+!!! warning "Production Consideration"
+    The current implementation generates a new secret key on each application restart, 
+    which invalidates all previously issued tokens. In production, use a persistent 
+    secret key stored securely (e.g., environment variable, secrets manager).
+
 ### **JWT Authentication Filter**
 
+The `JwtAuthenticationFilter` intercepts requests and validates JWT tokens:
+
 ```java
+package com.example.spring.security.reference.commonauth;
+
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.List;
+
+/**
+ * Filter that authenticates JWT tokens for incoming requests.
+ */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    
-    private static final Logger logger = LogManager.getLogger(JwtAuthenticationFilter.class);
-    
+
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
-    
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain chain) throws ServletException, IOException {
-        
-        logger.debug("🔍 [JWT-FILTER] Processing request: {}", request.getRequestURI());
-        
+
         String header = request.getHeader("Authorization");
         String jwtToken = null;
-        
+        String username = null;
+
         // Extract JWT token from Authorization header
         if (header != null && header.startsWith("Bearer ")) {
             jwtToken = header.substring(7);
-            logger.debug("🎟️ [JWT-FILTER] JWT token found in request");
-            
             try {
                 Claims claims = jwtTokenUtil.getClaimsFromToken(jwtToken);
-                String username = claims.getSubject();
+                username = claims.getSubject();
                 String role = claims.get("role", String.class);
-                
+
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    logger.debug("🔐 [JWT-FILTER] Setting authentication for user: {}", username);
-                    
+                    // Create authorities from role claim
                     List<SimpleGrantedAuthority> authorities = List.of(
-                            new SimpleGrantedAuthority(role)
+                        new SimpleGrantedAuthority(role)
                     );
                     
+                    // Create authentication token and set in SecurityContext
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(username, null, authorities);
-                    
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
-                    
-                    logger.debug("✅ [JWT-FILTER] Authentication set successfully");
-                    logger.debug("📚 [LEARNING] User authenticated via JWT token");
                 }
-            } catch (ExpiredJwtException e) {
-                logger.warn("⏰ [JWT-FILTER] JWT token expired: {}", e.getMessage());
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("{\"error\": \"JWT token expired\"}");
-                return;
             } catch (Exception e) {
-                logger.warn("❌ [JWT-FILTER] Invalid JWT token: {}", e.getMessage());
+                // Invalid token - continue without authentication
+                logger.debug("Invalid JWT token: " + e.getMessage());
             }
-        } else {
-            logger.debug("🔍 [JWT-FILTER] No JWT token found in Authorization header");
         }
-        
         chain.doFilter(request, response);
     }
 }
@@ -199,11 +196,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 }
 ```
 
+| Claim | Description |
+|-------|-------------|
+| `sub` | Subject - the username |
+| `role` | User's role (e.g., `ROLE_ADMIN`, `ROLE_USER`) |
+| `iat` | Issued At - timestamp when token was created |
+| `exp` | Expiration - timestamp when token expires |
+
 ### **Signature**
 ```
 HMACSHA512(
   base64UrlEncode(header) + "." + base64UrlEncode(payload),
-  "MySuperSecretKey"
+  SECRET_KEY
 )
 ```
 
@@ -223,216 +227,102 @@ curl -X POST http://localhost:8080/api/auth/login \
   "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJST0xFX0FETUlOIiwiaWF0IjoxNjk0NTIwMDAwLCJleHAiOjE2OTQ2MDY0MDB9.signature",
   "username": "admin",
   "role": "ROLE_ADMIN",
-  "message": "Login successful - use this JWT token for authenticated requests"
+  "message": "Login successful - use this JWT token for authenticated requests",
+  "usage": "Add header: Authorization: Bearer eyJhbGciOi..."
 }
 ```
 
 ### **2. Use JWT Token for API Access**
 
 ```bash
-# Admin endpoint
-curl -H "Authorization: Bearer eyJhbGci..." \
+# Store token in variable
+export JWT_TOKEN="eyJhbGciOiJIUzUxMiJ9..."
+
+# Admin endpoint (requires ROLE_ADMIN)
+curl -H "Authorization: Bearer $JWT_TOKEN" \
   http://localhost:8080/api/admin/secure
 
-# User endpoint
-curl -H "Authorization: Bearer eyJhbGci..." \
+# User endpoint (requires ROLE_USER or ROLE_ADMIN)
+curl -H "Authorization: Bearer $JWT_TOKEN" \
   http://localhost:8080/api/user/secure
 
-# Auth info endpoint
-curl -H "Authorization: Bearer eyJhbGci..." \
+# Auth info endpoint (any authenticated user)
+curl -H "Authorization: Bearer $JWT_TOKEN" \
   http://localhost:8080/api/auth/info
+```
+
+### **3. Test Different User Roles**
+
+```bash
+# Login as regular user
+curl -X POST http://localhost:8080/api/auth/login \
+  -d "username=user&password=password"
+
+# User token can access /api/user/** but NOT /api/admin/**
+export USER_TOKEN="eyJhbGci..."
+
+# This works (ROLE_USER can access user endpoints)
+curl -H "Authorization: Bearer $USER_TOKEN" \
+  http://localhost:8080/api/user/secure
+
+# This returns 403 Forbidden (ROLE_USER cannot access admin endpoints)
+curl -H "Authorization: Bearer $USER_TOKEN" \
+  http://localhost:8080/api/admin/secure
 ```
 
 ## 🔐 **Security Configuration**
 
 ### **Adding JWT Filter to Security Chain**
 
+The JWT filter is added **before** `UsernamePasswordAuthenticationFilter` in `MultiAuthSecurityConfig`:
+
 ```java
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
-    
+public class MultiAuthSecurityConfig {
+
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
-    
+
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
-            // Add JWT filter before UsernamePasswordAuthenticationFilter
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-            
+    public SecurityFilterChain defaultFilterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/api/public/**", "/api/auth/**").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
                 .anyRequest().authenticated()
             )
-            
-            // Disable session management for stateless JWT authentication
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
-            
-            // Disable CSRF for stateless APIs
-            .csrf(csrf -> csrf.disable())
-            
-            .build();
+            // JWT filter runs before username/password authentication
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
     }
 }
 ```
 
-## 🧪 **Testing JWT Authentication**
+## 🎓 **Learning Points**
 
-### **Unit Tests**
+| Concept | Description |
+|---------|-------------|
+| **Stateless Sessions** | JWT enables stateless authentication - no server-side session storage needed |
+| **Filter Order** | JWT filter must run early to authenticate before authorization checks |
+| **Claims** | JWT payload contains user identity and role information |
+| **Signature** | HMAC-SHA512 ensures token integrity and authenticity |
+| **Expiration** | Tokens automatically expire after 24 hours (configurable) |
 
-```java
-@ExtendWith(MockitoExtension.class)
-class JwtTokenUtilTest {
-    
-    @InjectMocks
-    private JwtTokenUtil jwtTokenUtil;
-    
-    @Test
-    void shouldGenerateValidJwtToken() {
-        // Given
-        String username = "testuser";
-        String role = "ROLE_USER";
-        
-        // When
-        String token = jwtTokenUtil.generateToken(username, role);
-        
-        // Then
-        assertThat(token).isNotNull();
-        assertThat(token.split("\\.")).hasSize(3); // header.payload.signature
-        
-        Claims claims = jwtTokenUtil.getClaimsFromToken(token);
-        assertThat(claims.getSubject()).isEqualTo(username);
-        assertThat(claims.get("role")).isEqualTo(role);
-    }
-    
-    @Test
-    void shouldThrowExceptionForExpiredToken() {
-        // Given - create expired token (mock implementation)
-        String expiredToken = createExpiredToken();
-        
-        // When & Then
-        assertThatThrownBy(() -> jwtTokenUtil.getClaimsFromToken(expiredToken))
-            .isInstanceOf(ExpiredJwtException.class);
-    }
-}
-```
+## ⚠️ **Security Best Practices**
 
-### **Integration Tests**
+1. **Use HTTPS**: Always transmit JWT tokens over encrypted connections
+2. **Secure Key Storage**: Store signing keys in environment variables or secrets managers
+3. **Short Expiration**: Use shorter expiration times for sensitive applications
+4. **Token Refresh**: Implement refresh token mechanism for long-lived sessions
+5. **Revocation**: Consider implementing token blacklisting for logout functionality
 
-```java
-@SpringBootTest
-@AutoConfigureTestDatabase
-class JwtAuthenticationIntegrationTest {
-    
-    @Autowired
-    private TestRestTemplate restTemplate;
-    
-    @Test
-    void shouldAuthenticateWithValidJwtToken() {
-        // Step 1: Get JWT token
-        ResponseEntity<Map> loginResponse = restTemplate.postForEntity(
-            "/api/auth/login",
-            createLoginRequest("admin", "password"),
-            Map.class
-        );
-        
-        String token = (String) loginResponse.getBody().get("token");
-        assertThat(token).isNotNull();
-        
-        // Step 2: Use JWT token to access protected endpoint
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
-        
-        ResponseEntity<Map> response = restTemplate.exchange(
-            "/api/admin/secure",
-            HttpMethod.GET,
-            new HttpEntity<>(headers),
-            Map.class
-        );
-        
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().get("user")).isEqualTo("admin");
-    }
-}
-```
+## 🔗 **Related Topics**
 
-## ⚡ **JWT Best Practices**
-
-### **✅ Do's**
-
-1. **Use strong secret keys** - Minimum 256-bit keys for HS256
-2. **Set appropriate expiration times** - Short-lived tokens (15 minutes to 1 hour)
-3. **Implement token refresh mechanism** - Refresh tokens for session management
-4. **Validate tokens on every request** - Never trust client-side validation
-5. **Use HTTPS in production** - Prevent token interception
-
-### **❌ Don'ts**
-
-1. **Don't store sensitive data** in JWT payload (it's base64 encoded, not encrypted)
-2. **Don't use predictable secret keys** - Use cryptographically secure random keys
-3. **Don't ignore token expiration** - Always check exp claim
-4. **Don't use JWT for session data** - Keep tokens lightweight
-5. **Don't use JWT for logout** - Implement token blacklisting if needed
-
-### **🔧 Production Configuration**
-
-```yaml
-# application-production.yml
-jwt:
-  secret: ${JWT_SECRET:} # Use environment variable
-  expiration: 3600000    # 1 hour
-  refresh-expiration: 86400000 # 24 hours
-  issuer: "spring-security-reference"
-  
-logging:
-  level:
-    com.example.commonauth.JwtTokenUtil: INFO # Reduce debug logging
-```
-
-## 🔄 **Token Refresh Pattern**
-
-```java
-@RestController
-public class TokenController {
-    
-    @PostMapping("/api/auth/refresh")
-    public ResponseEntity<Map<String, String>> refreshToken(
-            @RequestBody Map<String, String> request) {
-            
-        String refreshToken = request.get("refreshToken");
-        
-        if (isValidRefreshToken(refreshToken)) {
-            String username = extractUsernameFromRefreshToken(refreshToken);
-            String role = getUserRole(username);
-            
-            String newAccessToken = jwtTokenUtil.generateToken(username, role);
-            String newRefreshToken = generateRefreshToken(username);
-            
-            return ResponseEntity.ok(Map.of(
-                "accessToken", newAccessToken,
-                "refreshToken", newRefreshToken
-            ));
-        }
-        
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-            .body(Map.of("error", "Invalid refresh token"));
-    }
-}
-```
-
-## 🚀 **Next Steps**
-
-- **[LDAP Authentication →](ldap-auth.md)** - Directory-based authentication
-- **[OAuth2 Authentication →](oauth2-auth.md)** - Social login integration
-- **[SSO Integration →](sso-integration.md)** - Single Sign-On patterns
-- **[API Reference →](../api/index.md)** - Using JWTs with REST APIs
-- **[Security Configuration →](../security/filter-chain.md)** - JWT filter implementation
-
----
-
-**🎟️ JWT tokens provide stateless authentication perfect for modern APIs and microservices. Understanding token generation, validation, and security best practices is essential for building secure distributed systems.**
+- [Security Filter Chain](../security/filter-chain.md)
+- [REST Endpoints](../api/rest-endpoints.md)
+- [API Testing Guide](../examples/testing-api.md)

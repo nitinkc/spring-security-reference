@@ -7,10 +7,10 @@ The `common-security` module provides the foundational security configuration fo
 ```yaml
 Module: common-security
 Purpose: Core security configuration and cross-cutting security concerns
-Location: common-security/src/main/java/com/example/commonsecurity/
+Location: common-security/src/main/java/com/example/spring/security/reference/commonsecurity/
 Key Files:
-  - MultiAuthSecurityConfig.java    # Main security configuration
-  - SecurityConfig.java             # Basic security setup
+  - MultiAuthSecurityConfig.java    # Main security configuration (active)
+  - SecurityConfig.java             # Legacy config (disabled via @Profile)
   - GrpcSecurityInterceptor.java    # gRPC security
   - WebSocketSecurityInterceptor.java # WebSocket security
 ```
@@ -42,32 +42,52 @@ graph LR
     @Bean
     @Profile("!oauth2-only & !jdbc-only & !ldap-only")
     public SecurityFilterChain defaultFilterChain(HttpSecurity http) throws Exception {
-        return http
+        http
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/api/public/**", "/api/auth/**").permitAll()
-                .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
-                .requestMatchers("/api/jdbc/**").hasAnyRole("USER", "ADMIN")
-                .requestMatchers("/api/ldap/**").hasAnyRole("USER", "ADMIN")
-                .requestMatchers("/actuator/health").permitAll()
+                // H2 console endpoints (for development)
+                .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
+                // Public endpoints
+                .requestMatchers(new AntPathRequestMatcher("/api/public/**")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/auth/**")).permitAll()
+                // OAuth2 endpoints
+                .requestMatchers(new AntPathRequestMatcher("/oauth2/**")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/login/oauth2/**")).permitAll()
+                // Admin endpoints
+                .requestMatchers(new AntPathRequestMatcher("/api/admin/**")).hasRole("ADMIN")
+                // User endpoints
+                .requestMatchers(new AntPathRequestMatcher("/api/user/**")).hasAnyRole("USER", "ADMIN")
+                // Auth-specific endpoints
+                .requestMatchers(new AntPathRequestMatcher("/api/jdbc/**")).hasAnyRole("USER", "ADMIN")
+                .requestMatchers(new AntPathRequestMatcher("/api/ldap/**")).hasAnyRole("USER", "ADMIN")
+                // Actuator endpoints
+                .requestMatchers(new AntPathRequestMatcher("/actuator/health")).permitAll()
                 .anyRequest().authenticated()
             )
-            .authenticationProvider(customAuthenticationProvider)
-            .authenticationProvider(jdbcAuthenticationProvider)
-            .authenticationProvider(ldapAuthenticationProvider)
-            .oauth2Login(oauth2 -> {
-                oauth2.userInfoEndpoint(userInfo -> userInfo.userService(oauth2UserService));
-                if (oauth2AuthenticationSuccessHandler != null) {
-                    oauth2.successHandler(oauth2AuthenticationSuccessHandler);
-                }
-            })
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-            .build();
+            // Add all authentication providers
+            .authenticationProvider(customAuthenticationProvider);
+
+        // Add JDBC provider if available
+        if (jdbcAuthenticationProvider != null) {
+            http.authenticationProvider(jdbcAuthenticationProvider);
+        }
+
+        // Add LDAP provider if available
+        if (ldapAuthenticationProvider != null) {
+            http.authenticationProvider(ldapAuthenticationProvider);
+        }
+
+        // Add JWT filter before UsernamePasswordAuthenticationFilter
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
     }
     ```
+
+    !!! note "OAuth2 Integration"
+        OAuth2 configuration is currently commented out in the codebase. 
+        To enable it, uncomment the `oauth2Login()` configuration block.
 
 === "OAuth2-Only Profile"
 
@@ -75,21 +95,16 @@ graph LR
     @Bean
     @Profile("oauth2-only")
     public SecurityFilterChain oauth2OnlyFilterChain(HttpSecurity http) throws Exception {
-        return http
+        http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/", "/login", "/oauth2/**", "/login/oauth2/**").permitAll()
                 .anyRequest().authenticated()
-            )
-            .oauth2Login(oauth2 -> {
-                if (oauth2UserService != null) {
-                    oauth2.userInfoEndpoint(userInfo -> userInfo.userService(oauth2UserService));
-                }
-                if (oauth2AuthenticationSuccessHandler != null) {
-                    oauth2.successHandler(oauth2AuthenticationSuccessHandler);
-                }
-            })
-            .build();
+            );
+            // OAuth2 login configuration (currently commented out)
+            // .oauth2Login(oauth2 -> { ... });
+
+        return http.build();
     }
     ```
 
@@ -99,7 +114,7 @@ graph LR
     @Bean
     @Profile("jdbc-only")
     public SecurityFilterChain jdbcOnlyFilterChain(HttpSecurity http) throws Exception {
-        return http
+        http
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(IF_REQUIRED))
             .authorizeHttpRequests(authz -> authz
@@ -110,9 +125,13 @@ graph LR
                 .loginPage("/login")
                 .permitAll()
             )
-            .logout(logout -> logout.permitAll())
-            .authenticationProvider(jdbcAuthenticationProvider)
-            .build();
+            .logout(logout -> logout.permitAll());
+
+        if (jdbcAuthenticationProvider != null) {
+            http.authenticationProvider(jdbcAuthenticationProvider);
+        }
+
+        return http.build();
     }
     ```
 
@@ -122,7 +141,7 @@ graph LR
     @Bean
     @Profile("ldap-only")
     public SecurityFilterChain ldapOnlyFilterChain(HttpSecurity http) throws Exception {
-        return http
+        http
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(IF_REQUIRED))
             .authorizeHttpRequests(authz -> authz
@@ -133,9 +152,13 @@ graph LR
                 .loginPage("/login")
                 .permitAll()
             )
-            .logout(logout -> logout.permitAll())
-            .authenticationProvider(ldapAuthenticationProvider)
-            .build();
+            .logout(logout -> logout.permitAll());
+
+        if (ldapAuthenticationProvider != null) {
+            http.authenticationProvider(ldapAuthenticationProvider);
+        }
+
+        return http.build();
     }
     ```
 
@@ -145,43 +168,62 @@ graph LR
 
 | Provider | Purpose | Auto-Configuration |
 |----------|---------|-------------------|
-| `CustomAuthenticationProvider` | Session-based auth | Always available |
-| `JdbcAuthenticationProvider` | Database users | Conditional (`@Autowired(required = false)`) |
-| `LdapAuthenticationProvider` | Directory users | Conditional (`@Autowired(required = false)`) |
-| `OAuth2UserService` | Social login | Conditional (`@Autowired(required = false)`) |
+| `CustomAuthenticationProvider` | Session-based auth with hardcoded users | Always available |
+| `DaoAuthenticationProvider` (JDBC) | Database users via `JdbcUserDetailsManager` | Conditional (`@Autowired(required = false)`) |
+| `AuthenticationProvider` (LDAP) | Directory users | Conditional (`@Autowired(required = false)`) |
+
+### **Injected Dependencies**
+
+```java
+@Autowired
+private CustomAuthenticationProvider customAuthenticationProvider;
+
+@Autowired(required = false)
+private DaoAuthenticationProvider jdbcAuthenticationProvider;
+
+@Autowired(required = false)
+private AuthenticationProvider ldapAuthenticationProvider;
+
+@Autowired
+private JwtAuthenticationFilter jwtAuthenticationFilter;
+```
 
 ### **Security Features**
 
 #### 🛡️ **CSRF Protection**
 ```java
-// Disabled for API-first design
+// Disabled for API-first design (stateless JWT authentication)
 .csrf(csrf -> csrf.disable())
 ```
 
 #### 🔐 **Session Management**
 ```java
 // Stateless for default (JWT) profile
-.sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
+.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-// Stateful for form-based profiles  
-.sessionManagement(session -> session.sessionCreationPolicy(IF_REQUIRED))
+// Stateful for form-based profiles (jdbc-only, ldap-only)
+.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
 ```
 
 #### 🎯 **Authorization Rules**
 ```java
 .authorizeHttpRequests(authz -> authz
+    // Development endpoints
+    .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
     // Public endpoints
-    .requestMatchers("/api/public/**", "/api/auth/**").permitAll()
+    .requestMatchers(new AntPathRequestMatcher("/api/public/**")).permitAll()
+    .requestMatchers(new AntPathRequestMatcher("/api/auth/**")).permitAll()
     // OAuth2 endpoints
-    .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
+    .requestMatchers(new AntPathRequestMatcher("/oauth2/**")).permitAll()
+    .requestMatchers(new AntPathRequestMatcher("/login/oauth2/**")).permitAll()
     // Role-based endpoints
-    .requestMatchers("/api/admin/**").hasRole("ADMIN")
-    .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
+    .requestMatchers(new AntPathRequestMatcher("/api/admin/**")).hasRole("ADMIN")
+    .requestMatchers(new AntPathRequestMatcher("/api/user/**")).hasAnyRole("USER", "ADMIN")
     // Auth-method specific endpoints
-    .requestMatchers("/api/jdbc/**").hasAnyRole("USER", "ADMIN")
-    .requestMatchers("/api/ldap/**").hasAnyRole("USER", "ADMIN")
+    .requestMatchers(new AntPathRequestMatcher("/api/jdbc/**")).hasAnyRole("USER", "ADMIN")
+    .requestMatchers(new AntPathRequestMatcher("/api/ldap/**")).hasAnyRole("USER", "ADMIN")
     // Health check
-    .requestMatchers("/actuator/health").permitAll()
+    .requestMatchers(new AntPathRequestMatcher("/actuator/health")).permitAll()
     // Everything else requires authentication
     .anyRequest().authenticated()
 )
@@ -190,6 +232,7 @@ graph LR
 ## 🌐 **Multi-Protocol Security**
 
 ### **gRPC Security Interceptor**
+
 ```java
 @Bean
 public GrpcSecurityInterceptor grpcSecurityInterceptor() {
@@ -199,10 +242,12 @@ public GrpcSecurityInterceptor grpcSecurityInterceptor() {
 
 Features:
 - JWT token validation for gRPC calls
-- Metadata-based authentication
-- Status code mapping for security errors
+- Extracts token from `Authorization` metadata header
+- Validates `Bearer ` prefix requirement
+- Closes call with `Status.UNAUTHENTICATED` for invalid tokens
 
-### **WebSocket Security Interceptor**  
+### **WebSocket Security Interceptor**
+
 ```java
 @Bean  
 public WebSocketSecurityInterceptor webSocketSecurityInterceptor() {
@@ -211,84 +256,28 @@ public WebSocketSecurityInterceptor webSocketSecurityInterceptor() {
 ```
 
 Features:
-- Channel-level message interception
-- Session-based WebSocket authentication
-- Real-time security validation
+- Implements `ChannelInterceptor` interface
+- Security logic in `preSend()` method
+- Currently allows all messages (extend for JWT validation)
 
-## 📋 **Configuration Properties**
+## 📝 **Legacy SecurityConfig**
 
-### **Profile Activation**
-```bash
-# All authentication methods (default)
-mvn spring-boot:run -pl rest-api
+The original `SecurityConfig.java` is disabled via profile annotation:
 
-# OAuth2 only
-mvn spring-boot:run -pl rest-api -Dspring-boot.run.profiles=oauth2-only
-
-# Database authentication only  
-mvn spring-boot:run -pl rest-api -Dspring-boot.run.profiles=jdbc-only
-
-# LDAP authentication only
-mvn spring-boot:run -pl rest-api -Dspring-boot.run.profiles=ldap-only
+```java
+@Configuration
+@EnableWebSecurity
+@Profile("disabled-legacy-config")  // Disabled in favor of MultiAuthSecurityConfig
+public class SecurityConfig {
+    // ... legacy configuration
+}
 ```
 
-### **Security Configuration Override**
-```yaml
-# application.yml
-spring:
-  security:
-    require-ssl: false  # Development only
-    headers:
-      frame-options: SAMEORIGIN
-      content-type-options: nosniff
-```
+This configuration is preserved for reference but not active in the application.
 
-## 🎓 **Educational Highlights**
+## 🔗 **Related Topics**
 
-### **Key Learning Concepts**
-
-1. **Profile-Based Configuration**: How to create environment-specific security setups
-2. **Multi-Provider Authentication**: Combining different authentication mechanisms
-3. **Filter Chain Integration**: Proper JWT filter positioning
-4. **Conditional Dependencies**: Using `@Autowired(required = false)` for optional components
-5. **Security Filter Ordering**: Understanding Spring Security's filter execution order
-
-### **Best Practices Demonstrated**
-
-✅ **Separation of Concerns**: Each authentication method in its own module  
-✅ **Profile-Based Deployment**: Different security for different environments  
-✅ **Defensive Programming**: Null checks for optional components  
-✅ **Stateless Design**: JWT for APIs, sessions for web forms  
-✅ **Role-Based Security**: Clear authorization rules  
-
-## 🔗 **Integration Points**
-
-### **Dependencies**
-```xml
-<dependency>
-    <groupId>com.example</groupId>
-    <artifactId>common-auth</artifactId>
-    <version>${project.version}</version>
-</dependency>
-```
-
-### **Module Interactions**
-```mermaid
-graph LR
-    A[common-security] --> B[common-auth]
-    A --> C[jdbc-auth]
-    A --> D[ldap-auth]
-    A --> E[oauth2-auth]
-    F[rest-api] --> A
-```
-
-## 🚀 **Next Steps**
-
-- **[Security Filter Chain →](filter-chain.md)** - Deep dive into filter implementation
-- **[Authorization →](authorization.md)** - Role-based access control patterns
-- **[Authentication Methods →](../authentication/index.md)** - Individual auth method details
-- **[API Testing →](../examples/testing-auth.md)** - How to test security configurations
-
----
-
-**💡 The multi-profile approach allows this single configuration to support everything from development environments to production deployments with different authentication requirements.**
+- [Security Filter Chain](filter-chain.md)
+- [JWT Tokens](../authentication/jwt-tokens.md)
+- [JDBC Authentication](../authentication/jdbc-auth.md)
+- [LDAP Authentication](../authentication/ldap-auth.md)

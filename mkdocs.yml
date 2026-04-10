@@ -137,3 +137,10 @@ nav:
     - Authentication Flow: api/auth-flow.md
     - Error Handling: api/error-handling.md
     - Live API (Swagger): api/swagger.md
+  - Testing & Examples:
+    - examples/index.md
+    - API Testing Guide: examples/testing-api.md
+    - Postman Setup: examples/postman-setup.md
+    - Testing Authentication: examples/testing-auth.md
+    - Custom Providers: examples/custom-providers.md
+    - Advanced Patterns: examples/advanced-patterns.md
