@@ -1,12 +1,10 @@
 package com.example.spring.security.reference.commonsecurity;
 
 import io.grpc.*;
-import org.springframework.stereotype.Component;
 
 /**
  * Example gRPC server interceptor for authentication/authorization.
  */
-@Component
 public class GrpcSecurityInterceptor implements ServerInterceptor {
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(

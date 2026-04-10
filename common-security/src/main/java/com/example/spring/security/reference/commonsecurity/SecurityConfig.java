@@ -5,6 +5,7 @@ import com.example.spring.security.reference.commonauth.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,9 +22,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * - Custom authentication provider setup
  * - Role-based authorization rules
  * - Multi-protocol security setup (REST, gRPC, WebSocket)
+ *
+ * Note: This configuration is disabled in favor of MultiAuthSecurityConfig
+ * which provides enhanced multi-profile support.
  */
 @Configuration
 @EnableWebSecurity
+@Profile("disabled-legacy-config")
 public class SecurityConfig {
 
     @Autowired

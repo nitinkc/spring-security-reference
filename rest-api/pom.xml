@@ -107,7 +107,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>com.example.restapi.RestApiApplication</mainClass>
+                    <mainClass>com.example.spring.security.reference.api.RestApiApplication</mainClass>
                 </configuration>
             </plugin>
         </plugins>

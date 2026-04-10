@@ -21,19 +21,6 @@ mvn spring-boot:run -pl rest-api
 curl -X POST http://localhost:8080/api/auth/login -d "username=admin&password=password"
 ```
 
-## 📚 **Complete Documentation**
-
-**👉 [Visit the Full Documentation Site](https://nitikc.github.io/spring-security-reference) 👈**
-
-The comprehensive documentation includes:
-
-- 🏗️ **Architecture & Setup** - Project structure and quick start
-- 🔐 **Authentication Methods** - JDBC, LDAP, OAuth2, JWT guides  
-- 🛡️ **Security Configuration** - Filters, providers, and authorization
-- 🌐 **API Reference** - Complete endpoint documentation and testing
-- 📖 **Examples & Tutorials** - Step-by-step implementation guides
-- 🚀 **Production Deployment** - Security best practices and setup
-
 ## 🔧 What You'll Learn
 
 - **Multiple Authentication Methods**: Database, Directory, OAuth2, JWT
@@ -43,12 +30,12 @@ The comprehensive documentation includes:
 
 ## 🧪 Demo Credentials
 
-| Method | Username | Password | Role |
-|--------|----------|----------|------|
-| **JWT/Basic** | `admin` | `password` | Admin |
-| **JDBC** | `jdbcadmin` | `password` | Admin |
-| **LDAP** | `ldapadmin` | `password` | Admin |
-| **OAuth2** | *Social Login* | *Provider Auth* | User |
+| Method        | Username       | Password        | Role  |
+|:--------------|:---------------|:----------------|:------|
+| **JWT/Basic** | `admin`        | `password`      | Admin |
+| **JDBC**      | `jdbcadmin`    | `password`      | Admin |
+| **LDAP**      | `ldapadmin`    | `password`      | Admin |
+| **OAuth2**    | *Social Login* | *Provider Auth* | User  |
 
 ## 📖 Local Documentation
 
@@ -59,17 +46,11 @@ pip install -r requirements.txt
 python -m mkdocs serve
 ```
 
-Documentation will be available at `http://localhost:8000`
-
-## 🤝 Contributing
-
-This educational project welcomes contributions that enhance learning! See the [documentation site](https://nitikc.github.io/spring-security-reference) for detailed guides.
-
-## 📄 License
-
-MIT License - Use freely for learning and reference.
-
----
+- Documentation will be available at `http://localhost:8000`
 
 
-**📚 [Start Learning → Full Documentation](https://nitikc.github.io/spring-security-reference)**
+## 📚 **Complete Documentation**
+
+**👉 [Visit the Full Documentation Site](https://nitikc.github.io/spring-security-reference) 👈**
+
+- [Start Learning → Full Documentation](https://nitikc.github.io/spring-security-reference)

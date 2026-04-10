@@ -22,13 +22,13 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @SpringBootApplication
 @ComponentScan(basePackages = {
-    "com.example.restapi",
-    "com.example.commonauth",
-    "com.example.jdbcauth",
-    "com.example.ldapauth", 
-    "com.example.oauth2auth",
-    "com.example.commonsecurity", 
-    "com.example.authorizationservice"
+    "com.example.spring.security.reference.api",
+    "com.example.spring.security.reference.commonauth",
+    "com.example.spring.security.reference.jdbcauth",
+    "com.example.spring.security.reference.ldapauth",
+    "com.example.spring.security.reference.oauth2auth",
+    "com.example.spring.security.reference.commonsecurity",
+    "com.example.spring.security.reference.authorizationservice"
 })
 public class RestApiApplication {
     

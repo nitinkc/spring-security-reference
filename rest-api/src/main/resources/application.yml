@@ -25,9 +25,12 @@ spring:
     show-sql: true
   
   # LDAP Configuration (embedded server for demo)
+  # Disabled by default to avoid port conflicts
+  # Enable with --spring.ldap.embedded.enabled=true or through profiles
   ldap:
     embedded:
-      port: 8389
+      enabled: false
+      port: 18389
       ldif: classpath:test-server.ldif
       base-dn: dc=springframework,dc=org
     
