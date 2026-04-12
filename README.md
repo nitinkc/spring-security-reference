@@ -97,8 +97,8 @@ python3 -m mkdocs serve
 
 ## 📚 **Complete Documentation**
 
-**👉 [Visit the Full Documentation Site](https://nitikc.github.io/spring-security-reference) 👈**
+**👉 [Visit the Full Documentation Site](https://nitinkc.github.io/spring-security-reference/) 👈**
 
-- [API Testing Guide](https://nitikc.github.io/spring-security-reference/examples/testing-api/) - Step-by-step testing
-- [Postman Setup](https://nitikc.github.io/spring-security-reference/examples/postman-setup/) - Collection import guide
-- [Start Learning → Full Documentation](https://nitikc.github.io/spring-security-reference)
+- [API Testing Guide](https://nitinkc.github.io/spring-security-reference/examples/testing-api/) - Step-by-step testing
+- [Postman Setup](https://nitinkc.github.io/spring-security-reference/examples/postman-setup/) - Collection import guide
+- [Start Learning → Full Documentation](https://nitinkc.github.io/spring-security-reference/)
