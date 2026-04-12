@@ -1,0 +1,1882 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Comprehensive guide to Spring Security authentication and authorization patterns">
+      
+      
+        <meta name="author" content="Spring Security Reference Project">
+      
+      
+        <link rel="canonical" href="https://nitinkc.github.io/spring-security-reference/authentication/oauth2-auth/">
+      
+      
+        <link rel="prev" href="../ldap-auth/">
+      
+      
+        <link rel="next" href="../jwt-tokens/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>OAuth2 Authentication - Spring Security Reference Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="green" data-md-color-accent="teal">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#oauth2-authentication" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Spring Security Reference Documentation" class="md-header__button md-logo" aria-label="Spring Security Reference Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Spring Security Reference Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              OAuth2 Authentication
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="green" data-md-color-accent="teal"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="green" data-md-color-accent="teal"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/nitinkc/spring-security-reference" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    spring-security-reference
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../reference/diagrams/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture & Diagrams
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../getting-started/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Authentication Methods
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../security/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Security Configuration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../examples/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Testing & Examples
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Spring Security Reference Documentation" class="md-nav__button md-logo" aria-label="Spring Security Reference Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Spring Security Reference Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/nitinkc/spring-security-reference" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    spring-security-reference
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/diagrams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture & Diagrams
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quick-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/project-structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Structure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authentication Methods
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Authentication Methods
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jdbc-auth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    JDBC Authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ldap-auth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LDAP Authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OAuth2 Authentication
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OAuth2 Authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#oauth2-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🌐 OAuth2 Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oauth2-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔧 OAuth2 Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔧 OAuth2 Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#oauth2-client-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OAuth2 Client Setup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#oauth2-client-registrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OAuth2 Client Registrations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔐 Security Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔐 Security Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#oauth2-security-filter-chain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OAuth2 Security Filter Chain
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jwt-tokens/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    JWT Tokens
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../security/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security Configuration
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security Configuration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/common-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Common Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/filter-chain/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filter Chain
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authorization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/use-cases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Use Cases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/rest-endpoints/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST Endpoints
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/auth-flow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authentication Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/error-handling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error Handling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/swagger/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Live API (Swagger)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../examples/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing & Examples
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Testing & Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/testing-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Testing Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/postman-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Postman Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/testing-auth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/custom-providers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Providers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/advanced-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Authentication Methods
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="oauth2-authentication">OAuth2 Authentication<a class="headerlink" href="#oauth2-authentication" title="Permanent link">&para;</a></h1>
+<p>Comprehensive guide to OAuth2 authentication in Spring Security. Learn how to integrate with social login providers like Google, GitHub, and Facebook for modern authentication flows.</p>
+<h2 id="oauth2-overview">🌐 <strong>OAuth2 Overview</strong><a class="headerlink" href="#oauth2-overview" title="Permanent link">&para;</a></h2>
+<p>OAuth2 enables secure third-party authentication without exposing user credentials to your application. Users authenticate with trusted providers and grant limited access to your app.</p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant U as User
+    participant A as Application
+    participant P as OAuth2 Provider
+    participant R as Resource Server
+
+    Note over U,R: OAuth2 Authorization Code Flow
+    U-&gt;&gt;A: Click "Login with Provider"
+    A-&gt;&gt;P: Redirect to authorization URL
+    U-&gt;&gt;P: Login with provider credentials
+    P-&gt;&gt;P: User grants permissions
+    P-&gt;&gt;A: Redirect with authorization code
+    A-&gt;&gt;P: Exchange code for access token
+    P--&gt;&gt;A: Access token + refresh token
+    A-&gt;&gt;R: Request user info with token
+    R--&gt;&gt;A: User profile data
+    A-&gt;&gt;A: Create user session
+    A--&gt;&gt;U: Authentication successful</code></pre>
+<h2 id="oauth2-configuration">🔧 <strong>OAuth2 Configuration</strong><a class="headerlink" href="#oauth2-configuration" title="Permanent link">&para;</a></h2>
+<h3 id="oauth2-client-setup"><strong>OAuth2 Client Setup</strong><a class="headerlink" href="#oauth2-client-setup" title="Permanent link">&para;</a></h3>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nd">@Configuration</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nd">@EnableOAuth2Client</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nd">@Profile</span><span class="p">(</span><span class="s">&quot;oauth2&quot;</span><span class="p">)</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">OAuth2Config</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Logger</span><span class="w"> </span><span class="n">logger</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LogManager</span><span class="p">.</span><span class="na">getLogger</span><span class="p">(</span><span class="n">OAuth2Config</span><span class="p">.</span><span class="na">class</span><span class="p">);</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="nd">@Bean</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ClientRegistrationRepository</span><span class="w"> </span><span class="nf">clientRegistrationRepository</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">        </span><span class="n">logger</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">&quot;🌐 [OAUTH2-CONFIG] Setting up OAuth2 client registrations&quot;</span><span class="p">);</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">        </span><span class="n">logger</span><span class="p">.</span><span class="na">debug</span><span class="p">(</span><span class="s">&quot;📚 [LEARNING] OAuth2 allows third-party authentication providers&quot;</span><span class="p">);</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">InMemoryClientRegistrationRepository</span><span class="p">(</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">                </span><span class="n">googleClientRegistration</span><span class="p">(),</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">                </span><span class="n">githubClientRegistration</span><span class="p">(),</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">                </span><span class="n">facebookClientRegistration</span><span class="p">()</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">        </span><span class="p">);</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="w">    </span><span class="nd">@Bean</span>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">OAuth2AuthorizedClientService</span><span class="w"> </span><span class="nf">authorizedClientService</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">InMemoryOAuth2AuthorizedClientService</span><span class="p">(</span><span class="n">clientRegistrationRepository</span><span class="p">());</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="w">    </span><span class="nd">@Bean</span>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">OAuth2AuthorizedClientManager</span><span class="w"> </span><span class="nf">authorizedClientManager</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a><span class="w">        </span><span class="n">OAuth2AuthorizedClientProvider</span><span class="w"> </span><span class="n">authorizedClientProvider</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a><span class="w">                </span><span class="n">OAuth2AuthorizedClientProviderBuilder</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a><span class="w">                        </span><span class="p">.</span><span class="na">authorizationCode</span><span class="p">()</span>
+</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a><span class="w">                        </span><span class="p">.</span><span class="na">refreshToken</span><span class="p">()</span>
+</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a><span class="w">                        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>
+</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a><span class="w">        </span><span class="n">DefaultOAuth2AuthorizedClientManager</span><span class="w"> </span><span class="n">authorizedClientManager</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a><span class="w">                </span><span class="k">new</span><span class="w"> </span><span class="n">DefaultOAuth2AuthorizedClientManager</span><span class="p">(</span>
+</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a><span class="w">                        </span><span class="n">clientRegistrationRepository</span><span class="p">(),</span>
+</span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a><span class="w">                        </span><span class="n">authorizedClientService</span><span class="p">()</span>
+</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a><span class="w">                </span><span class="p">);</span>
+</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a>
+</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a><span class="w">        </span><span class="n">authorizedClientManager</span><span class="p">.</span><span class="na">setAuthorizedClientProvider</span><span class="p">(</span><span class="n">authorizedClientProvider</span><span class="p">);</span>
+</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a>
+</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a><span class="w">        </span><span class="n">logger</span><span class="p">.</span><span class="na">debug</span><span class="p">(</span><span class="s">&quot;✅ [OAUTH2-CONFIG] OAuth2 client manager configured&quot;</span><span class="p">);</span>
+</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a>
+</span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43" href="#__codelineno-0-43"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">authorizedClientManager</span><span class="p">;</span>
+</span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44" href="#__codelineno-0-44"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45" href="#__codelineno-0-45"></a><span class="p">}</span>
+</span></code></pre></div>
+<h3 id="oauth2-client-registrations"><strong>OAuth2 Client Registrations</strong><a class="headerlink" href="#oauth2-client-registrations" title="Permanent link">&para;</a></h3>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kd">private</span><span class="w"> </span><span class="n">ClientRegistration</span><span class="w"> </span><span class="nf">googleClientRegistration</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="n">logger</span><span class="p">.</span><span class="na">debug</span><span class="p">(</span><span class="s">&quot;🔐 [OAUTH2-CONFIG] Configuring Google OAuth2 client&quot;</span><span class="p">);</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ClientRegistration</span><span class="p">.</span><span class="na">withRegistrationId</span><span class="p">(</span><span class="s">&quot;google&quot;</span><span class="p">)</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">            </span><span class="p">.</span><span class="na">clientId</span><span class="p">(</span><span class="s">&quot;${oauth2.google.client-id}&quot;</span><span class="p">)</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">            </span><span class="p">.</span><span class="na">clientSecret</span><span class="p">(</span><span class="s">&quot;${oauth2.google.client-secret}&quot;</span><span class="p">)</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">            </span><span class="p">.</span><span class="na">clientAuthenticationMethod</span><span class="p">(</span><span class="n">ClientAuthenticationMethod</span><span class="p">.</span><span class="na">CLIENT_SECRET_BASIC</span><span class="p">)</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">            </span><span class="p">.</span><span class="na">authorizationGrantType</span><span class="p">(</span><span class="n">AuthorizationGrantType</span><span class="p">.</span><span class="na">AUTHORIZATION_CODE</span><span class="p">)</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">            </span><span class="p">.</span><span class="na">redirectUri</span><span class="p">(</span><span class="s">&quot;{baseUrl}/login/oauth2/code/{registrationId}&quot;</span><span class="p">)</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">            </span><span class="p">.</span><span class="na">scope</span><span class="p">(</span><span class="s">&quot;openid&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;profile&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;email&quot;</span><span class="p">)</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">            </span><span class="p">.</span><span class="na">authorizationUri</span><span class="p">(</span><span class="s">&quot;https://accounts.google.com/o/oauth2/v2/auth&quot;</span><span class="p">)</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">            </span><span class="p">.</span><span class="na">tokenUri</span><span class="p">(</span><span class="s">&quot;https://oauth2.googleapis.com/token&quot;</span><span class="p">)</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">            </span><span class="p">.</span><span class="na">userInfoUri</span><span class="p">(</span><span class="s">&quot;https://www.googleapis.com/oauth2/v3/userinfo&quot;</span><span class="p">)</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">            </span><span class="p">.</span><span class="na">userNameAttributeName</span><span class="p">(</span><span class="n">IdTokenClaimNames</span><span class="p">.</span><span class="na">SUB</span><span class="p">)</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">            </span><span class="p">.</span><span class="na">jwkSetUri</span><span class="p">(</span><span class="s">&quot;https://www.googleapis.com/oauth2/v3/certs&quot;</span><span class="p">)</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">            </span><span class="p">.</span><span class="na">clientName</span><span class="p">(</span><span class="s">&quot;Google&quot;</span><span class="p">)</span>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="p">}</span>
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="kd">private</span><span class="w"> </span><span class="n">ClientRegistration</span><span class="w"> </span><span class="nf">githubClientRegistration</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">    </span><span class="n">logger</span><span class="p">.</span><span class="na">debug</span><span class="p">(</span><span class="s">&quot;🔐 [OAUTH2-CONFIG] Configuring GitHub OAuth2 client&quot;</span><span class="p">);</span>
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ClientRegistration</span><span class="p">.</span><span class="na">withRegistrationId</span><span class="p">(</span><span class="s">&quot;github&quot;</span><span class="p">)</span>
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="w">            </span><span class="p">.</span><span class="na">clientId</span><span class="p">(</span><span class="s">&quot;${oauth2.github.client-id}&quot;</span><span class="p">)</span>
+</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="w">            </span><span class="p">.</span><span class="na">clientSecret</span><span class="p">(</span><span class="s">&quot;${oauth2.github.client-secret}&quot;</span><span class="p">)</span>
+</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="w">            </span><span class="p">.</span><span class="na">clientAuthenticationMethod</span><span class="p">(</span><span class="n">ClientAuthenticationMethod</span><span class="p">.</span><span class="na">CLIENT_SECRET_BASIC</span><span class="p">)</span>
+</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a><span class="w">            </span><span class="p">.</span><span class="na">authorizationGrantType</span><span class="p">(</span><span class="n">AuthorizationGrantType</span><span class="p">.</span><span class="na">AUTHORIZATION_CODE</span><span class="p">)</span>
+</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="w">            </span><span class="p">.</span><span class="na">redirectUri</span><span class="p">(</span><span class="s">&quot;{baseUrl}/login/oauth2/code/{registrationId}&quot;</span><span class="p">)</span>
+</span><span id="__span-1-29"><a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a><span class="w">            </span><span class="p">.</span><span class="na">scope</span><span class="p">(</span><span class="s">&quot;read:user&quot;</span><span class="p">)</span>
+</span><span id="__span-1-30"><a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a><span class="w">            </span><span class="p">.</span><span class="na">authorizationUri</span><span class="p">(</span><span class="s">&quot;https://github.com/login/oauth/authorize&quot;</span><span class="p">)</span>
+</span><span id="__span-1-31"><a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a><span class="w">            </span><span class="p">.</span><span class="na">tokenUri</span><span class="p">(</span><span class="s">&quot;https://github.com/login/oauth/access_token&quot;</span><span class="p">)</span>
+</span><span id="__span-1-32"><a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a><span class="w">            </span><span class="p">.</span><span class="na">userInfoUri</span><span class="p">(</span><span class="s">&quot;https://api.github.com/user&quot;</span><span class="p">)</span>
+</span><span id="__span-1-33"><a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a><span class="w">            </span><span class="p">.</span><span class="na">userNameAttributeName</span><span class="p">(</span><span class="s">&quot;id&quot;</span><span class="p">)</span>
+</span><span id="__span-1-34"><a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a><span class="w">            </span><span class="p">.</span><span class="na">clientName</span><span class="p">(</span><span class="s">&quot;GitHub&quot;</span><span class="p">)</span>
+</span><span id="__span-1-35"><a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a><span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+</span><span id="__span-1-36"><a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a><span class="p">}</span>
+</span><span id="__span-1-37"><a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a>
+</span><span id="__span-1-38"><a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a><span class="kd">private</span><span class="w"> </span><span class="n">ClientRegistration</span><span class="w"> </span><span class="nf">facebookClientRegistration</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-1-39"><a id="__codelineno-1-39" name="__codelineno-1-39" href="#__codelineno-1-39"></a><span class="w">    </span><span class="n">logger</span><span class="p">.</span><span class="na">debug</span><span class="p">(</span><span class="s">&quot;🔐 [OAUTH2-CONFIG] Configuring Facebook OAuth2 client&quot;</span><span class="p">);</span>
+</span><span id="__span-1-40"><a id="__codelineno-1-40" name="__codelineno-1-40" href="#__codelineno-1-40"></a>
+</span><span id="__span-1-41"><a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ClientRegistration</span><span class="p">.</span><span class="na">withRegistrationId</span><span class="p">(</span><span class="s">&quot;facebook&quot;</span><span class="p">)</span>
+</span><span id="__span-1-42"><a id="__codelineno-1-42" name="__codelineno-1-42" href="#__codelineno-1-42"></a><span class="w">            </span><span class="p">.</span><span class="na">clientId</span><span class="p">(</span><span class="s">&quot;${oauth2.facebook.client-id}&quot;</span><span class="p">)</span>
+</span><span id="__span-1-43"><a id="__codelineno-1-43" name="__codelineno-1-43" href="#__codelineno-1-43"></a><span class="w">            </span><span class="p">.</span><span class="na">clientSecret</span><span class="p">(</span><span class="s">&quot;${oauth2.facebook.client-secret}&quot;</span><span class="p">)</span>
+</span><span id="__span-1-44"><a id="__codelineno-1-44" name="__codelineno-1-44" href="#__codelineno-1-44"></a><span class="w">            </span><span class="p">.</span><span class="na">clientAuthenticationMethod</span><span class="p">(</span><span class="n">ClientAuthenticationMethod</span><span class="p">.</span><span class="na">CLIENT_SECRET_POST</span><span class="p">)</span>
+</span><span id="__span-1-45"><a id="__codelineno-1-45" name="__codelineno-1-45" href="#__codelineno-1-45"></a><span class="w">            </span><span class="p">.</span><span class="na">authorizationGrantType</span><span class="p">(</span><span class="n">AuthorizationGrantType</span><span class="p">.</span><span class="na">AUTHORIZATION_CODE</span><span class="p">)</span>
+</span><span id="__span-1-46"><a id="__codelineno-1-46" name="__codelineno-1-46" href="#__codelineno-1-46"></a><span class="w">            </span><span class="p">.</span><span class="na">redirectUri</span><span class="p">(</span><span class="s">&quot;{baseUrl}/login/oauth2/code/{registrationId}&quot;</span><span class="p">)</span>
+</span><span id="__span-1-47"><a id="__codelineno-1-47" name="__codelineno-1-47" href="#__codelineno-1-47"></a><span class="w">            </span><span class="p">.</span><span class="na">scope</span><span class="p">(</span><span class="s">&quot;email&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;public_profile&quot;</span><span class="p">)</span>
+</span><span id="__span-1-48"><a id="__codelineno-1-48" name="__codelineno-1-48" href="#__codelineno-1-48"></a><span class="w">            </span><span class="p">.</span><span class="na">authorizationUri</span><span class="p">(</span><span class="s">&quot;https://www.facebook.com/v18.0/dialog/oauth&quot;</span><span class="p">)</span>
+</span><span id="__span-1-49"><a id="__codelineno-1-49" name="__codelineno-1-49" href="#__codelineno-1-49"></a><span class="w">            </span><span class="p">.</span><span class="na">tokenUri</span><span class="p">(</span><span class="s">&quot;https://graph.facebook.com/v18.0/oauth/access_token&quot;</span><span class="p">)</span>
+</span><span id="__span-1-50"><a id="__codelineno-1-50" name="__codelineno-1-50" href="#__codelineno-1-50"></a><span class="w">            </span><span class="p">.</span><span class="na">userInfoUri</span><span class="p">(</span><span class="s">&quot;https://graph.facebook.com/me?fields=id,name,email&quot;</span><span class="p">)</span>
+</span><span id="__span-1-51"><a id="__codelineno-1-51" name="__codelineno-1-51" href="#__codelineno-1-51"></a><span class="w">            </span><span class="p">.</span><span class="na">userNameAttributeName</span><span class="p">(</span><span class="s">&quot;id&quot;</span><span class="p">)</span>
+</span><span id="__span-1-52"><a id="__codelineno-1-52" name="__codelineno-1-52" href="#__codelineno-1-52"></a><span class="w">            </span><span class="p">.</span><span class="na">clientName</span><span class="p">(</span><span class="s">&quot;Facebook&quot;</span><span class="p">)</span>
+</span><span id="__span-1-53"><a id="__codelineno-1-53" name="__codelineno-1-53" href="#__codelineno-1-53"></a><span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+</span><span id="__span-1-54"><a id="__codelineno-1-54" name="__codelineno-1-54" href="#__codelineno-1-54"></a><span class="p">}</span>
+</span></code></pre></div>
+<h2 id="security-configuration">🔐 <strong>Security Configuration</strong><a class="headerlink" href="#security-configuration" title="Permanent link">&para;</a></h2>
+<h3 id="oauth2-security-filter-chain"><strong>OAuth2 Security Filter Chain</strong><a class="headerlink" href="#oauth2-security-filter-chain" title="Permanent link">&para;</a></h3>
+<p>```java
+<a class="magiclink magiclink-github magiclink-mention" href="https://github.com/Configuration" title="GitHub User: Configuration">@Configuration</a>
+<a class="magiclink magiclink-github magiclink-mention" href="https://github.com/EnableWebSecurity" title="GitHub User: EnableWebSecurity">@EnableWebSecurity</a>
+<a class="magiclink magiclink-github magiclink-mention" href="https://github.com/Profile" title="GitHub User: Profile">@Profile</a>("oauth2")
+public class OAuth2SecurityConfig {</p>
+<div class="language-text highlight"><pre><span></span><code>private static final Logger logger = LogManager.getLogger(OAuth2SecurityConfig.class);
+
+@Autowired
+private OAuth2UserService&lt;OAuth2UserRequest, OAuth2User&gt; customOAuth2UserService;
+
+@Bean
+public SecurityFilterChain oauth2FilterChain(HttpSecurity http) throws Exception {
+    logger.info(&quot;🔐 [OAUTH2-SECURITY] Configuring OAuth2 security filter chain&quot;);
+    logger.debug(&quot;📚 [LEARNING] OAuth2 login with social providers&quot;);
+
+    return http
+        .authorizeHttpRequests(authz -&gt; authz
+            .requestMatchers(&quot;/&quot;, &quot;/login&quot;, &quot;/oauth2/**&quot;, &quot;/api/public/**&quot;).permitAll()
+            .requestMatchers(&quot;/api/oauth2/**&quot;).authenticated()
+            .requestMatchers(&quot;/api/admin/**&quot;).hasRole(&quot;ADMIN&quot;)
+            .requestMatchers(&quot;/api/user/**&quot;).hasAnyRole(&quot;USER&quot;, &quot;ADMIN&quot;)
+            .anyRequest().authenticated()
+        )
+
+        .oauth2Login(oauth2 -&gt; oauth2
+            .loginPage(&quot;/login&quot;)
+            .defaultSuccessUrl(&quot;/api/oauth2/success&quot;)
+            .failureUrl(&quot;/login?error&quot;)
+            .userInfoEndpoint(userInfo -&gt; userInfo
+                .userService(customOAuth2UserService)
+            )\n            )\n            \n            .logout(logout -&gt; logout\n                .logoutUrl(\&quot;/logout\&quot;)\n                .logoutSuccessUrl(\&quot;/\&quot;)\n                .invalidateHttpSession(true)\n                .clearAuthentication(true)\n            )\n            \n            .sessionManagement(session -&gt; session\n                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)\n                .maximumSessions(1)\n                .maxSessionsPreventsLogin(false)\n            )\n            \n            .csrf(csrf -&gt; csrf.disable())\n            \n            .build();\n    }\n}\n```\n\n## 🎯 **Custom OAuth2 User Service**\n\n### **OAuth2UserService Implementation**\n\n```java\n@Service\npublic class CustomOAuth2UserService implements OAuth2UserService&lt;OAuth2UserRequest, OAuth2User&gt; {\n    \n    private static final Logger logger = LogManager.getLogger(CustomOAuth2UserService.class);\n    \n    private final DefaultOAuth2UserService delegate = new DefaultOAuth2UserService();\n    \n    @Override\n    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {\n        OAuth2User oauth2User = delegate.loadUser(userRequest);\n        \n        String registrationId = userRequest.getClientRegistration().getRegistrationId();\n        String userNameAttributeName = userRequest.getClientRegistration()\n                .getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();\n                \n        logger.info(\&quot;🌐 [OAUTH2-USER] Loading OAuth2 user from provider: {}\&quot;, registrationId);\n        logger.debug(\&quot;📊 [OAUTH2-USER] User name attribute: {}\&quot;, userNameAttributeName);\n        \n        // Extract user information based on provider\n        OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(\n                registrationId, \n                oauth2User.getAttributes()\n        );\n        \n        logger.debug(\&quot;👤 [OAUTH2-USER] User info extracted:\&quot;);\n        logger.debug(\&quot;   • ID: {}\&quot;, userInfo.getId());\n        logger.debug(\&quot;   • Name: {}\&quot;, userInfo.getName());\n        logger.debug(\&quot;   • Email: {}\&quot;, userInfo.getEmail());\n        \n        // Check if user exists in database, create if not\n        User user = createOrUpdateUser(userInfo, registrationId);\n        \n        // Create custom principal with user details\n        return new CustomOAuth2User(\n                oauth2User.getAuthorities(),\n                oauth2User.getAttributes(),\n                userNameAttributeName,\n                user\n        );\n    }\n    \n    private User createOrUpdateUser(OAuth2UserInfo userInfo, String provider) {\n        logger.debug(\&quot;🔄 [OAUTH2-USER] Creating/updating user for provider: {}\&quot;, provider);\n        \n        // Implementation for user creation/update logic\n        User user = User.builder()\n                .providerId(userInfo.getId())\n                .provider(provider)\n                .name(userInfo.getName())\n                .email(userInfo.getEmail())\n                .role(\&quot;ROLE_USER\&quot;) // Default role\n                .enabled(true)\n                .build();\n                \n        logger.debug(\&quot;✅ [OAUTH2-USER] User created/updated successfully\&quot;);\n        return user;\n    }\n}\n```\n\n### **OAuth2 User Info Factory**\n\n```java\npublic class OAuth2UserInfoFactory {\n    \n    public static OAuth2UserInfo getOAuth2UserInfo(String registrationId, \n                                                   Map&lt;String, Object&gt; attributes) {\n        \n        return switch (registrationId.toLowerCase()) {\n            case \&quot;google\&quot; -&gt; new GoogleOAuth2UserInfo(attributes);\n            case \&quot;github\&quot; -&gt; new GitHubOAuth2UserInfo(attributes);\n            case \&quot;facebook\&quot; -&gt; new FacebookOAuth2UserInfo(attributes);\n            default -&gt; throw new OAuth2AuthenticationProcessingException(\n                    \&quot;Login with \&quot; + registrationId + \&quot; is not supported\&quot;);\n        };\n    }\n}\n\n// Provider-specific user info classes\npublic class GoogleOAuth2UserInfo extends OAuth2UserInfo {\n    \n    public GoogleOAuth2UserInfo(Map&lt;String, Object&gt; attributes) {\n        super(attributes);\n    }\n    \n    @Override\n    public String getId() {\n        return (String) attributes.get(\&quot;sub\&quot;);\n    }\n    \n    @Override\n    public String getName() {\n        return (String) attributes.get(\&quot;name\&quot;);\n    }\n    \n    @Override\n    public String getEmail() {\n        return (String) attributes.get(\&quot;email\&quot;);\n    }\n    \n    @Override\n    public String getImageUrl() {\n        return (String) attributes.get(\&quot;picture\&quot;);\n    }\n}\n```\n\n## 🚀 **Usage Examples**\n\n### **1. OAuth2 Login Endpoints**\n\n```bash\n# Initiate Google OAuth2 login\ncurl -v http://localhost:8080/oauth2/authorization/google\n\n# Initiate GitHub OAuth2 login\ncurl -v http://localhost:8080/oauth2/authorization/github\n\n# Initiate Facebook OAuth2 login\ncurl -v http://localhost:8080/oauth2/authorization/facebook\n```\n\n### **2. OAuth2 User Info Endpoint**\n\n```java\n@RestController\n@RequestMapping(\&quot;/api/oauth2\&quot;)\npublic class OAuth2Controller {\n    \n    @GetMapping(\&quot;/user\&quot;)\n    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; getCurrentUser(\n            @AuthenticationPrincipal OAuth2User principal) {\n        \n        Map&lt;String, Object&gt; userInfo = new HashMap&lt;&gt;();\n        userInfo.put(\&quot;name\&quot;, principal.getAttribute(\&quot;name\&quot;));\n        userInfo.put(\&quot;email\&quot;, principal.getAttribute(\&quot;email\&quot;));\n        userInfo.put(\&quot;provider\&quot;, getProvider(principal));\n        userInfo.put(\&quot;authorities\&quot;, principal.getAuthorities());\n        \n        return ResponseEntity.ok(userInfo);\n    }\n    \n    @GetMapping(\&quot;/success\&quot;)\n    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; loginSuccess(\n            Authentication authentication) {\n            \n        OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();\n        \n        return ResponseEntity.ok(Map.of(\n            \&quot;message\&quot;, \&quot;OAuth2 login successful\&quot;,\n            \&quot;user\&quot;, oauth2User.getAttribute(\&quot;name\&quot;),\n            \&quot;email\&quot;, oauth2User.getAttribute(\&quot;email\&quot;),\n            \&quot;provider\&quot;, getProvider(oauth2User)\n        ));\n    }\n}\n```\n\n### **3. OAuth2 Response Example**\n\n```json\n{\n  \&quot;message\&quot;: \&quot;OAuth2 login successful\&quot;,\n  \&quot;user\&quot;: \&quot;John Doe\&quot;,\n  \&quot;email\&quot;: \&quot;john.doe@example.com\&quot;,\n  \&quot;provider\&quot;: \&quot;google\&quot;,\n  \&quot;authorities\&quot;: [\n    {\n      \&quot;authority\&quot;: \&quot;ROLE_USER\&quot;\n    },\n    {\n      \&quot;authority\&quot;: \&quot;OAUTH2_USER\&quot;\n    }\n  ],\n  \&quot;attributes\&quot;: {\n    \&quot;sub\&quot;: \&quot;123456789\&quot;,\n    \&quot;name\&quot;: \&quot;John Doe\&quot;,\n    \&quot;email\&quot;: \&quot;john.doe@example.com\&quot;,\n    \&quot;picture\&quot;: \&quot;https://example.com/avatar.jpg\&quot;\n  }\n}\n```\n\n## 🔧 **Configuration Properties**\n\n### **Application Properties**\n\n```yaml\n# application-oauth2.yml\nspring:\n  security:\n    oauth2:\n      client:\n        registration:\n          google:\n            client-id: ${GOOGLE_CLIENT_ID}\n            client-secret: ${GOOGLE_CLIENT_SECRET}\n            scope:\n              - openid\n              - profile\n              - email\n            redirect-uri: \&quot;{baseUrl}/login/oauth2/code/{registrationId}\&quot;\n          \n          github:\n            client-id: ${GITHUB_CLIENT_ID}\n            client-secret: ${GITHUB_CLIENT_SECRET}\n            scope:\n              - read:user\n              - user:email\n            redirect-uri: \&quot;{baseUrl}/login/oauth2/code/{registrationId}\&quot;\n          \n          facebook:\n            client-id: ${FACEBOOK_CLIENT_ID}\n            client-secret: ${FACEBOOK_CLIENT_SECRET}\n            scope:\n              - email\n              - public_profile\n            redirect-uri: \&quot;{baseUrl}/login/oauth2/code/{registrationId}\&quot;\n        \n        provider:\n          facebook:\n            authorization-uri: https://www.facebook.com/v18.0/dialog/oauth\n            token-uri: https://graph.facebook.com/v18.0/oauth/access_token\n            user-info-uri: https://graph.facebook.com/me?fields=id,name,email\n            user-name-attribute: id\n\nlogging:\n  level:\n    org.springframework.security.oauth2: DEBUG\n    com.example.oauth2: DEBUG\n```\n\n## 🧪 **Testing OAuth2 Authentication**\n\n### **Integration Tests**\n\n```java\n@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)\n@ActiveProfiles(\&quot;oauth2\&quot;)\nclass OAuth2AuthenticationTest {\n    \n    @Autowired\n    private TestRestTemplate restTemplate;\n    \n    @Autowired\n    private ClientRegistrationRepository clientRegistrationRepository;\n    \n    @Test\n    void shouldHaveOAuth2ClientRegistrations() {\n        // Test OAuth2 client registrations are configured\n        ClientRegistration google = clientRegistrationRepository.findByRegistrationId(\&quot;google\&quot;);\n        ClientRegistration github = clientRegistrationRepository.findByRegistrationId(\&quot;github\&quot;);\n        ClientRegistration facebook = clientRegistrationRepository.findByRegistrationId(\&quot;facebook\&quot;);\n        \n        assertThat(google).isNotNull();\n        assertThat(github).isNotNull();\n        assertThat(facebook).isNotNull();\n        \n        assertThat(google.getClientName()).isEqualTo(\&quot;Google\&quot;);\n        assertThat(github.getClientName()).isEqualTo(\&quot;GitHub\&quot;);\n        assertThat(facebook.getClientName()).isEqualTo(\&quot;Facebook\&quot;);\n    }\n    \n    @Test\n    void shouldRedirectToOAuth2Provider() {\n        // Test OAuth2 authorization redirection\n        ResponseEntity&lt;String&gt; response = restTemplate.getForEntity(\n                \&quot;/oauth2/authorization/google\&quot;, \n                String.class\n        );\n        \n        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);\n        assertThat(response.getHeaders().getLocation().toString())\n                .contains(\&quot;accounts.google.com/o/oauth2/v2/auth\&quot;);\n    }\n}\n```\n\n### **Mock OAuth2 User Tests**\n\n```java\n@Test\n@WithMockOAuth2User(value = \&quot;123456789\&quot;, attributes = {\n    \&quot;sub\&quot;, \&quot;123456789\&quot;,\n    \&quot;name\&quot;, \&quot;Test User\&quot;,\n    \&quot;email\&quot;, \&quot;test@example.com\&quot;\n})\nvoid shouldAuthenticateWithMockOAuth2User() {\n    ResponseEntity&lt;Map&gt; response = restTemplate.getForEntity(\n            \&quot;/api/oauth2/user\&quot;, \n            Map.class\n    );\n    \n    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);\n    assertThat(response.getBody().get(\&quot;name\&quot;)).isEqualTo(\&quot;Test User\&quot;);\n    assertThat(response.getBody().get(\&quot;email\&quot;)).isEqualTo(\&quot;test@example.com\&quot;);\n}\n```\n\n## 🔄 **OAuth2 Token Management**\n\n### **Token Refresh**\n\n```java\n@Component\npublic class OAuth2TokenRefreshService {\n    \n    private final OAuth2AuthorizedClientManager authorizedClientManager;\n    \n    public String refreshAccessToken(String clientRegistrationId, String principalName) {\n        OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest\n                .withClientRegistrationId(clientRegistrationId)\n                .principal(principalName)\n                .build();\n                \n        OAuth2AuthorizedClient authorizedClient = \n                authorizedClientManager.authorize(authorizeRequest);\n                \n        if (authorizedClient != null &amp;&amp; authorizedClient.getAccessToken() != null) {\n            return authorizedClient.getAccessToken().getTokenValue();\n        }\n        \n        throw new IllegalStateException(\&quot;Unable to refresh OAuth2 token\&quot;);\n    }\n}\n```\n\n### **Token Storage**\n\n```java\n@Bean\npublic OAuth2AuthorizedClientService authorizedClientService() {\n    // Use JdbcOAuth2AuthorizedClientService for persistent token storage\n    return new JdbcOAuth2AuthorizedClientService(\n            jdbcTemplate,\n            clientRegistrationRepository()\n    );\n}\n```\n\n## ⚡ **OAuth2 Best Practices**\n\n### **✅ Do&#39;s**\n\n1. **Use HTTPS in production** - OAuth2 requires secure communication\n2. **Validate redirect URIs** - Prevent authorization code interception\n3. **Implement proper scopes** - Request minimal required permissions\n4. **Store tokens securely** - Use encrypted storage for access/refresh tokens\n5. **Handle token expiration** - Implement automatic token refresh\n\n### **❌ Don&#39;ts**\n\n1. **Don&#39;t store client secrets** in source code or client-side applications\n2. **Don&#39;t use implicit flow** - Use authorization code flow with PKCE\n3. **Don&#39;t ignore state parameters** - Prevent CSRF attacks\n4. **Don&#39;t trust client-side tokens** - Always validate tokens server-side\n5. **Don&#39;t expose sensitive scopes** - Limit access to necessary data only\n\n### **🔧 Production Configuration**\n\n```yaml\n# application-production.yml\nspring:\n  security:\n    oauth2:\n      client:\n        registration:\n          google:\n            client-id: ${GOOGLE_OAUTH2_CLIENT_ID}\n            client-secret: ${GOOGLE_OAUTH2_CLIENT_SECRET}\n            \nlogging:\n  level:\n    org.springframework.security.oauth2: INFO # Reduce debug logging\n    \n# Environment variables for production\n# GOOGLE_OAUTH2_CLIENT_ID=your-google-client-id\n# GOOGLE_OAUTH2_CLIENT_SECRET=your-google-client-secret\n# GITHUB_OAUTH2_CLIENT_ID=your-github-client-id\n# GITHUB_OAUTH2_CLIENT_SECRET=your-github-client-secret\n```\n\n## 🚀 **Next Steps**\n\n- **[SSO Integration →](sso-integration.md)** - Enterprise single sign-on\n- **[JWT Tokens →](jwt-tokens.md)** - Combine OAuth2 with JWT\n- **[LDAP Authentication →](ldap-auth.md)** - Directory-based authentication\n- **[API Reference →](../api/auth-flow.md)** - OAuth2 API patterns\n- **[Security Configuration →](../security/index.md)** - OAuth2 security setup\n\n---\n\n**🌐 OAuth2 authentication enables modern social login flows while maintaining security and user privacy. Understanding provider integration and token management is essential for contemporary web applications.**
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/nitinkc" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.path", "navigation.indexes", "toc.follow", "toc.integrate", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
