@@ -1,0 +1,19 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+rootProject.name = 'spring-security-reference'
+
+include 'common-auth'
+include 'jdbc-auth'
+include 'ldap-auth'
+include 'oauth2-auth'
+include 'common-security'
+include 'authorization-service'
+include 'rest-api'
+include 'graphql-service'
+include 'grpc-service'
+include 'websocket-service'

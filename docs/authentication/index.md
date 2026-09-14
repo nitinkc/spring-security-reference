@@ -1,16 +1,17 @@
 # Authentication Methods
 
-This section covers all authentication methods implemented in the Spring Security Reference Project. Each method demonstrates different use cases and integration patterns commonly found in enterprise applications.
+This section covers authentication methods implemented or planned in the Spring Security Reference Project. Check the [Coverage Registry](../coverage.md) before treating documentation as runnable proof.
 
 ## 🎯 Overview
 
-The project implements **four distinct authentication strategies**, each designed for different scenarios:
+The project tracks these authentication and federation strategies:
 
 | Method | Module | Use Case | Complexity |
 |--------|--------|----------|------------|
 | **[JDBC Authentication](jdbc-auth.md)** | `jdbc-auth` | Database-backed users | ⭐⭐ |
 | **[LDAP Authentication](ldap-auth.md)** | `ldap-auth` | Enterprise directories | ⭐⭐⭐ |
-| **[OAuth2 Authentication](oauth2-auth.md)** | `oauth2-auth` | Social login, SSO | ⭐⭐⭐⭐ |
+| **[OAuth2 Authentication](oauth2-auth.md)** | `oauth2-auth` scaffold | OAuth2/OIDC login and API security | ⭐⭐⭐⭐ |
+| **[SSO with OIDC and SAML](sso-integration.md)** | Planned labs | Cross-application enterprise federation | ⭐⭐⭐⭐⭐ |
 | **[JWT Tokens](jwt-tokens.md)** | `common-auth` | Stateless API auth | ⭐⭐⭐ |
 
 ## 🏗️ Authentication Architecture
@@ -171,9 +172,11 @@ spring:
 3. **[Custom Providers](../examples/custom-providers.md)** - Build custom auth
 
 ### Advanced Path
-1. **[OAuth2 Authentication](oauth2-auth.md)** - Modern identity protocols
-2. **[Advanced Patterns](../examples/advanced-patterns.md)** - Complex scenarios
-3. **[Production Setup](../deployment/production.md)** - Deploy securely
+1. **[OAuth2 Authentication](oauth2-auth.md)** - OAuth2 client and resource-server concepts
+2. **[SSO with OIDC and SAML](sso-integration.md)** - Federation, sessions, logout, and assertion security
+3. **[SSO and SAML Labs](../labs.md#track-c-sso-and-saml-20)** - Build executable proof
+4. **[Advanced Patterns](../examples/advanced-patterns.md)** - Delegation and workload identity
+5. **[Production Setup](../deployment/production.md)** - Deploy securely
 
 ## 🔍 Comparison Matrix
 
@@ -194,8 +197,10 @@ spring:
 
 - **JDBC**: Internal applications with custom user management
 - **LDAP**: Enterprise environments with existing directories
-- **OAuth2**: Public applications or SSO requirements
-- **JWT**: APIs, microservices, or stateless architectures
+- **OIDC SSO**: Preferred federation for new browser and mobile applications
+- **SAML SSO**: Established enterprise workforce and partner federation
+- **OAuth2 access tokens**: Delegated API authorization
+- **JWT**: A token format, not an authentication or SSO protocol by itself
 
 ### Best Practices
 

@@ -2,6 +2,17 @@
 
 Comprehensive guide to API error responses, HTTP status codes, and error handling patterns in the Spring Security Reference project.
 
+## Current security error contract
+
+The stateless REST chain returns `application/json` through a production `AuthenticationEntryPoint` and `AccessDeniedHandler`.
+
+| Status | Machine code | Meaning |
+|---|---|---|
+| 401 | `authentication_required` | Authentication is absent or invalid |
+| 403 | `access_denied` | Authentication succeeded but permission is insufficient |
+
+Both responses contain `status`, `error`, `message`, and `path`. They deliberately omit exception messages, stack traces, policy expressions, authorities, and credentials. See [LAB-005](../tutorials/lab-005-security-errors.md) for implementation and executable assertions.
+
 ## 🚨 **Error Response Architecture**
 
 ```mermaid

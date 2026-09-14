@@ -233,6 +233,6 @@ graph TD
 
 ## 🚀 **Getting Started**
 
-1. **Build all modules**: `mvn clean install -DskipTests`
-2. **Run the application**: `mvn spring-boot:run -pl rest-api`
+1. **Build all modules**: `./gradlew build`
+2. **Run the application**: `./gradlew :rest-api:bootRun`
 3. **Test endpoints**: See [API Testing Guide](../examples/testing-api.md)

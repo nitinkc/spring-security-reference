@@ -21,16 +21,16 @@ oauth2-auth → standalone
 ```
 README.md
 rest-api/
-    pom.xml
+    build.gradle
     src/main/java/com/example/spring/security/reference/api/
         RestApiApplication.java
         ApiController.java
 authorization-service/
-    pom.xml
+    build.gradle
     src/main/java/com/example/spring/security/reference/authorizationservice/
         AuthorizationService.java
 common-auth/
-    pom.xml
+    build.gradle
     src/main/java/com/example/spring/security/reference/commonauth/
         AuthService.java
         CustomAuthenticationProvider.java
@@ -38,34 +38,34 @@ common-auth/
         JwtTokenUtil.java
         TwoFactorAuthService.java
 common-security/
-    pom.xml
+    build.gradle
     src/main/java/com/example/spring/security/reference/commonsecurity/
         GrpcSecurityInterceptor.java
         MultiAuthSecurityConfig.java
         SecurityConfig.java
         WebSocketSecurityInterceptor.java
 jdbc-auth/
-    pom.xml
+    build.gradle
     src/main/java/com/example/spring/security/reference/jdbcauth/
         JdbcAuthConfig.java
         JdbcDataInitializer.java
 ldap-auth/
-    pom.xml
+    build.gradle
     src/main/java/com/example/spring/security/reference/ldapauth/
         LdapAuthConfig.java
         PersonContextMapper.java
 oauth2-auth/
-    pom.xml
+    build.gradle
     src/main/java/com/example/spring/security/reference/oauth2auth/
         OAuth2AuthConfig.java
         OAuth2AuthenticationSuccessHandler.java
 graphql-service/
-    pom.xml
+    build.gradle
     src/main/java/com/example/spring/security/reference/graphqlservice/
         GraphQLController.java
         GraphQLSecurityInterceptor.java
 websocket-service/
-    pom.xml
+    build.gradle
     src/main/java/com/example/spring/security/reference/websocketservice/
         WebSocketConfig.java
         WebSocketController.java

@@ -9,7 +9,7 @@ Before you begin, ensure you have the following installed:
 | Tool | Version | Purpose |
 |------|---------|---------|
 | **Java** | 17+ | Runtime environment |
-| **Maven** | 3.6+ | Build and dependency management |
+| **Gradle Wrapper** | Included | Build and dependency management |
 | **Git** | Latest | Version control |
 | **IDE** | IntelliJ IDEA, Eclipse, or VS Code | Development environment |
 
@@ -19,8 +19,8 @@ Before you begin, ensure you have the following installed:
 # Check Java version
 java -version
 
-# Check Maven version  
-mvn -version
+# Check the Gradle wrapper
+./gradlew --version
 
 # Check Git version
 git --version
@@ -39,7 +39,7 @@ cd spring-security-reference
 
 ```bash
 # Clean install all modules
-mvn clean install
+./gradlew build
 
 # Verify build success
 echo "Build completed successfully!"
@@ -49,7 +49,7 @@ echo "Build completed successfully!"
 
 ```bash
 # Start the main application
-mvn spring-boot:run -pl rest-api
+./gradlew :rest-api:bootRun
 ```
 
 The application will start on `http://localhost:8080`
@@ -110,13 +110,13 @@ Expected response:
 
 #### IntelliJ IDEA
 
-1. **Import Project**: File → Open → Select `pom.xml`
+1. **Import Project**: File → Open → Select the repository root `settings.gradle`
 2. **Enable Annotation Processing**: Settings → Build → Compiler → Annotation Processors
-3. **Set JDK**: File → Project Structure → Project → SDK: Java 17+
+3. **Set JDK**: File → Project Structure → Project → SDK: Java 21
 
 #### Eclipse
 
-1. **Import Project**: File → Import → Existing Maven Projects
+1. **Import Project**: File → Import → Gradle → Existing Gradle Project
 2. **Select Root Directory**: Browse to project folder
 3. **Configure JDK**: Right-click project → Properties → Java Build Path
 
@@ -149,16 +149,16 @@ export LOGGING_LEVEL_ROOT=INFO
 
 ```bash
 # Execute all unit and integration tests
-mvn test
+./gradlew test
 ```
 
 ### Module-Specific Testing
 
 ```bash
 # Test specific authentication modules
-mvn test -pl jdbc-auth
-mvn test -pl ldap-auth
-mvn test -pl oauth2-auth
+./gradlew test -pl jdbc-auth
+./gradlew test -pl ldap-auth
+./gradlew test -pl oauth2-auth
 ```
 
 ### HTTP Testing
@@ -211,10 +211,10 @@ The application supports multiple profiles for different scenarios:
 
 ```bash
 # JDBC authentication only
-mvn spring-boot:run -pl rest-api -Dspring-boot.run.profiles=jdbc-only
+./gradlew :rest-api:bootRun -Dspring-boot.run.profiles=jdbc-only
 
 # LDAP authentication only  
-mvn spring-boot:run -pl rest-api -Dspring-boot.run.profiles=ldap-only
+./gradlew :rest-api:bootRun -Dspring-boot.run.profiles=ldap-only
 ```
 
 ## 🔍 Troubleshooting
@@ -229,7 +229,7 @@ netstat -ano | findstr :8080    # Windows
 lsof -i :8080                   # macOS/Linux
 
 # Kill the process or use different port
-mvn spring-boot:run -pl rest-api -Dspring-boot.run.arguments=--server.port=8081
+./gradlew :rest-api:bootRun -Dspring-boot.run.arguments=--server.port=8081
 ```
 
 #### Java Version Issues
@@ -239,18 +239,18 @@ mvn spring-boot:run -pl rest-api -Dspring-boot.run.arguments=--server.port=8081
 export JAVA_HOME=/path/to/java17    # macOS/Linux
 set JAVA_HOME=C:\path\to\java17     # Windows
 
-# Verify Maven uses correct Java
-mvn -version
+# Verify Gradle uses the expected Java runtime
+./gradlew --version
 ```
 
 #### Build Failures
 
 ```bash
 # Clean and rebuild
-mvn clean compile
+./gradlew clean classes
 
 # Skip tests if needed
-mvn clean install -DskipTests
+./gradlew build -x test
 ```
 
 ### Getting Help

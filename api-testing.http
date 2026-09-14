@@ -4,7 +4,7 @@
 ### Use with VS Code REST Client extension or IntelliJ HTTP Client
 ###
 ### HOW TO USE:
-### 1. Start the app: mvn spring-boot:run -pl rest-api
+### 1. Start the app: ./gradlew :rest-api:bootRun
 ### 2. Run "Login as Admin" request below
 ### 3. Copy the token from response
 ### 4. Replace @jwtToken value with your token

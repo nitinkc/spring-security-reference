@@ -3,8 +3,8 @@
 Welcome to the **Spring Security Reference Project** - a comprehensive educational resource demonstrating advanced Spring Security authentication and authorization patterns.
 
 ![Spring Security](https://img.shields.io/badge/Spring%20Security-6.0+-green.svg)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.1+-blue.svg)
-![Java](https://img.shields.io/badge/Java-17+-orange.svg)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5+-blue.svg)
+![Java](https://img.shields.io/badge/Java-21-orange.svg)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 [View License](https://github.com/nitinkc/spring-security-reference/blob/main/LICENSE)
 
@@ -12,11 +12,11 @@ Welcome to the **Spring Security Reference Project** - a comprehensive education
 
 This project serves as a **living reference** for Spring Security implementations, featuring:
 
-- **Multiple Authentication Methods**: JDBC, LDAP, OAuth2/OIDC
-- **Comprehensive Logging**: Educational tracing of all security flows
-- **Real-world Patterns**: Production-ready security configurations  
-- **Testing Examples**: Complete API testing suite
-- **Modular Architecture**: Independent, reusable authentication modules
+- **Authentication and Federation**: JDBC, LDAP, JWT, OAuth2/OIDC SSO, and SAML SSO
+- **SSO Security**: Identity-provider trust, application sessions, logout, claim mapping, and rotation
+- **Coverage Honesty**: Theory and planned mechanisms are distinguished from verified code
+- **Executable Labs**: Positive, negative, and attack-case tests define completion
+- **Modular Architecture**: Independent authentication and authorization modules
 
 ## 🏗️ Architecture
 
@@ -38,16 +38,16 @@ graph TD
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Java 17+
-- Maven 3.6+
+- Java 21
+- Gradle Wrapper included
 - Your favorite IDE
 
 ### Run the Application
 ```bash
 git clone <repository-url>
 cd spring-security-reference
-mvn clean install
-mvn spring-boot:run -pl rest-api
+./gradlew build
+./gradlew :rest-api:bootRun
 ```
 
 ### Test Authentication
@@ -67,10 +67,11 @@ curl -H "Authorization: Bearer <token>" \
 ## 📚 Learning Path
 
 1. **[Getting Started](getting-started/overview.md)** - Understand the project structure
-2. **[Authentication Methods](authentication/index.md)** - Explore different auth strategies
-3. **[Security Configuration](security/index.md)** - Learn security setup patterns
-4. **[API Reference](api/index.md)** - Test endpoints and flows
-5. **[Examples & Tutorials](examples/index.md)** - Practice with real scenarios
+2. **[Authentication Methods](authentication/index.md)** - Explore local and federated authentication
+3. **[SSO with OIDC and SAML](authentication/sso-integration.md)** - Learn IdP trust, sessions, logout, and threats
+4. **[Security Configuration](security/index.md)** - Connect authentication to authorization
+5. **[Lab Roadmap](labs.md)** - Implement and prove each mechanism in order
+6. **[Coverage Registry](coverage.md)** - Check what is Theory, Implemented, or Verified
 
 ## 🔧 Modules
 
@@ -94,12 +95,14 @@ logger.info("🔐 [JDBC-AUTH] Creating BCrypt password encoder for database user
 logger.debug("📚 [LEARNING] BCrypt adds salt and hashing for secure password storage");
 ```
 
-### Multiple Authentication Flows
-- **Session-based**: Traditional form login with sessions
-- **JWT-based**: Stateless token authentication  
-- **OAuth2/OIDC**: Social login integration
-- **Database**: JDBC user store authentication
-- **Directory**: LDAP/Active Directory integration
+### Authentication and SSO flows
+- **Session-based**: Traditional form login with an application session
+- **JWT-based**: Stateless API token authentication
+- **OIDC SSO**: IdP authentication followed by a separate local session in each client
+- **SAML SSO**: Signed enterprise assertions validated by a relying party
+- **Database and directory**: JDBC and LDAP credential validation
+
+OIDC SSO and SAML SSO are currently Theory/Planned. Their implementation evidence is defined by LAB-010 through LAB-020.
 
 ### Comprehensive Testing
 - HTTP test files for all endpoints
@@ -112,7 +115,7 @@ This is an educational project designed to demonstrate Spring Security patterns.
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the [repository license](https://github.com/nitinkc/spring-security-reference/blob/main/LICENSE) for details.
 
 ## 🆘 Support
 

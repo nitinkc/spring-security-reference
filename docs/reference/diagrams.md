@@ -61,7 +61,28 @@ graph TD
 
 ---
 
-## 2. Authentication Flow - Session-Based Login
+## 2. Federated SSO boundary
+
+OIDC and SAML SSO use a central Identity Provider, but each application creates and protects its own local session. The federation path is currently planned in LAB-010 through LAB-020.
+
+```mermaid
+graph LR
+    U[User Browser] --> A[Application A]
+    U --> B[Application B]
+    A -->|OIDC or SAML| I[Identity Provider]
+    B -->|OIDC or SAML| I
+    I --> D[Identity Directory and MFA]
+    A --> SA[Local Session A]
+    B --> SB[Local Session B]
+```
+
+Authentication at the IdP does not replace application authorization. Both applications must validate the response, map only approved claims or attributes, rotate the local session, and enforce request and object permissions.
+
+See [Single Sign-On with OIDC and SAML](../authentication/sso-integration.md).
+
+---
+
+## 3. Authentication Flow - Session-Based Login
 
 This sequence diagram shows the step-by-step process for a traditional, session-based user login.
 

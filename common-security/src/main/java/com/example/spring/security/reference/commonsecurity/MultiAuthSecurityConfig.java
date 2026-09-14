@@ -15,7 +15,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
  * Enhanced Security Configuration supporting multiple authentication methods.
@@ -42,6 +41,12 @@ public class MultiAuthSecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    @Autowired
+    private JsonAuthenticationEntryPoint authenticationEntryPoint;
+
+    @Autowired
+    private JsonAccessDeniedHandler accessDeniedHandler;
+
 //    @Autowired(required = false)
 //    private OAuth2UserService<?, OAuth2User> oauth2UserService;
 //
@@ -62,24 +67,27 @@ public class MultiAuthSecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .exceptionHandling(exceptions -> exceptions
+                .authenticationEntryPoint(authenticationEntryPoint)
+                .accessDeniedHandler(accessDeniedHandler))
             .authorizeHttpRequests(authz -> authz
                 // H2 console endpoints (for development)
-                .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
+                .requestMatchers("/h2-console/**").permitAll()
                 // Public endpoints
-                .requestMatchers(new AntPathRequestMatcher("/api/public/**")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/auth/**")).permitAll()
+                .requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
                 // OAuth2 endpoints
-                .requestMatchers(new AntPathRequestMatcher("/oauth2/**")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/login/oauth2/**")).permitAll()
+                .requestMatchers("/oauth2/**").permitAll()
+                .requestMatchers("/login/oauth2/**").permitAll()
                 // Admin endpoints
-                .requestMatchers(new AntPathRequestMatcher("/api/admin/**")).hasRole("ADMIN")
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // User endpoints
-                .requestMatchers(new AntPathRequestMatcher("/api/user/**")).hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
                 // Auth-specific endpoints
-                .requestMatchers(new AntPathRequestMatcher("/api/jdbc/**")).hasAnyRole("USER", "ADMIN")
-                .requestMatchers(new AntPathRequestMatcher("/api/ldap/**")).hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/api/jdbc/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/api/ldap/**").hasAnyRole("USER", "ADMIN")
                 // Actuator endpoints
-                .requestMatchers(new AntPathRequestMatcher("/actuator/health")).permitAll()
+                .requestMatchers("/actuator/health").permitAll()
                 .anyRequest().authenticated()
             )
             // Add all authentication providers

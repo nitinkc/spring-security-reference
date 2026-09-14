@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import javax.sql.DataSource;
@@ -26,13 +25,6 @@ public class JdbcAuthConfig {
 
     @Autowired
     private DataSource dataSource;
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        logger.info("🔐 [JDBC-AUTH] Creating BCrypt password encoder for database users");
-        logger.debug("📚 [LEARNING] BCrypt adds salt and hashing for secure password storage");
-        return new BCryptPasswordEncoder();
-    }
 
     @Bean
     public JdbcUserDetailsManager jdbcUserDetailsManager() {

@@ -48,15 +48,22 @@ theme:
     edit: material/pencil
     view: material/eye
 
-  # Plugins
-  plugins:
-    - search:
-        separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
-    - mermaid2:
-      # Use the UMD bundle so mermaid is available on window for our init script
-      javascript: https://unpkg.com/mermaid@10.13.6/dist/mermaid.min.js
-    - minify:
-        minify_html: true
+# Plugins
+plugins:
+  - search:
+      separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - mermaid2:
+      arguments:
+        securityLevel: strict
+  - mkdocs_quiz:
+      auto_number: true
+      auto_submit: false
+      disable_after_submit: false
+      shuffle_answers: true
+      show_progress: true
+      confetti: false
+  - minify:
+      minify_html: true
 
 # Extensions
 markdown_extensions:
@@ -107,40 +114,78 @@ extra:
       link: https://github.com/nitinkc
   version:
     provider: mike
-  # Include custom mermaid initializer
-  extra_javascript:
-    - js/mermaid-init.js
 
 # Navigation
 nav:
   - Home: index.md
-  - Architecture & Diagrams: reference/diagrams.md
-  - Getting Started:
-    - Overview: getting-started/overview.md
-    - Quick Setup: getting-started/quick-setup.md
-    - Project Structure: getting-started/project-structure.md
-  - Authentication Methods:
-    - authentication/index.md
-    - JDBC Authentication: authentication/jdbc-auth.md
-    - LDAP Authentication: authentication/ldap-auth.md
-    - OAuth2 Authentication: authentication/oauth2-auth.md
-    - JWT Tokens: authentication/jwt-tokens.md
-  - Security Configuration:
-    - security/index.md
-    - Common Security: security/common-security.md
-    - Filter Chain: security/filter-chain.md
-    - Authorization: security/authorization.md
-    - Use Cases: security/use-cases.md
-  - API Reference:
-    - api/index.md
-    - REST Endpoints: api/rest-endpoints.md
-    - Authentication Flow: api/auth-flow.md
-    - Error Handling: api/error-handling.md
-    - Live API (Swagger): api/swagger.md
-  - Testing & Examples:
-    - examples/index.md
-    - API Testing Guide: examples/testing-api.md
-    - Postman Setup: examples/postman-setup.md
-    - Testing Authentication: examples/testing-auth.md
-    - Custom Providers: examples/custom-providers.md
-    - Advanced Patterns: examples/advanced-patterns.md
+  - Learn:
+    - Start Here:
+      - Overview: getting-started/overview.md
+      - Quick Setup: getting-started/quick-setup.md
+      - Project Structure: getting-started/project-structure.md
+      - Resume Progress: progress.md
+      - Learning Model: learning-model.md
+      - Learning Path: learning-path.md
+      - Coverage Registry: coverage.md
+    - Theory:
+      - Theory Index: theory/index.md
+      - Request Authorization: theory/request-authorization.md
+      - Authentication Providers: theory/authentication-providers.md
+      - Password Storage: theory/password-storage.md
+      - Method Security: theory/method-security.md
+      - Security Errors: theory/security-errors.md
+    - Labs:
+      - Lab Roadmap: labs.md
+      - LAB-001 Request Authorization: tutorials/lab-001-request-authorization.md
+      - LAB-002 Secure Login: tutorials/lab-002-secure-login.md
+      - LAB-003 Password Storage: tutorials/lab-003-password-storage.md
+      - LAB-004 Method Security: tutorials/lab-004-method-security.md
+      - LAB-005 Security Errors: tutorials/lab-005-security-errors.md
+    - Assessments:
+      - Quiz Guide: quizzes/index.md
+      - Spring Security Internals: quizzes/fundamentals.md
+      - SSO and Federation: quizzes/federation.md
+      - Microservice Security: quizzes/microservices.md
+      - Operations and Architecture: quizzes/operations.md
+  - Security:
+    - Architecture & Diagrams: reference/diagrams.md
+    - Authentication:
+      - Overview: authentication/index.md
+      - JDBC: authentication/jdbc-auth.md
+      - LDAP: authentication/ldap-auth.md
+      - OAuth2: authentication/oauth2-auth.md
+      - JWT: authentication/jwt-tokens.md
+      - SSO, SAML & OIDC: authentication/sso-integration.md
+    - Configuration:
+      - Overview: security/index.md
+      - Common Security: security/common-security.md
+      - Filter Chain: security/filter-chain.md
+      - Authorization: security/authorization.md
+      - Use Cases: security/use-cases.md
+    - Protocols:
+      - GraphQL: modules/graphql-service.md
+  - Practice:
+    - API:
+      - Overview: api/index.md
+      - REST Endpoints: api/rest-endpoints.md
+      - Authentication Flow: api/auth-flow.md
+      - Error Handling: api/error-handling.md
+      - Swagger: api/swagger.md
+    - Exercises:
+      - Overview: examples/index.md
+      - API Testing: examples/testing-api.md
+      - Postman: examples/postman-setup.md
+      - Authentication Testing: examples/testing-auth.md
+      - Custom Providers: examples/custom-providers.md
+      - Advanced Patterns: examples/advanced-patterns.md
+  - Operate & Reference:
+    - Deployment:
+      - Overview: deployment/index.md
+      - Profiles: deployment/profiles.md
+      - Production: deployment/production.md
+    - Reference:
+      - Modules: reference/modules.md
+      - Authentication Testing: reference/testing-auth.md
+      - Custom Providers: reference/custom-providers.md
+      - Advanced Patterns: reference/advanced-patterns.md
+      - Troubleshooting: reference/troubleshooting.md

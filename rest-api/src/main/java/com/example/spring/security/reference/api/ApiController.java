@@ -4,8 +4,12 @@ import com.example.spring.security.reference.commonauth.JwtTokenUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +36,9 @@ public class ApiController {
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     public ApiController() {
         logger.info("🌐 [REST-API] Initializing API Controller");
@@ -96,14 +103,15 @@ public class ApiController {
         logger.info("🔐 [REST-API] Login endpoint accessed for user: {}", username);
         logger.debug("📚 [LEARNING] This endpoint generates JWT tokens for API access");
         
-        // Basic JWT token generation (replace with real authentication logic)
-        String role = determineUserRole(username);
-        String token = jwtTokenUtil.generateToken(username, role);
+        Authentication authentication = authenticationManager.authenticate(
+            UsernamePasswordAuthenticationToken.unauthenticated(username, password)
+        );
+        String role = authentication.getAuthorities().iterator().next().getAuthority();
+        String token = jwtTokenUtil.generateToken(authentication.getName(), role);
         
         logger.debug("🎟️ [REST-API] JWT token generated for user:");
         logger.debug("   • Username: {}", username);
         logger.debug("   • Role: {}", role);
-        logger.debug("   • Token prefix: {}...", token.substring(0, Math.min(10, token.length())));
         logger.debug("📚 [LEARNING] JWT contains encoded user identity and role claims");
         
         Map<String, Object> response = new HashMap<>();
@@ -115,6 +123,12 @@ public class ApiController {
         
         logger.debug("✅ [REST-API] Login response prepared with JWT token");
         return response;
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Map<String, String> authenticationFailure() {
+        return Map.of("error", "invalid_credentials", "message", "Authentication failed");
     }
 
     @GetMapping("/api/jdbc/users")
@@ -245,21 +259,5 @@ public class ApiController {
         
         logger.debug("🏷️ [REST-API] Determined auth type: {}", authType);
         return authType;
-    }
-
-    private String determineUserRole(String username) {
-        logger.debug("🔍 [REST-API] Determining role for username: {}", username);
-        
-        String role;
-        // Simple role determination logic for demo
-        if ("admin".equals(username) || username.contains("admin")) {
-            role = "ROLE_ADMIN";
-        } else {
-            role = "ROLE_USER";
-        }
-        
-        logger.debug("🏷️ [REST-API] Determined role: {}", role);
-        logger.debug("📚 [LEARNING] Role assignment based on username pattern (demo logic)");
-        return role;
     }
 }

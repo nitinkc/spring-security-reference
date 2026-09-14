@@ -59,10 +59,10 @@ Demonstrate different authentication methods (JWT, JDBC, LDAP, OAuth2).
 ### **1. Start the Application**
 ```bash
 # Run with default profile (supports all auth methods)
-mvn spring-boot:run
+./gradlew :rest-api:bootRun
 
-# Or run with specific profile
-mvn spring-boot:run -Dspring-boot.run.profiles=jwt
+# Or run with a specific profile
+./gradlew :rest-api:bootRun --args='--spring.profiles.active=jwt'
 ```
 
 ### **2. Test Public Endpoint**
@@ -131,7 +131,7 @@ Traditional session cookies with CSRF protection.
 ### **Postman Collection**
 ```bash
 # Import the provided collection
-Spring-Security-Reference-APIs.postman_collection.json
+Spring-Security-Reference-APIs-Enhanced.postman_collection.json
 ```
 
 ### **VS Code REST Client**

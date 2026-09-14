@@ -3,8 +3,14 @@
 A comprehensive educational resource demonstrating advanced Spring Security authentication and authorization patterns.
 
 ![Spring Security](https://img.shields.io/badge/Spring%20Security-6.0+-green.svg)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.1+-blue.svg)
-![Java](https://img.shields.io/badge/Java-17+-orange.svg)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5+-blue.svg)
+![Java](https://img.shields.io/badge/Java-21-orange.svg)
+
+## Resume reminder
+
+Before starting new work, open **[Project Progress and Resume Point](docs/progress.md)**. It is the single source for completed labs, the exact next lab, known limitations, and verification commands.
+
+Current resume point: **LAB-006 — Browser Sessions and Session Fixation**. Do not infer progress from the number of documentation pages; only labs listed as completed in `docs/progress.md` have executable evidence.
 
 ## 🚀 Quick Start
 
@@ -12,10 +18,10 @@ A comprehensive educational resource demonstrating advanced Spring Security auth
 # Clone and build
 git clone https://github.com/nitikc/spring-security-reference.git
 cd spring-security-reference
-mvn clean install -DskipTests
+./gradlew build -x test
 
 # Run the application
-mvn spring-boot:run -pl rest-api
+./gradlew :rest-api:bootRun
 
 # Test it works
 curl http://localhost:8080/api/public/hello
@@ -53,10 +59,14 @@ Import the Postman collection for **automatic JWT token management**:
 
 ## 🔧 What You'll Learn
 
-- **Multiple Authentication Methods**: Database, Directory, OAuth2, JWT
-- **Security Architecture**: Filter chains, providers, authorization flows
-- **Production Patterns**: BCrypt encoding, token validation, role management
-- **Educational Logging**: Comprehensive tracing of all security operations
+- **Authentication Methods**: Database, directory, OAuth2/OIDC, SAML 2.0, and JWT
+- **Single Sign-On**: OIDC and SAML trust models, sessions, logout, threats, and labs
+- **Security Architecture**: Filter chains, providers, authorization flows, and service identity
+- **Hands-on Learning**: 58 ordered labs with positive, negative, and attack-case tests
+- **Senior Assessments**: Interactive scenario quizzes for internals, SSO, microservices, and operations
+- **Advanced Platform Security**: Authorization server, SCIM, WebFlux, gateway, multi-tenancy, Kafka, supply chain, and data protection
+
+OAuth2/OIDC, SSO, and SAML are currently Theory/Planned capabilities. Follow [LAB-010 through LAB-020](docs/labs.md) to implement them, then LAB-047 through LAB-058 for advanced identity and platform coverage.
 
 ## 🧪 Demo Credentials
 
@@ -88,6 +98,8 @@ Import the Postman collection for **automatic JWT token management**:
 To run the documentation site locally:
 
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
 pip3 install -r requirements.txt
 python3 -m mkdocs serve
 ```

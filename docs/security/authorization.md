@@ -137,13 +137,12 @@ public class UserController {
 
 ```java
 @Configuration
-@EnableGlobalMethodSecurity(
-    prePostEnabled = true,    // Enable @PreAuthorize/@PostAuthorize
-    securedEnabled = true,    // Enable @Secured
-    jsr250Enabled = true      // Enable @RolesAllowed
+@EnableMethodSecurity(
+    prePostEnabled = true,
+    securedEnabled = true,
+    jsr250Enabled = true
 )
 public class MethodSecurityConfig {
-    // Method-level security enabled
 }
 ```
 

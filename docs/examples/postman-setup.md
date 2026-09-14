@@ -100,7 +100,7 @@ The token switches automatically!
 
 ### Test JWT Authentication
 
-1. **Start the app**: `mvn spring-boot:run -pl rest-api`
+1. **Start the app**: `./gradlew :rest-api:bootRun`
 2. **Open collection** in Postman
 3. **Run** `🔑 JWT Authentication > 1. Login as ADMIN`
 4. **Check console** - you'll see "Token saved!"

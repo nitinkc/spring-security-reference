@@ -13,10 +13,10 @@ This guide walks you through testing **every authentication method** step-by-ste
 cd spring-security-reference
 
 # Build all modules first
-mvn clean install -DskipTests
+./gradlew build -x test
 
 # Start the REST API (this is the main application)
-mvn spring-boot:run -pl rest-api
+./gradlew :rest-api:bootRun
 ```
 
 !!! tip "Verify Application Started"

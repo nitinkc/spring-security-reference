@@ -1,16 +1,11 @@
-# GraphQL Service (Scaffold)
+# GraphQL Service
 
-This module is a placeholder for future GraphQL API integration. It demonstrates how to extend the reference architecture to support GraphQL endpoints and security patterns.
+This module is a security lab scaffold. It compiles with Spring GraphQL and Spring Security, but its interceptor is not implemented and the module is not yet a secured service.
 
-## Structure
-- `GraphQLController.java`: Example GraphQL query endpoint
-- `GraphQLSecurityInterceptor.java`: Placeholder for GraphQL security logic
+Complete LAB-029 and LAB-030 in `docs/labs.md` to add resolver and field authorization, ownership tests, depth and complexity limits, and abuse-case coverage.
 
-## Next Steps
-- Add Spring GraphQL dependencies to your build
-- Implement authentication and authorization for GraphQL queries and mutations
-- Integrate with existing security modules (JWT, roles, etc.)
+```bash
+./gradlew :graphql-service:test
+```
 
----
-
-**This scaffold makes it easy to add GraphQL support as you continue learning.**
+See `docs/modules/graphql-service.md` for the security boundary and completion criteria.

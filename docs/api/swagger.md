@@ -8,7 +8,7 @@ This page provides a link to the live, interactive API documentation generated b
 
 1.  **Run the application**:
     ```bash
-    mvn spring-boot:run -pl rest-api
+    ./gradlew :rest-api:bootRun
     ```
 
 2.  **Open the Swagger UI**:

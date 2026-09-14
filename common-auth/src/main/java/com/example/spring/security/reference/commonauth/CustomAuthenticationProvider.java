@@ -2,10 +2,14 @@ package com.example.spring.security.reference.commonauth;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * Custom AuthenticationProvider for session-based login.
@@ -21,11 +25,15 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         String username = authentication.getName();
         String password = (String) authentication.getCredentials();
 
-        if (authService.authenticateSession(username, password)) {
-            return new UsernamePasswordAuthenticationToken(username, password, null); // Add authorities here
-        } else {
-            throw new AuthenticationException("Invalid credentials") {};
+        if (!authService.authenticateSession(username, password)) {
+            throw new BadCredentialsException("Invalid credentials");
         }
+
+        return new UsernamePasswordAuthenticationToken(
+            username,
+            null,
+            List.of(new SimpleGrantedAuthority(authService.getRole(username)))
+        );
     }
 
     @Override

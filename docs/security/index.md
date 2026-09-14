@@ -1,135 +1,124 @@
 # Security Configuration
 
-This section covers the comprehensive security configuration patterns implemented in the Spring Security Reference project.
+This section connects Spring Security configuration to authentication, authorization, federation, and executable labs. Check the [Coverage Registry](../coverage.md): several advanced mechanisms, including SSO and SAML, remain Theory or Planned until their tests pass.
 
-## 🏗️ **Security Architecture Overview**
-
-Our security configuration follows a **layered, multi-provider architecture** designed to demonstrate enterprise-grade Spring Security patterns:
+## Security architecture
 
 ```mermaid
 graph TD
-    A[HTTP Request] --> B[Security Filter Chain]
-    B --> C{Authentication Required?}
-    C -->|Yes| D[JWT Filter]
-    D --> E[Multi-Auth Providers]
-    E --> F[JDBC Provider]
-    E --> G[LDAP Provider] 
-    E --> H[OAuth2 Provider]
-    E --> I[Custom Provider]
-    F --> J[Authorization Check]
-    G --> J
-    H --> J
-    I --> J
-    J --> K{Authorized?}
-    K -->|Yes| L[Controller]
-    K -->|No| M[403 Forbidden]
-    C -->|No| L
+    U[User or Workload] --> F[Security Filter Chain]
+    F --> A{Authentication mechanism}
+    A --> P[Password/JDBC Provider]
+    A --> L[LDAP Provider]
+    A --> J[JWT Resource Server]
+    A --> O[OIDC Login]
+    A --> S[SAML Relying Party]
+    P --> C[SecurityContext]
+    L --> C
+    J --> C
+    O --> C
+    S --> C
+    C --> R[Request Authorization]
+    R --> M[Method/Object Authorization]
+    M --> X[Protected Resource]
+    O --> I[Identity Provider]
+    S --> I
 ```
 
-## 🔧 **Configuration Modules**
+The active code currently demonstrates custom, JDBC, LDAP, and custom JWT paths. OIDC SSO, SAML SSO, the standard JWT resource server, and several browser protections are represented in documentation and the lab backlog but are not yet verified implementations.
 
-| Module | Purpose | Key Components |
-|--------|---------|----------------|
-| **common-security** | Core security configuration | `MultiAuthSecurityConfig`, interceptors |
-| **common-auth** | Authentication utilities | JWT filters, custom providers |
-| **authorization-service** | Role & permission logic | Authorization service, role management |
+## Configuration topics
 
-## 📋 **Security Configuration Topics**
+### [Common Security Configuration](common-security.md)
 
-### 🛡️ [Common Security Configuration](common-security.md)
-- Multi-provider authentication setup
-- Profile-based security configurations
-- Cross-cutting security concerns
+- `SecurityFilterChain` construction
+- Provider registration
+- Session policy by profile
+- Cross-cutting REST, gRPC, and WebSocket scaffolding
 
-### ⛓️ [Security Filter Chain](filter-chain.md)
-- Filter ordering and execution
-- Custom filter integration
-- JWT authentication flow
+### [Security Filter Chain](filter-chain.md)
 
-### 🔐 [Authorization & Access Control](authorization.md)
-- Role-based access control (RBAC)
-- Method-level security
-- Custom authorization logic
+- Request matching and ordering
+- Authentication filter placement
+- Anonymous, unauthenticated, and authenticated requests
+- 401 versus 403 behavior
 
-## 🎯 **Key Security Features**
+### [Authorization and Access Control](authorization.md)
 
-### **Multi-Authentication Support**
-```java
-@Configuration
-@EnableWebSecurity
-public class MultiAuthSecurityConfig {
-    
-    @Bean
-    public SecurityFilterChain defaultFilterChain(HttpSecurity http) {
-        return http
-            .authenticationProvider(customAuthenticationProvider)
-            .authenticationProvider(jdbcAuthenticationProvider)  
-            .authenticationProvider(ldapAuthenticationProvider)
-            .addFilterBefore(jwtAuthenticationFilter, 
-                UsernamePasswordAuthenticationFilter.class)
-            .build();
-    }
-}
+- Request and role authorization
+- Method security
+- Permission and ownership decisions
+- Required positive and negative tests
+
+### [Single Sign-On with OIDC and SAML](../authentication/sso-integration.md)
+
+- SSO as an outcome rather than a protocol
+- OIDC and SAML trust models
+- Separate IdP and application sessions
+- Local, provider, and coordinated logout
+- Claim and attribute mapping
+- Key/certificate rotation and outage handling
+
+SSO is currently **Theory**. Complete LAB-010 through LAB-020, especially the two-client OIDC SSO and SAML relying-party labs, before marking it Verified.
+
+## SSO in the security chain
+
+SSO does not bypass Spring Security authorization. OIDC login or SAML login establishes an authenticated `SecurityContext`; request, method, tenant, and object rules must still authorize access.
+
+```mermaid
+sequenceDiagram
+    participant U as Browser
+    participant A as Application
+    participant I as Identity Provider
+    participant Z as Authorization Rules
+    U->>A: Request protected resource
+    A->>I: OIDC authorization request or SAML AuthnRequest
+    I-->>A: Validated identity response
+    A->>A: Create local authenticated session
+    A->>Z: Evaluate roles, scopes, tenant, ownership
+    Z-->>U: Resource or 403
 ```
 
-### **Profile-Based Configuration**
-- **Default Profile**: All authentication methods enabled
-- **`jdbc-only`**: Database authentication only
-- **`ldap-only`**: LDAP authentication only  
-- **`oauth2-only`**: Social login only
+The IdP proves an authentication event under an agreed trust policy. The application remains responsible for local authorization and session security.
 
-### **Security Endpoints**
-```yaml
-Authorization Rules:
-  Public Access:
-    - /api/public/**     # No authentication required
-    - /api/auth/**       # Login endpoints
-    - /actuator/health   # Health checks
-    
-  Role-Based Access:
-    - /api/admin/**      # ROLE_ADMIN required
-    - /api/user/**       # ROLE_USER or ROLE_ADMIN
-    - /api/jdbc/**       # Database auth endpoints
-    - /api/ldap/**       # LDAP auth endpoints
+## Mechanism status
+
+| Mechanism | Status | Evidence or next lab |
+|---|---|---|
+| Request authorization | Implemented | LAB-001 verifies the production chain |
+| Custom/JDBC/LDAP providers | Implemented | LAB-002 and LAB-003 add credential tests |
+| Method security | Theory | LAB-004 |
+| Sessions and CSRF | Theory | LAB-006 and LAB-007 |
+| CORS and headers | Planned | LAB-008 |
+| Standard JWT resource server | Theory | LAB-009 |
+| OIDC login | Theory | LAB-010 through LAB-015 |
+| OIDC SSO | Theory | LAB-016 |
+| SAML SSO | Theory | LAB-017 through LAB-020 |
+| Service identity and delegation | Planned | LAB-021 through LAB-028 |
+
+## Security rules
+
+- Prefer standard Spring Security DSLs over custom token or federation filters.
+- Validate the credential at the boundary and authorize at the resource-owning layer.
+- Do not convert external groups or attributes to privileged roles without an allow list.
+- Keep browser sessions protected by secure cookies, session rotation, and CSRF defenses.
+- Validate issuer, audience, signature, algorithm, and time for tokens.
+- Validate issuer, destination, audience, recipient, signature, correlation, and time for SAML assertions.
+- Never log passwords, tokens, authorization codes, assertions, cookies, or private keys.
+- Document local versus IdP/global logout accurately.
+
+## Learning and verification
+
+1. Complete [Spring Security foundations](../labs.md#track-a-spring-security-foundations).
+2. Implement [OAuth2 and OIDC](../labs.md#track-b-oauth2-oidc-and-token-security).
+3. Prove [SSO and SAML](../labs.md#track-c-sso-and-saml-20).
+4. Continue with microservice identity and protocol-specific security.
+
+Run:
+
+```bash
+./gradlew test
+uv run --with-requirements requirements.txt mkdocs build --strict
 ```
 
-## 🔒 **Security Best Practices Demonstrated**
-
-### ✅ **Authentication**
-- **JWT Token Security**: Stateless authentication with secure token validation
-- **Password Encoding**: BCrypt hashing for database credentials
-- **Session Management**: Configurable session policies per profile
-- **CSRF Protection**: Disabled for APIs, configurable for web forms
-
-### ✅ **Authorization**  
-- **Role Hierarchy**: Admin inherits user permissions
-- **Method Security**: `@PreAuthorize` and `@Secured` annotations
-- **Path-Based Security**: URL pattern matching for access control
-- **Custom Authorization**: Business logic-based authorization rules
-
-### ✅ **Security Headers**
-- **CORS Configuration**: Cross-origin request handling
-- **Content Security Policy**: XSS protection headers
-- **Secure Headers**: X-Frame-Options, X-Content-Type-Options
-
-## 🎓 **Learning Objectives**
-
-By studying this security configuration, you'll learn:
-
-1. **Multi-Provider Setup** - How to configure multiple authentication methods
-2. **Filter Chain Design** - Proper ordering and custom filter integration  
-3. **Profile-Based Config** - Environment-specific security configurations
-4. **Authorization Patterns** - Role-based and method-level security
-5. **Security Testing** - How to test different authentication flows
-
-## 🚀 **Quick Navigation**
-
-- **[Common Security →](common-security.md)** - Core security configuration patterns
-- **[Filter Chain →](filter-chain.md)** - Security filter implementation details  
-- **[Authorization →](authorization.md)** - Access control and role management
-- **[Authentication →](../authentication/index.md)** - Authentication method details
-- **[API Reference →](../api/index.md)** - Secured endpoint documentation
-
----
-
-**🎯 Start with [Common Security Configuration](common-security.md) to understand the foundation of our security setup.**
+Continue with the [SSO guide](../authentication/sso-integration.md), [Learning Path](../learning-path.md), and [Coverage Registry](../coverage.md).
