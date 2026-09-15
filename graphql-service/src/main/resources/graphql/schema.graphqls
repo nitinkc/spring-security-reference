@@ -1,0 +1,9 @@
+type User {
+    name: String
+    salary: Int
+}
+
+type Query {
+    hello: String
+    me: User
+}

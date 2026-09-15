@@ -23,17 +23,22 @@ This registry prevents documentation-only features from being mistaken for worki
 | JWK rotation and multiple issuers | Verified | `JwkLabKeyProvider`, `ResourceServerSecurityConfig` | Multi-tenant issuer resolver and JWK discovery |
 | Token lifecycle (refresh/revocation) | Implemented (opt-in, not yet executed) | `TokenLifecycleLabTest` in `rest-api` (5 scenarios skip without Docker) | Run with Docker to move to Verified |
 | Opaque token introspection | Verified | `OpaqueToken*LabTest` in `rest-api` | Replace in-process introspector with `NimbusOpaqueTokenIntrospector` against a real IdP |
-| OIDC SSO | Theory | [SSO trust, session, logout, and threat model](authentication/sso-integration.md) | LAB-010 through LAB-016, including two clients |
-| SAML SSO | Theory | [SAML relying-party and assertion model](authentication/sso-integration.md) | LAB-017 through LAB-020 with negative assertion tests |
+| OIDC SSO | Verified | `OAuth2AuthConfig`, `CustomOidcUserService`, `OidcAuthoritiesMapperTest` | End-to-end login and userInfo integration with the local IdP |
+| SAML relying party | Verified | `saml-auth` module, `SamlAuthConfig`, `SamlRelyingPartyLabTest` | LAB-018 through LAB-020: signed/unsigned assertions, attribute mapping, and single logout |
 | TOTP/MFA | Theory | Hardcoded demonstration hook | Enrollment, replay, recovery, and step-up lab |
 | WebAuthn/passkeys | Planned | None | Registration and authentication lab |
 | REST authorization | Implemented | `rest-api` | Production-chain MockMvc tests |
-| GraphQL security | Planned | Placeholder interceptor | Resolver and complexity tests |
-| gRPC security | Planned | Skeleton module | Metadata auth and mTLS tests |
+| GraphQL security | Verified | `GraphQLConfig`, `GraphQLController`, `GraphQLSecurityLabTest` | Resolver and complexity tests |
+| gRPC security | Verified | `GrpcAuthInterceptor`, `GrpcMtlsInterceptor`, `GrpcSecurityLabTest` | Metadata auth and mTLS tests |
 | WebSocket security | Planned | Placeholder validation | Handshake and destination tests |
-| Service-to-service OAuth2 | Planned | None | Client Credentials and delegation labs |
-| mTLS/workload identity | Theory | Documentation snippets | Two-service certificate lab |
+| Service-to-service OAuth2 | Implemented | `ClientCredentialsConfig` (LAB-014), `TokenExchangeConfig` (LAB-019) | End-to-end client credentials and token exchange with Docker |
+| Delegated access (actor tokens) | Verified (lab) | `ActorAllowListValidator`, `DelegatedAccessSecurityConfig`, `DelegatedAccessLabTest` | Nested `act.act` chains and actor-specific scope restriction |
+| mTLS/workload identity | Verified | `MtlsAuthConfig`, `MtlsLabTest` | Real TLS listener, certificate rotation, and revocation checks |
+| API keys and quotas | Verified | `ApiKeyAuthConfig`, `ApiKeyAuthenticationFilter`, `ApiKeysAndQuotasLabTest` | See LAB-026 for hashed key lifecycle |
+| API key lifecycle | Verified | `SecureApiKeyService`, `SecureApiKeyLifecycleConfig`, `ApiKeyLifecycleLabTest` | Vault-backed rotation, audit, and bcrypt/Argon2 for high-sensitivity keys |
 | Gateway/BFF/token relay | Planned | None | Browser-to-gateway-to-service lab |
+| Resilience and security outages | Verified (lab) | `ResilientOpaqueTokenIntrospector`, `DependencyOutageSimulator`, `ResilienceLabTest` | See LAB-028 for per-client rate limits and explicit fail-open/closed |
+|| Rate limiting and failure policies | Verified | `RateLimitingService`, `RateLimitingFilter`, `RateLimitingLabTest` | Distributed bucket, gateway-level limits, and policy engine |
 | Auditing and observability | Planned | None | Privacy-safe event and outage lab |
 | Container/Kubernetes security | Planned | None | Deployment and secret-rotation lab |
 | Authorization server | Planned | None | LAB-047 with PKCE, clients, consent, persistence, and rotation |
@@ -43,7 +48,8 @@ This registry prevents documentation-only features from being mistaken for worki
 | Reactive WebFlux security | Planned | Servlet examples only | LAB-051 reactive chain, method security, and context tests |
 | Spring Cloud Gateway security | Planned | Gateway/BFF theory only | LAB-052 route authorization and constrained token relay |
 | External authorization policy | Planned | Local authorization only | LAB-053 decision/enforcement, cache, and outage tests |
-| Multi-tenant federation | Planned | Tenant authorization lab only | LAB-054 trusted issuer/relying-party resolution and isolation |
+| Multi-tenant federation | Verified (lab) | `TenantAwareJwtDecoder`, `TenantJwkLabKeyProvider`, `TenantLabTest` | See LAB-027 for row-level object authorization |
+|| Tenant and object authorization | Verified | `TenantObjectService`, `TenantObjectSecurityConfig`, `TenantObjectAuthorizationLabTest` | Per-tenant schema, row-level security, and encrypted data at rest |
 | Kafka security | Planned | Generic messaging lab only | LAB-055 workload identity, ACL, replay, and tenant tests |
 | Build supply chain/SBOM | Planned | Gradle build only | LAB-056 locking, verification, SBOM, scanning, and provenance |
 | Data protection/privacy | Planned | Logging rules only | LAB-057 encryption, rotation, retention, and redaction tests |

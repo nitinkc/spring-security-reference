@@ -88,3 +88,91 @@ A WebSocket authenticates once during connection and remains active for seven da
 
 Long-lived protocols require explicit expiry, revocation, destination authorization, and authority-change behavior.
 </quiz>
+
+<quiz>
+An API key is a 64-character random secret. Which storage and handling choices reduce breach impact?
+
+- [x] Store a one-way hash plus a non-secret prefix for lookup
+- [x] Scope keys to a small set of endpoints and rotate them regularly
+- [x] Enforce per-key rate limits and revoke on anomalous usage
+- [ ] Log the full key in access and error logs for debugging
+
+API keys are long-lived credentials. Treat them like passwords: hash the stored value, limit scope, rotate, and never log the secret.
+</quiz>
+
+<quiz>
+A Spring application defines one filter chain with `.anyRequest().authenticated()` and no `securityMatcher`, then later defines another chain for `/mtls/**`. Why does Spring Security reject this?
+
+- [x] The first chain already matches every request, so the second chain can never run
+- [ ] Chains must use the same authentication type
+- [ ] The order is ignored for `SecurityFilterChain` beans
+- [ ] `/mtls/**` must be a top-level path
+
+A catch-all `anyRequest` chain should be published last, or each chain should be scoped with `securityMatcher` to a specific request set. Otherwise more specific chains become unreachable.
+</quiz>
+
+<quiz>
+A downstream service receives a token with an `act` claim identifying the caller as `support-tool`. Under what condition may it treat the request as delegated access on behalf of the token's subject?
+
+- [x] The token signature is valid and `support-tool` is on the resource server's explicit trusted-actor allow-list
+- [ ] The `act` claim is present, regardless of its value
+- [ ] The caller's IP address is inside the corporate network
+- [ ] The request includes an `X-Acting-As` header matching the claim
+
+Delegation must be based on verified, signed claims checked against an explicit trust decision — not on the mere presence of a claim or an unauthenticated header.
+</quiz>
+
+<quiz>
+A multi-tenant resource server needs to validate tokens from many customers. Which design enforces isolation?
+
+- [x] Select the tenant's JWK set from a claim inside the signed token before verification
+- [x] Reject tokens signed with a different tenant's key even if the `tenant` claim is forged
+- [x] Scope every data query using the tenant from the authenticated token
+- [ ] Trust the `X-Tenant-Id` header and skip tenant-specific key checks
+
+Tenant identity must come from a verified token, and the right trust material must be selected before the signature is validated.
+</quiz>
+
+<quiz>
+An API key service stores `SHA-256(prefix + secret)` and a per-key salt. Why is this safer than storing the full key?
+
+- [x] A database leak exposes hashes and salts, not reusable credentials
+- [x] An attacker must still recover the original secret from the hash
+- [x] The prefix can be logged or shown in support tools without leaking the credential
+- [ ] The salt is the only value that needs to stay secret
+
+The salt defends precomputed rainbow attacks but is not itself a secret. Security comes from not storing the original credential and from using a slow, salted hash.
+</quiz>
+
+<quiz>
+An authenticated user in `tenant-a` tries to read a document owned by another `tenant-a` user. What should the resource server do?
+
+- [x] Reject the request because the user's subject does not match the document's `owner`
+- [x] Allow the read if the user has a `tenant-a` `ADMIN` role
+- [ ] Reject the request only when the `tenant` claim does not match
+- [ ] Allow the read because the tenant already matches
+
+Object authorization enforces ownership within a tenant. Same-tenant administrators may be granted an override, but ordinary users cannot access each other's objects.
+</quiz>
+
+<quiz>
+A GraphQL resolver for `salary` is protected with `@PreAuthorize("hasRole('ADMIN')")`, but the HTTP endpoint is `permitAll`. What happens when a non-admin user requests `me { name salary }`?
+
+- [x] The `me.name` field returns and `me.salary` returns `null` with an error in `errors`
+- [ ] The entire HTTP response is 403
+- [ ] The `salary` field silently returns `null` with no error
+- [ ] The query is blocked at the GraphQL parser before any resolver runs
+
+Field-level method security isolates the denial to the protected field. Other fields still resolve, and the client sees the error in the GraphQL `errors` array.
+</quiz>
+
+<quiz>
+A gRPC server receives a call with a valid TLS session but no client certificate. What should the server do?
+
+- [x] Reject the call because it cannot verify the caller's identity
+- [ ] Accept the call because TLS is already protecting the transport
+- [ ] Accept the call and trust the `x-user-id` metadata value
+- [ ] Accept the call if the peer IP is inside the data center
+
+mTLS requires the client to present a certificate. A TLS-only transport protects confidentiality but does not authenticate the caller.
+</quiz>

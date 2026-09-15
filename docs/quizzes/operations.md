@@ -57,6 +57,17 @@ Combine an SBOM with dependency verification, scanning, provenance, patch proces
 </quiz>
 
 <quiz>
+A rate limiter in an API starts to fail and cannot calculate the remaining quota. Should it stop traffic or allow it?
+
+- [ ] Always allow traffic; the limiter is advisory
+- [x] Default to allowing traffic only for non-sensitive paths when that policy was explicitly risk-assessed
+- [ ] Stop all traffic; any limiter failure is a hard stop
+- [ ] Use the previous quota from the last successful request
+
+Rate-limiter failures are denial-of-service risks. Security-sensitive paths should fail closed; public or non-sensitive paths may be allowed to fail open if that is an explicit, reviewed policy.
+</quiz>
+
+<quiz>
 An external policy engine times out while evaluating a money-transfer request. Which design questions must already be answered?
 
 - [x] Whether this operation fails closed

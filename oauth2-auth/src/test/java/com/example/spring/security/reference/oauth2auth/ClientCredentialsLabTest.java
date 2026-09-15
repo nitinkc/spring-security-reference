@@ -2,6 +2,7 @@ package com.example.spring.security.reference.oauth2auth;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
@@ -22,6 +23,7 @@ class ClientCredentialsLabTest {
     private ClientRegistrationRepository clientRegistrations;
 
     @Autowired
+    @Qualifier("clientCredentialsAuthorizedClientManager")
     private OAuth2AuthorizedClientManager authorizedClientManager;
 
     @Autowired

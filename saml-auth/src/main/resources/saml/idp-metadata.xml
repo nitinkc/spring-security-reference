@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
+                  ID="_local-test-idp"
+                  entityID="local:test:idp">
+
+    <IDPSSODescriptor
+            protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+
+        <NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</NameIDFormat>
+
+        <SingleSignOnService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+                Location="http://localhost:8090/auth/realms/spring-security-reference/protocol/saml"/>
+
+        <KeyDescriptor use="signing">
+            <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+                <X509Data>
+                    <X509Certificate>
+MIIDEzCCAfugAwIBAgIUG1NcDbpbpRWN5d7bpZSCovwBsZMwDQYJKoZIhvcNAQELBQAwGTEXMBUGA1UEAwwObG9jYWwtdGVzdC1pZHAwHhcNMjYwOTE1MDQzMDU3WhcNMzYwOTEyMDQzMDU3WjAZMRcwFQYDVQQDDA5sb2NhbC10ZXN0LWlkcDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANkcA9gAosZAyO4DgqFQWKFmnwAexmQ4gBtCHzaXyIezE3X0AueixqYmjbaaQZQWQnTByDFoLbTwNXAxyLb2JciD9Zjw9FrfzWFIEI73NmVh3LTu8iHGYdnYyzWeqO9oyO9FtPjlvwRTI5Yygj9WqnOUCBr5X+2wNkSKyaBNCSWMOQ99Z/0h9H6Uv66TBgAh5uUCwKCX+xdAESTz5rPJ3ehBMYpar80DcIYECy5rjlOhKZIKyqV6HMjFOhIY0TE+ItXZ9+XtKSHBpHxyjrRvw+hlJu8kIhSHTQ3XIjAt9e5RwWPJiEejsvpdu38bdNatrZ+rGUqO7oNFlNMlKTsitIECAwEAAaNTMFEwHQYDVR0OBBYEFG3WomPQ6IrfPB5Arygcm8Dnrs4iMB8GA1UdIwQYMBaAFG3WomPQ6IrfPB5Arygcm8Dnrs4iMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQELBQADggEBABoo10UTqHFJ4vpB0/SmoDF1ufAefiEsg/gw1UqirMIk9yN4RiDGd1pvLHoQFhrmBIRObKm0a8L9yqVM25HauqeXwRrFVWbZIubFGC8GuLCGvENx10h1/9/FMEMAVfP0pEYofvRODHIdNBHcATs/NN5VhPDGXDGopY/3CpQ84/WBEmqclZgb3Se+V+OM459maZD32DoYcYL/5OdjJ1E42rLhYW/aNFYHEtexEEx05/51K4+Wfi9vtgsKxeFe1rHs/IgM6oO/mGi62L05uah3f3mBfyakXaIpKqhUNATHuvKG9/BDFnyNCCI700lWeRcaW2ohzXeN53Yn4p2U6cpmjFU=
+                    </X509Certificate>
+                </X509Data>
+            </KeyInfo>
+        </KeyDescriptor>
+
+    </IDPSSODescriptor>
+
+    <Organization>
+        <OrganizationName xml:lang="en">Spring Security Reference</OrganizationName>
+        <OrganizationDisplayName xml:lang="en">Spring Security Reference</OrganizationDisplayName>
+        <OrganizationURL xml:lang="en">https://example.org</OrganizationURL>
+    </Organization>
+
+</EntityDescriptor>

@@ -5,14 +5,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestCustomizers;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
@@ -31,6 +35,7 @@ public class OAuth2AuthConfig {
 
     public static final String CLIENT_REGISTRATION_ID = "spring-security-reference";
     public static final String API_CLIENT_REGISTRATION_ID = ClientCredentialsConfig.API_CLIENT_REGISTRATION_ID;
+    public static final String TOKEN_EXCHANGE_CLIENT_REGISTRATION_ID = "token-exchange-client";
     public static final String ISSUER = "http://localhost:8081/realms/spring-security-reference";
     public static final String EXPECTED_AUDIENCE = "spring-security-reference-api";
 
@@ -68,13 +73,26 @@ public class OAuth2AuthConfig {
             .tokenUri(ISSUER + "/protocol/openid-connect/token")
             .build();
 
-        return new InMemoryClientRegistrationRepository(spaClient, apiClient);
+        ClientRegistration tokenExchangeClient = ClientRegistration
+            .withRegistrationId(TOKEN_EXCHANGE_CLIENT_REGISTRATION_ID)
+            .clientName("Spring Security Reference Delegation Client")
+            .clientId("api-client")
+            .clientSecret("lab-api-client-secret")
+            .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+            .authorizationGrantType(AuthorizationGrantType.TOKEN_EXCHANGE)
+            .scope("spring-security-reference-api")
+            .tokenUri(ISSUER + "/protocol/openid-connect/token")
+            .build();
+
+        return new InMemoryClientRegistrationRepository(spaClient, apiClient, tokenExchangeClient);
     }
 
     @Bean
     public SecurityFilterChain oAuth2LoginFilterChain(HttpSecurity http,
                                                       ClientRegistrationRepository clientRegistrationRepository,
-                                                      AuthenticationSuccessHandler successHandler) throws Exception {
+                                                      AuthenticationSuccessHandler successHandler,
+                                                      OAuth2UserService<OidcUserRequest, OidcUser> oidcUserService,
+                                                      OAuth2AuthorizedClientRepository authorizedClientRepository) throws Exception {
 
         DefaultOAuth2AuthorizationRequestResolver resolver =
             new DefaultOAuth2AuthorizationRequestResolver(clientRegistrationRepository, "/oauth2/authorization");
@@ -84,12 +102,14 @@ public class OAuth2AuthConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/oauth2/**", "/login/**", "/error").permitAll()
+                .requestMatchers("/oauth2/**", "/login/**", "/bff/health", "/error").permitAll()
                 .anyRequest().authenticated())
             .oauth2Login(oauth2 -> oauth2
                 .clientRegistrationRepository(clientRegistrationRepository)
+                .authorizedClientRepository(authorizedClientRepository)
                 .authorizationEndpoint(endpoint -> endpoint
                     .authorizationRequestResolver(resolver))
+                .userInfoEndpoint(userInfo -> userInfo.oidcUserService(oidcUserService))
                 .successHandler(successHandler))
             .build();
     }

@@ -10,6 +10,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -62,9 +64,11 @@ public class MultiAuthSecurityConfig {
      * Default security configuration supporting all authentication methods
      */
     @Bean
+    @Order(Ordered.LOWEST_PRECEDENCE)
     @Profile("!oauth2-only & !jdbc-only & !ldap-only")
     public SecurityFilterChain defaultFilterChain(HttpSecurity http) throws Exception {
         http
+            .securityMatcher("/api/**", "/h2-console/**", "/oauth2/**", "/login/oauth2/**", "/actuator/**")
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .exceptionHandling(exceptions -> exceptions

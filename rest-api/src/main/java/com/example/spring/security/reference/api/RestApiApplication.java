@@ -26,7 +26,6 @@ import org.springframework.context.annotation.ComponentScan;
     "com.example.spring.security.reference.commonauth",
     "com.example.spring.security.reference.jdbcauth",
     "com.example.spring.security.reference.ldapauth",
-    "com.example.spring.security.reference.oauth2auth",
     "com.example.spring.security.reference.commonsecurity",
     "com.example.spring.security.reference.authorizationservice"
 })

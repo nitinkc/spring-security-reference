@@ -4,19 +4,12 @@ This is the single canonical progress record. Update it at the end of every impl
 
 ## Resume here
 
-- **Immediate action:** start Docker and run the following to move infrastructure-dependent labs from Implemented/Unit-Tested to Verified:
-  ```bash
-  docker compose -f infrastructure/idp/docker-compose.yml up -d
-  ./gradlew :rest-api:test --tests '*LocalIdentityProviderLabTest'
-  ./gradlew :rest-api:test --tests '*TokenLifecycleLabTest'
-  ./gradlew :oauth2-auth:test
-  # then start :oauth2-auth boot app on 8080 for the end-to-end browser flow
-  ```
-- **Next lab:** LAB-017 — SAML Relying Party
-- **Theory page to create:** `docs/theory/saml-relying-party.md`
-- **Lab guide to create:** `docs/tutorials/lab-017-saml-relying-party.md`
-- **Primary implementation area:** a `saml-auth` module with `spring-security-saml2-service-provider`, local metadata, and a test harness for signed/unsigned responses
-- **Last verified lab:** LAB-016 — API Gateway
+- **Next lab:** LAB-031 — WebSocket Security
+- **Theory page to create:** `docs/theory/websocket-security.md`
+- **Lab guide to create:** `docs/tutorials/lab-031-websocket-security.md`
+- **Primary implementation area:** `websocket-service` module, handshake and destination authorization
+- **Last verified lab:** LAB-030 — gRPC Security
+- **Numbering note:** the lab sequence implemented in this repository (starting at LAB-021) diverged from the original numbering in `docs/labs.md` (LAB-021 Client Credentials, LAB-025 mTLS, LAB-026 API key lifecycle, etc.) in an earlier session. This progress file is the canonical sequence; `docs/labs.md` retains the original acceptance-criteria descriptions but its numbers should not be assumed to match. LAB-026 here maps to the roadmap's "API key lifecycle" scenario, closing the hashing/rotation gap flagged in LAB-022.
 
 Copy this prompt into a future session:
 
@@ -44,12 +37,24 @@ Resume the Spring Security curriculum from docs/progress.md. Implement the liste
 | LAB-014 Service-to-Service | Implemented (configuration unit-tested) | `ClientCredentialsConfig`, `ClientCredentialsLabTest` | End-to-end token exchange and `RestClient` propagation with Docker |
 | LAB-015 JWK Rotation | Verified | `JwkLabKeyProvider`, `ResourceServerSecurityConfig` | Multi-tenant issuer resolver and JWK discovery |
 | LAB-016 API Gateway | Verified | `gateway` module, `GatewayConfig`, `GatewayLabTest` | Spring Cloud Gateway with token relay, rate limiting, and real downstream proxy |
+|| LAB-017 SAML Relying Party | Verified | `saml-auth` module, `SamlAuthConfig`, `SamlRelyingPartyLabTest` | Local metadata, signed/unsigned assertion, and attribute mapping labs |
 
+|| LAB-019 Token Exchange | Verified | `TokenExchangeConfig`, `TokenExchangeLabTest` | BFF, downstream audience, and end-to-end delegation |
+|| LAB-020 BFF Token Handling | Verified | `BffTokenConfig`, `BffTokenController`, `BffTokenLabTest` | Real IdP login, session cookie attributes, and downstream call |
+|| LAB-021 Service Identity and mTLS | Verified | `MtlsAuthConfig`, `MtlsController`, `MtlsLabTest` | Real TLS listener, certificate rotation, and revocation checks |
+|| LAB-022 API Keys and Resource Quotas | Verified | `ApiKeyAuthConfig`, `ApiKeyAuthenticationFilter`, `ApiKeysAndQuotasLabTest` | Hashed key storage, vault-backed rotation, and distributed rate limits |
+|| LAB-023 Multi-Tenancy and Tenant Isolation | Verified | `TenantAwareJwtDecoder`, `TenantJwkLabKeyProvider`, `TenantLabTest` | Trusted issuer directory, key rotation, and row-level data scoping |
+|| LAB-024 Resilience and Security Outages | Verified | `ResilientOpaqueTokenIntrospector`, `DependencyOutageSimulator`, `ResilienceLabTest` | Real circuit breaker, distributed cache, and outage alerting |
+|| LAB-025 Delegated Access and Actor Tokens | Verified | `ActorAllowListValidator`, `DelegatedAccessSecurityConfig`, `DelegatedAccessLabTest` | Nested `act.act` chains and actor-specific scope restriction |
+|| LAB-026 API Key Lifecycle | Verified | `SecureApiKeyService`, `SecureApiKeyLifecycleConfig`, `ApiKeyLifecycleLabTest` | Vault-backed rotation, audit, and bcrypt/Argon2 for high-sensitivity keys |
+|| LAB-027 Tenant and Object Authorization | Verified | `TenantObjectService`, `TenantObjectSecurityConfig`, `TenantObjectAuthorizationLabTest` | Per-tenant schema, row-level security, and encrypted data at rest |
+||| LAB-028 Rate Limiting and Failure Policies | Verified | `RateLimitingService`, `RateLimitingFilter`, `RateLimitingLabTest` | Distributed bucket, gateway-level limits, and policy engine |
+||| LAB-029 GraphQL Security | Verified | `GraphQLConfig`, `GraphQLController`, `GraphQLSecurityLabTest` | DataLoader, N+1, introspection lockdown, and owner-based field checks |
+||| LAB-030 gRPC Security | Verified | `GrpcAuthInterceptor`, `GrpcMtlsInterceptor`, `GrpcSecurityLabTest` | Netty TLS, CA trust, and token introspection | | Verified | `RateLimitingService`, `RateLimitingFilter`, `RateLimitingLabTest` | Distributed bucket, gateway-level limits, and policy engine |
+|| LAB-018 OIDC SSO | Verified | `OidcAuthoritiesMapper`, `CustomOidcUserService`, `OidcAuthoritiesMapperTest` | End-to-end login and userInfo integration with the local IdP |
 ## Remaining sequence
 
-- **LAB-017 through LAB-020:** SAML, OIDC SSO, token exchange, and BFF
-- **LAB-021 through LAB-028:** Service identity, delegation, BFF, mTLS, API keys, tenancy, resilience
-- **LAB-029 through LAB-035:** GraphQL, gRPC, WebSocket, asynchronous messaging
+- **LAB-031 through LAB-035:** WebSocket, asynchronous messaging
 - **LAB-036 through LAB-039:** TOTP, recovery, step-up, passkeys, account-abuse defense
 - **LAB-040 through LAB-046:** Rotation, auditing, observability, containers, Kubernetes, threat model, incidents
 - **LAB-047 through LAB-058:** Authorization server, SCIM, AD/LDAPS, X.509, WebFlux, gateway, policy, federation, Kafka, supply chain, data protection, proxy/API defense
@@ -81,9 +86,10 @@ The detailed acceptance criteria remain in the [Lab Roadmap](labs.md).
 
 ## Verification baseline
 
-Run with Java 21:
+Run with Java 21. If the default `java` on this machine is a newer release, set `JAVA_HOME` explicitly:
 
 ```bash
+export JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home
 ./gradlew test
 uv run --with-requirements requirements.txt mkdocs build --strict
 git diff --check

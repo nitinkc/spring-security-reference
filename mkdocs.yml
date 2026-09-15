@@ -145,6 +145,20 @@ nav:
       - Service-to-Service: theory/service-to-service.md
       - JWK Rotation: theory/jwk-rotation.md
       - API Gateway: theory/api-gateway.md
+      - SAML Relying Party: theory/saml-relying-party.md
+      - OIDC SSO: theory/oidc-sso.md
+      - Token Exchange: theory/token-exchange.md
+      - BFF Token Handling: theory/bff-token-handling.md
+      - Service Identity and mTLS: theory/service-identity-mtls.md
+      - API Keys and Resource Quotas: theory/api-keys-resource-quotas.md
+      - Multi-Tenancy and Tenant Isolation: theory/multi-tenancy-isolation.md
+      - Resilience and Security Outages: theory/resilience-security-outages.md
+      - Delegated Access and Actor Tokens: theory/delegated-access-actor-tokens.md
+      - API Key Lifecycle: theory/api-key-lifecycle.md
+      - Tenant and Object Authorization: theory/tenant-object-authorization.md
+      - Rate Limiting and Failure Policies: theory/rate-limiting-failure-policies.md
+      - GraphQL Security: theory/graphql-security.md
+      - gRPC Security: theory/grpc-security.md
     - Labs:
       - Lab Roadmap: labs.md
       - LAB-001 Request Authorization: tutorials/lab-001-request-authorization.md
@@ -163,6 +177,20 @@ nav:
       - LAB-014 Service-to-Service: tutorials/lab-014-service-to-service.md
       - LAB-015 JWK Rotation: tutorials/lab-015-jwk-rotation.md
       - LAB-016 API Gateway: tutorials/lab-016-api-gateway.md
+      - LAB-017 SAML Relying Party: tutorials/lab-017-saml-relying-party.md
+      - LAB-018 OIDC SSO: tutorials/lab-018-oidc-sso.md
+      - LAB-019 Token Exchange: tutorials/lab-019-token-exchange.md
+      - LAB-020 BFF Token Handling: tutorials/lab-020-bff-token-handling.md
+      - LAB-021 Service Identity and mTLS: tutorials/lab-021-service-identity-mtls.md
+      - LAB-022 API Keys and Resource Quotas: tutorials/lab-022-api-keys-resource-quotas.md
+      - LAB-023 Multi-Tenancy and Tenant Isolation: tutorials/lab-023-multi-tenancy-isolation.md
+      - LAB-024 Resilience and Security Outages: tutorials/lab-024-resilience-security-outages.md
+      - LAB-025 Delegated Access and Actor Tokens: tutorials/lab-025-delegated-access-actor-tokens.md
+      - LAB-026 API Key Lifecycle: tutorials/lab-026-api-key-lifecycle.md
+      - LAB-027 Tenant and Object Authorization: tutorials/lab-027-tenant-object-authorization.md
+      - LAB-028 Rate Limiting and Failure Policies: tutorials/lab-028-rate-limiting-failure-policies.md
+      - LAB-029 GraphQL Security: tutorials/lab-029-graphql-security.md
+      - LAB-030 gRPC Security: tutorials/lab-030-grpc-security.md
     - Assessments:
       - Quiz Guide: quizzes/index.md
       - Spring Security Internals: quizzes/fundamentals.md
