@@ -10,12 +10,19 @@ This registry prevents documentation-only features from being mistaken for worki
 | Password storage and migration | Verified | `PasswordSecurityConfig`, `AuthServicePasswordMigrationLabTest` | Add persistent atomic migration and work-factor benchmark |
 | JDBC authentication | Implemented | `jdbc-auth` | Database-backed authentication tests |
 | LDAP authentication | Implemented | `ldap-auth` | Embedded LDAP integration tests |
-| JWT custom filter | Implemented | `common-auth` | Replace primary path with resource server lab |
+| JWT custom filter | Implemented (educational only) | `common-auth` | Keep labeled as a filter-mechanics example, not a recommended path |
+| OAuth2 resource server (JWT) | Verified | `ResourceServerSecurityConfig`, `ResourceServerJwtLabTest` | Add JWK rotation, unknown `kid`, discovery, and outage policy |
 | Method security | Verified | `MethodSecurityConfig`, `AuthorizationServiceMethodSecurityLabTest` | Add domain-backed ownership and proxy-boundary integration tests |
-| CSRF and browser sessions | Theory | Documentation snippets | Cookie-based positive and attack lab |
-| CORS and security headers | Planned | None | Browser-origin and header tests |
-| OAuth2/OIDC login | Theory | `oauth2-auth` is skeletal | Local IdP login lab |
-| OAuth2 resource server | Theory | Dependencies and snippets | Issuer/audience/JWK tests |
+| Browser sessions and fixation | Verified | `BrowserSecurityConfig`, `BrowserSessionLabTest` | Add cookie attributes, timeouts, and concurrent-session limits |
+| CSRF protection | Verified | `BrowserSecurityConfig`, `BrowserCsrfLabTest` | Add SPA cookie repository and token rotation tests |
+| CORS and security headers | Verified | `BrowserSecurityConfig`, `BrowserCorsHeadersLabTest` | Add HSTS and nonce-based CSP on an HTTPS origin |
+| Local identity provider | Implemented (opt-in, not yet executed) | `infrastructure/idp/*`, `LocalIdentityProviderLabTest` | Run with Docker to move to Verified; then use Testcontainers in CI |
+| Service-to-service client credentials | Implemented (configuration unit-tested) | `ClientCredentialsConfig`, `ClientCredentialsLabTest` | End-to-end token exchange and `RestClient` propagation with Docker |
+| OAuth2/OIDC login | Implemented (configuration verified, IdP flow pending) | `OAuth2AuthConfig`, `OAuth2LoginConfigurationTest` | Run the end-to-end browser flow with Docker and add an opt-in integration test |
+| API gateway | Verified | `gateway` module, `GatewayConfig`, `GatewayLabTest` | Spring Cloud Gateway with token relay, rate limiting, and real downstream proxy |
+| JWK rotation and multiple issuers | Verified | `JwkLabKeyProvider`, `ResourceServerSecurityConfig` | Multi-tenant issuer resolver and JWK discovery |
+| Token lifecycle (refresh/revocation) | Implemented (opt-in, not yet executed) | `TokenLifecycleLabTest` in `rest-api` (5 scenarios skip without Docker) | Run with Docker to move to Verified |
+| Opaque token introspection | Verified | `OpaqueToken*LabTest` in `rest-api` | Replace in-process introspector with `NimbusOpaqueTokenIntrospector` against a real IdP |
 | OIDC SSO | Theory | [SSO trust, session, logout, and threat model](authentication/sso-integration.md) | LAB-010 through LAB-016, including two clients |
 | SAML SSO | Theory | [SAML relying-party and assertion model](authentication/sso-integration.md) | LAB-017 through LAB-020 with negative assertion tests |
 | TOTP/MFA | Theory | Hardcoded demonstration hook | Enrollment, replay, recovery, and step-up lab |

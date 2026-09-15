@@ -50,4 +50,4 @@ Expected machine codes:
 
 Complete the entry-point and denied-handler questions in the [Spring Security Internals Quiz](../quizzes/fundamentals.md).
 
-**Next:** LAB-006 Browser Sessions and Session Fixation
+**Next:** [LAB-006 Browser Sessions](lab-006-browser-sessions.md)

@@ -10,7 +10,7 @@ A comprehensive educational resource demonstrating advanced Spring Security auth
 
 Before starting new work, open **[Project Progress and Resume Point](docs/progress.md)**. It is the single source for completed labs, the exact next lab, known limitations, and verification commands.
 
-Current resume point: **LAB-006 — Browser Sessions and Session Fixation**. Do not infer progress from the number of documentation pages; only labs listed as completed in `docs/progress.md` have executable evidence.
+Current resume point: **LAB-017 — SAML Relying Party**. Do not infer progress from the number of documentation pages; only labs listed as completed in `docs/progress.md` have executable evidence.
 
 ## 🚀 Quick Start
 

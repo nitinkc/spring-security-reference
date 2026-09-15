@@ -134,6 +134,17 @@ nav:
       - Password Storage: theory/password-storage.md
       - Method Security: theory/method-security.md
       - Security Errors: theory/security-errors.md
+      - Browser Sessions: theory/browser-sessions.md
+      - CSRF: theory/csrf.md
+      - CORS and Headers: theory/cors-and-headers.md
+      - JWT Resource Server: theory/jwt-resource-server.md
+      - Identity Providers: theory/identity-provider.md
+      - Authorization Code with PKCE: theory/authorization-code-pkce.md
+      - Token Lifecycle: theory/token-lifecycle.md
+      - Opaque Token Introspection: theory/opaque-token-introspection.md
+      - Service-to-Service: theory/service-to-service.md
+      - JWK Rotation: theory/jwk-rotation.md
+      - API Gateway: theory/api-gateway.md
     - Labs:
       - Lab Roadmap: labs.md
       - LAB-001 Request Authorization: tutorials/lab-001-request-authorization.md
@@ -141,6 +152,17 @@ nav:
       - LAB-003 Password Storage: tutorials/lab-003-password-storage.md
       - LAB-004 Method Security: tutorials/lab-004-method-security.md
       - LAB-005 Security Errors: tutorials/lab-005-security-errors.md
+      - LAB-006 Browser Sessions: tutorials/lab-006-browser-sessions.md
+      - LAB-007 CSRF: tutorials/lab-007-csrf.md
+      - LAB-008 CORS and Headers: tutorials/lab-008-cors-and-headers.md
+      - LAB-009 JWT Resource Server: tutorials/lab-009-jwt-resource-server.md
+      - LAB-010 Local Identity Provider: tutorials/lab-010-local-identity-provider.md
+      - LAB-011 Authorization Code with PKCE: tutorials/lab-011-authorization-code-pkce.md
+      - LAB-012 Token Lifecycle: tutorials/lab-012-token-lifecycle.md
+      - LAB-013 Opaque Token Introspection: tutorials/lab-013-opaque-token-introspection.md
+      - LAB-014 Service-to-Service: tutorials/lab-014-service-to-service.md
+      - LAB-015 JWK Rotation: tutorials/lab-015-jwk-rotation.md
+      - LAB-016 API Gateway: tutorials/lab-016-api-gateway.md
     - Assessments:
       - Quiz Guide: quizzes/index.md
       - Spring Security Internals: quizzes/fundamentals.md

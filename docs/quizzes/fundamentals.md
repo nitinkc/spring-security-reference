@@ -56,6 +56,39 @@ Origins are browser execution boundaries, not identities. Never convert an origi
 </quiz>
 
 <quiz>
+A browser application keeps the same session identifier before and after login. Why is this dangerous, and what fixes it?
+
+- [x] An identifier known to an attacker before login stays valid afterwards
+- [x] Rotate the session identifier during authentication, for example with `changeSessionId`
+- [x] Invalidate server-side session state at logout rather than only deleting the cookie
+- [ ] Set the session cookie to `HttpOnly` and keep the same identifier
+
+Session fixation lets an attacker pre-seed an identifier and inherit the authenticated session. `HttpOnly` prevents script access but does not rotate or invalidate anything.
+</quiz>
+
+<quiz>
+One application has a cookie-authenticated browser chain and a bearer-token API chain. How should CSRF and session policy be configured?
+
+- [x] Enable CSRF and use a session policy that permits sessions on the browser chain
+- [x] Keep the API chain stateless with an explicit bearer credential
+- [x] Separate the two into different `SecurityFilterChain` beans with distinct matchers
+- [ ] Disable CSRF globally so the API chain does not need a token
+
+CSRF depends on ambient credentials, so protection follows the authentication style rather than the whole application. Chain-scoped configuration avoids weakening one flow to satisfy the other.
+</quiz>
+
+<quiz>
+A credentialed CORS response is configured with `Access-Control-Allow-Origin: *` and the browser refuses it. What is the correct fix?
+
+- [x] Return the exact approved origin instead of a wildcard
+- [x] Keep the origin list in server-controlled configuration
+- [ ] Reflect whatever `Origin` header the request supplied
+- [ ] Remove `allowCredentials` and rely on CORS for CSRF protection
+
+Wildcards are invalid with credentials, and reflecting the request origin defeats the boundary entirely. CORS also never replaces a CSRF token for cookie-authenticated state changes.
+</quiz>
+
+<quiz>
 A service method has `@PreAuthorize`, but direct calls from another method in the same class are not intercepted. What is the likely cause?
 
 - [x] Self-invocation bypasses the Spring proxy that applies method security

@@ -1,0 +1,110 @@
+{
+  "realm": "spring-security-reference",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "accessTokenLifespan": 300,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "roles": {
+    "realm": [
+      { "name": "USER", "description": "Standard lab user" },
+      { "name": "ADMIN", "description": "Administrative lab user" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "spa-client",
+      "name": "Public SPA client (Authorization Code + PKCE)",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://localhost:8080/login/oauth2/code/*",
+        "http://127.0.0.1:8080/login/oauth2/code/*"
+      ],
+      "webOrigins": ["http://localhost:8080"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:8080/*"
+      },
+      "protocolMappers": [
+        {
+          "name": "api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "spring-security-reference-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        },
+        {
+          "name": "realm-roles-as-roles-claim",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "roles",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "api-client",
+      "name": "Confidential machine client (Client Credentials)",
+      "enabled": true,
+      "publicClient": false,
+      "secret": "lab-api-client-secret",
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "protocolMappers": [
+        {
+          "name": "api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "spring-security-reference-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "labuser",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "labuser@example.test",
+      "firstName": "Lab",
+      "lastName": "User",
+      "credentials": [
+        { "type": "password", "value": "lab-user-password", "temporary": false }
+      ],
+      "realmRoles": ["USER"]
+    },
+    {
+      "username": "labadmin",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "labadmin@example.test",
+      "firstName": "Lab",
+      "lastName": "Admin",
+      "credentials": [
+        { "type": "password", "value": "lab-admin-password", "temporary": false }
+      ],
+      "realmRoles": ["USER", "ADMIN"]
+    }
+  ]
+}
