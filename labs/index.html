@@ -1,0 +1,1661 @@
+<!doctype html><html lang=en class=no-js> <head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Comprehensive guide to Spring Security authentication and authorization patterns"><meta name=author content="Spring Security Reference Project"><link href=https://nitinkc.github.io/spring-security-reference/labs/ rel=canonical><link href=../theory/grpc-security/ rel=prev><link href=../tutorials/lab-001-request-authorization/ rel=next><link rel=icon href=../assets/images/favicon.png><meta name=generator content="mkdocs-1.6.1, mkdocs-material-9.7.7"><title>Lab Roadmap - Spring Security Reference Documentation</title><link rel=stylesheet href=../assets/stylesheets/main.ec1eaa64.min.css><link rel=stylesheet href=../assets/stylesheets/palette.ab4e12ef.min.css><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback"><style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style><script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script></head> <body dir=ltr data-md-color-scheme=default data-md-color-primary=green data-md-color-accent=teal> <input class=md-toggle data-md-toggle=drawer type=checkbox id=__drawer autocomplete=off> <input class=md-toggle data-md-toggle=search type=checkbox id=__search autocomplete=off> <label class=md-overlay for=__drawer></label> <div data-md-component=skip> <a href=#lab-roadmap class=md-skip> Skip to content </a> </div> <div data-md-component=announce> </div> <div data-md-color-scheme=default data-md-component=outdated hidden> </div> <header class="md-header md-header--shadow md-header--lifted" data-md-component=header> <nav class="md-header__inner md-grid" aria-label=Header> <a href=.. title="Spring Security Reference Documentation" class="md-header__button md-logo" aria-label="Spring Security Reference Documentation" data-md-component=logo> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg> </a> <label class="md-header__button md-icon" for=__drawer> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg> </label> <div class=md-header__title data-md-component=header-title> <div class=md-header__ellipsis> <div class=md-header__topic> <span class=md-ellipsis> Spring Security Reference Documentation </span> </div> <div class=md-header__topic data-md-component=header-topic> <span class=md-ellipsis> Lab Roadmap </span> </div> </div> </div> <form class=md-header__option data-md-component=palette> <input class=md-option data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme=default data-md-color-primary=green data-md-color-accent=teal aria-label="Switch to dark mode" type=radio name=__palette id=__palette_0> <label class="md-header__button md-icon" title="Switch to dark mode" for=__palette_1 hidden> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg> </label> <input class=md-option data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme=slate data-md-color-primary=green data-md-color-accent=teal aria-label="Switch to light mode" type=radio name=__palette id=__palette_1> <label class="md-header__button md-icon" title="Switch to light mode" for=__palette_0 hidden> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg> </label> </form> <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script> <label class="md-header__button md-icon" for=__search> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg> </label> <div class=md-search data-md-component=search role=dialog> <label class=md-search__overlay for=__search></label> <div class=md-search__inner role=search> <form class=md-search__form name=search> <input type=text class=md-search__input name=query aria-label=Search placeholder=Search autocapitalize=off autocorrect=off autocomplete=off spellcheck=false data-md-component=search-query required> <label class="md-search__icon md-icon" for=__search> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg> </label> <nav class=md-search__options aria-label=Search> <button type=reset class="md-search__icon md-icon" title=Clear aria-label=Clear tabindex=-1> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg> </button> </nav> <div class=md-search__suggest data-md-component=search-suggest></div> </form> <div class=md-search__output> <div class=md-search__scrollwrap tabindex=0 data-md-scrollfix> <div class=md-search-result data-md-component=search-result> <div class=md-search-result__meta> Initializing search </div> <ol class=md-search-result__list role=presentation></ol> </div> </div> </div> </div> </div> <div class=md-header__source> <a href=https://github.com/nitinkc/spring-security-reference title="Go to repository" class=md-source data-md-component=source> <div class="md-source__icon md-icon"> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 512 512"><!-- Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg> </div> <div class=md-source__repository> spring-security-reference </div> </a> </div> </nav> <nav class=md-tabs aria-label=Tabs data-md-component=tabs> <div class=md-grid> <ul class=md-tabs__list> <li class=md-tabs__item> <a href=.. class=md-tabs__link> Home </a> </li> <li class="md-tabs__item md-tabs__item--active"> <a href=../getting-started/overview/ class=md-tabs__link> Learn </a> </li> <li class=md-tabs__item> <a href=../reference/diagrams/ class=md-tabs__link> Security </a> </li> <li class=md-tabs__item> <a href=../api/ class=md-tabs__link> Practice </a> </li> <li class=md-tabs__item> <a href=../deployment/ class=md-tabs__link> Operate & Reference </a> </li> </ul> </div> </nav> </header> <div class=md-container data-md-component=container> <main class=md-main data-md-component=main> <div class="md-main__inner md-grid"> <div class="md-sidebar md-sidebar--primary" data-md-component=sidebar data-md-type=navigation> <div class=md-sidebar__scrollwrap> <div class=md-sidebar__inner> <nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label=Navigation data-md-level=0> <label class=md-nav__title for=__drawer> <a href=.. title="Spring Security Reference Documentation" class="md-nav__button md-logo" aria-label="Spring Security Reference Documentation" data-md-component=logo> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg> </a> Spring Security Reference Documentation </label> <div class=md-nav__source> <a href=https://github.com/nitinkc/spring-security-reference title="Go to repository" class=md-source data-md-component=source> <div class="md-source__icon md-icon"> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 512 512"><!-- Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg> </div> <div class=md-source__repository> spring-security-reference </div> </a> </div> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=.. class=md-nav__link> <span class=md-ellipsis> Home </span> </a> </li> <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested"> <input class="md-nav__toggle md-toggle " type=checkbox id=__nav_2 checked> <label class=md-nav__link for=__nav_2 id=__nav_2_label tabindex> <span class=md-ellipsis> Learn </span> <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav data-md-level=1 aria-labelledby=__nav_2_label aria-expanded=true> <label class=md-nav__title for=__nav_2> <span class="md-nav__icon md-icon"></span> Learn </label> <ul class=md-nav__list data-md-scrollfix> <li class="md-nav__item md-nav__item--section md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_2_1> <label class=md-nav__link for=__nav_2_1 id=__nav_2_1_label tabindex> <span class=md-ellipsis> Start Here </span> <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_2_1_label aria-expanded=false> <label class=md-nav__title for=__nav_2_1> <span class="md-nav__icon md-icon"></span> Start Here </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../getting-started/overview/ class=md-nav__link> <span class=md-ellipsis> Overview </span> </a> </li> <li class=md-nav__item> <a href=../getting-started/quick-setup/ class=md-nav__link> <span class=md-ellipsis> Quick Setup </span> </a> </li> <li class=md-nav__item> <a href=../getting-started/project-structure/ class=md-nav__link> <span class=md-ellipsis> Project Structure </span> </a> </li> <li class=md-nav__item> <a href=../progress/ class=md-nav__link> <span class=md-ellipsis> Resume Progress </span> </a> </li> <li class=md-nav__item> <a href=../learning-model/ class=md-nav__link> <span class=md-ellipsis> Learning Model </span> </a> </li> <li class=md-nav__item> <a href=../learning-path/ class=md-nav__link> <span class=md-ellipsis> Learning Path </span> </a> </li> <li class=md-nav__item> <a href=../coverage/ class=md-nav__link> <span class=md-ellipsis> Coverage Registry </span> </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--section md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_2_2> <div class="md-nav__link md-nav__container"> <a href=../theory/ class="md-nav__link "> <span class=md-ellipsis> Theory </span> </a> <label class="md-nav__link " for=__nav_2_2 id=__nav_2_2_label tabindex> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_2_2_label aria-expanded=false> <label class=md-nav__title for=__nav_2_2> <span class="md-nav__icon md-icon"></span> Theory </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../theory/request-authorization/ class=md-nav__link> <span class=md-ellipsis> Request Authorization </span> </a> </li> <li class=md-nav__item> <a href=../theory/authentication-providers/ class=md-nav__link> <span class=md-ellipsis> Authentication Providers </span> </a> </li> <li class=md-nav__item> <a href=../theory/password-storage/ class=md-nav__link> <span class=md-ellipsis> Password Storage </span> </a> </li> <li class=md-nav__item> <a href=../theory/method-security/ class=md-nav__link> <span class=md-ellipsis> Method Security </span> </a> </li> <li class=md-nav__item> <a href=../theory/security-errors/ class=md-nav__link> <span class=md-ellipsis> Security Errors </span> </a> </li> <li class=md-nav__item> <a href=../theory/browser-sessions/ class=md-nav__link> <span class=md-ellipsis> Browser Sessions </span> </a> </li> <li class=md-nav__item> <a href=../theory/csrf/ class=md-nav__link> <span class=md-ellipsis> CSRF </span> </a> </li> <li class=md-nav__item> <a href=../theory/cors-and-headers/ class=md-nav__link> <span class=md-ellipsis> CORS and Headers </span> </a> </li> <li class=md-nav__item> <a href=../theory/jwt-resource-server/ class=md-nav__link> <span class=md-ellipsis> JWT Resource Server </span> </a> </li> <li class=md-nav__item> <a href=../theory/identity-provider/ class=md-nav__link> <span class=md-ellipsis> Identity Providers </span> </a> </li> <li class=md-nav__item> <a href=../theory/authorization-code-pkce/ class=md-nav__link> <span class=md-ellipsis> Authorization Code with PKCE </span> </a> </li> <li class=md-nav__item> <a href=../theory/token-lifecycle/ class=md-nav__link> <span class=md-ellipsis> Token Lifecycle </span> </a> </li> <li class=md-nav__item> <a href=../theory/opaque-token-introspection/ class=md-nav__link> <span class=md-ellipsis> Opaque Token Introspection </span> </a> </li> <li class=md-nav__item> <a href=../theory/service-to-service/ class=md-nav__link> <span class=md-ellipsis> Service-to-Service </span> </a> </li> <li class=md-nav__item> <a href=../theory/jwk-rotation/ class=md-nav__link> <span class=md-ellipsis> JWK Rotation </span> </a> </li> <li class=md-nav__item> <a href=../theory/api-gateway/ class=md-nav__link> <span class=md-ellipsis> API Gateway </span> </a> </li> <li class=md-nav__item> <a href=../theory/saml-relying-party/ class=md-nav__link> <span class=md-ellipsis> SAML Relying Party </span> </a> </li> <li class=md-nav__item> <a href=../theory/oidc-sso/ class=md-nav__link> <span class=md-ellipsis> OIDC SSO </span> </a> </li> <li class=md-nav__item> <a href=../theory/token-exchange/ class=md-nav__link> <span class=md-ellipsis> Token Exchange </span> </a> </li> <li class=md-nav__item> <a href=../theory/bff-token-handling/ class=md-nav__link> <span class=md-ellipsis> BFF Token Handling </span> </a> </li> <li class=md-nav__item> <a href=../theory/service-identity-mtls/ class=md-nav__link> <span class=md-ellipsis> Service Identity and mTLS </span> </a> </li> <li class=md-nav__item> <a href=../theory/api-keys-resource-quotas/ class=md-nav__link> <span class=md-ellipsis> API Keys and Resource Quotas </span> </a> </li> <li class=md-nav__item> <a href=../theory/multi-tenancy-isolation/ class=md-nav__link> <span class=md-ellipsis> Multi-Tenancy and Tenant Isolation </span> </a> </li> <li class=md-nav__item> <a href=../theory/resilience-security-outages/ class=md-nav__link> <span class=md-ellipsis> Resilience and Security Outages </span> </a> </li> <li class=md-nav__item> <a href=../theory/delegated-access-actor-tokens/ class=md-nav__link> <span class=md-ellipsis> Delegated Access and Actor Tokens </span> </a> </li> <li class=md-nav__item> <a href=../theory/api-key-lifecycle/ class=md-nav__link> <span class=md-ellipsis> API Key Lifecycle </span> </a> </li> <li class=md-nav__item> <a href=../theory/tenant-object-authorization/ class=md-nav__link> <span class=md-ellipsis> Tenant and Object Authorization </span> </a> </li> <li class=md-nav__item> <a href=../theory/rate-limiting-failure-policies/ class=md-nav__link> <span class=md-ellipsis> Rate Limiting and Failure Policies </span> </a> </li> <li class=md-nav__item> <a href=../theory/graphql-security/ class=md-nav__link> <span class=md-ellipsis> GraphQL Security </span> </a> </li> <li class=md-nav__item> <a href=../theory/grpc-security/ class=md-nav__link> <span class=md-ellipsis> gRPC Security </span> </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested"> <input class="md-nav__toggle md-toggle " type=checkbox id=__nav_2_3 checked> <label class=md-nav__link for=__nav_2_3 id=__nav_2_3_label tabindex> <span class=md-ellipsis> Labs </span> <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_2_3_label aria-expanded=true> <label class=md-nav__title for=__nav_2_3> <span class="md-nav__icon md-icon"></span> Labs </label> <ul class=md-nav__list data-md-scrollfix> <li class="md-nav__item md-nav__item--active"> <input class="md-nav__toggle md-toggle" type=checkbox id=__toc> <label class="md-nav__link md-nav__link--active" for=__toc> <span class=md-ellipsis> Lab Roadmap </span> <span class="md-nav__icon md-icon"></span> </label> <a href=./ class="md-nav__link md-nav__link--active"> <span class=md-ellipsis> Lab Roadmap </span> </a> <nav class="md-nav md-nav--secondary" aria-label="Table of contents"> <label class=md-nav__title for=__toc> <span class="md-nav__icon md-icon"></span> Table of contents </label> <ul class=md-nav__list data-md-component=toc data-md-scrollfix> <li class=md-nav__item> <a href=#how-to-run-a-session class=md-nav__link> <span class=md-ellipsis> How to run a session </span> </a> </li> <li class=md-nav__item> <a href=#track-a-spring-security-foundations class=md-nav__link> <span class=md-ellipsis> Track A: Spring Security foundations </span> </a> <nav class=md-nav aria-label="Track A: Spring Security foundations"> <ul class=md-nav__list> <li class=md-nav__item> <a href=#lab-001-production-filter-chain-tests class=md-nav__link> <span class=md-ellipsis> LAB-001: Production filter-chain tests </span> </a> </li> <li class=md-nav__item> <a href=#lab-002-secure-usernamepassword-login class=md-nav__link> <span class=md-ellipsis> LAB-002: Secure username/password login </span> </a> </li> <li class=md-nav__item> <a href=#lab-003-password-storage-and-migration class=md-nav__link> <span class=md-ellipsis> LAB-003: Password storage and migration </span> </a> </li> <li class=md-nav__item> <a href=#lab-004-method-security class=md-nav__link> <span class=md-ellipsis> LAB-004: Method security </span> </a> </li> <li class=md-nav__item> <a href=#lab-005-security-error-contract class=md-nav__link> <span class=md-ellipsis> LAB-005: Security error contract </span> </a> </li> <li class=md-nav__item> <a href=#lab-006-browser-sessions-and-session-fixation class=md-nav__link> <span class=md-ellipsis> LAB-006: Browser sessions and session fixation </span> </a> </li> <li class=md-nav__item> <a href=#lab-007-csrf-protection class=md-nav__link> <span class=md-ellipsis> LAB-007: CSRF protection </span> </a> </li> <li class=md-nav__item> <a href=#lab-008-cors-and-security-headers class=md-nav__link> <span class=md-ellipsis> LAB-008: CORS and security headers </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#track-b-oauth2-oidc-and-token-security class=md-nav__link> <span class=md-ellipsis> Track B: OAuth2, OIDC, and token security </span> </a> <nav class=md-nav aria-label="Track B: OAuth2, OIDC, and token security"> <ul class=md-nav__list> <li class=md-nav__item> <a href=#lab-009-standard-jwt-resource-server class=md-nav__link> <span class=md-ellipsis> LAB-009: Standard JWT resource server </span> </a> </li> <li class=md-nav__item> <a href=#lab-010-local-identity-provider class=md-nav__link> <span class=md-ellipsis> LAB-010: Local identity provider </span> </a> </li> <li class=md-nav__item> <a href=#lab-011-oauth2-authorization-code-with-pkce class=md-nav__link> <span class=md-ellipsis> LAB-011: OAuth2 Authorization Code with PKCE </span> </a> </li> <li class=md-nav__item> <a href=#lab-012-oidc-identity-and-authority-mapping class=md-nav__link> <span class=md-ellipsis> LAB-012: OIDC identity and authority mapping </span> </a> </li> <li class=md-nav__item> <a href=#lab-013-opaque-token-introspection class=md-nav__link> <span class=md-ellipsis> LAB-013: Opaque-token introspection </span> </a> </li> <li class=md-nav__item> <a href=#lab-014-refresh-revocation-and-logout class=md-nav__link> <span class=md-ellipsis> LAB-014: Refresh, revocation, and logout </span> </a> </li> <li class=md-nav__item> <a href=#lab-015-jwk-rotation-and-multiple-issuers class=md-nav__link> <span class=md-ellipsis> LAB-015: JWK rotation and multiple issuers </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#track-c-sso-and-saml-20 class=md-nav__link> <span class=md-ellipsis> Track C: SSO and SAML 2.0 </span> </a> <nav class=md-nav aria-label="Track C: SSO and SAML 2.0"> <ul class=md-nav__list> <li class=md-nav__item> <a href=#lab-016-two-client-oidc-sso class=md-nav__link> <span class=md-ellipsis> LAB-016: Two-client OIDC SSO </span> </a> </li> <li class=md-nav__item> <a href=#lab-017-saml-relying-party class=md-nav__link> <span class=md-ellipsis> LAB-017: SAML relying party </span> </a> </li> <li class=md-nav__item> <a href=#lab-018-saml-attributes-and-authorization class=md-nav__link> <span class=md-ellipsis> LAB-018: SAML attributes and authorization </span> </a> </li> <li class=md-nav__item> <a href=#lab-019-saml-assertion-validation class=md-nav__link> <span class=md-ellipsis> LAB-019: SAML assertion validation </span> </a> </li> <li class=md-nav__item> <a href=#lab-020-saml-logout-and-certificate-rollover class=md-nav__link> <span class=md-ellipsis> LAB-020: SAML logout and certificate rollover </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#track-d-microservice-identity-and-authorization class=md-nav__link> <span class=md-ellipsis> Track D: Microservice identity and authorization </span> </a> <nav class=md-nav aria-label="Track D: Microservice identity and authorization"> <ul class=md-nav__list> <li class=md-nav__item> <a href=#lab-021-client-credentials-service-identity class=md-nav__link> <span class=md-ellipsis> LAB-021: Client Credentials service identity </span> </a> </li> <li class=md-nav__item> <a href=#lab-022-user-token-relay class=md-nav__link> <span class=md-ellipsis> LAB-022: User token relay </span> </a> </li> <li class=md-nav__item> <a href=#lab-023-token-exchange-and-delegation class=md-nav__link> <span class=md-ellipsis> LAB-023: Token exchange and delegation </span> </a> </li> <li class=md-nav__item> <a href=#lab-024-gateway-and-bff class=md-nav__link> <span class=md-ellipsis> LAB-024: Gateway and BFF </span> </a> </li> <li class=md-nav__item> <a href=#lab-025-mtls-and-workload-identity class=md-nav__link> <span class=md-ellipsis> LAB-025: mTLS and workload identity </span> </a> </li> <li class=md-nav__item> <a href=#lab-026-api-key-lifecycle class=md-nav__link> <span class=md-ellipsis> LAB-026: API key lifecycle </span> </a> </li> <li class=md-nav__item> <a href=#lab-027-tenant-and-object-authorization class=md-nav__link> <span class=md-ellipsis> LAB-027: Tenant and object authorization </span> </a> </li> <li class=md-nav__item> <a href=#lab-028-rate-limits-replay-and-failure-policy class=md-nav__link> <span class=md-ellipsis> LAB-028: Rate limits, replay, and failure policy </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#track-e-protocol-specific-security class=md-nav__link> <span class=md-ellipsis> Track E: Protocol-specific security </span> </a> <nav class=md-nav aria-label="Track E: Protocol-specific security"> <ul class=md-nav__list> <li class=md-nav__item> <a href=#lab-029-graphql-authorization class=md-nav__link> <span class=md-ellipsis> LAB-029: GraphQL authorization </span> </a> </li> <li class=md-nav__item> <a href=#lab-030-graphql-resource-controls class=md-nav__link> <span class=md-ellipsis> LAB-030: GraphQL resource controls </span> </a> </li> <li class=md-nav__item> <a href=#lab-031-grpc-authentication-and-authorization class=md-nav__link> <span class=md-ellipsis> LAB-031: gRPC authentication and authorization </span> </a> </li> <li class=md-nav__item> <a href=#lab-032-grpc-mtls class=md-nav__link> <span class=md-ellipsis> LAB-032: gRPC mTLS </span> </a> </li> <li class=md-nav__item> <a href=#lab-033-websocket-handshake-and-destinations class=md-nav__link> <span class=md-ellipsis> LAB-033: WebSocket handshake and destinations </span> </a> </li> <li class=md-nav__item> <a href=#lab-034-websocket-expiry-and-revocation class=md-nav__link> <span class=md-ellipsis> LAB-034: WebSocket expiry and revocation </span> </a> </li> <li class=md-nav__item> <a href=#lab-035-asynchronous-messaging-identity class=md-nav__link> <span class=md-ellipsis> LAB-035: Asynchronous messaging identity </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#track-f-modern-authentication class=md-nav__link> <span class=md-ellipsis> Track F: Modern authentication </span> </a> <nav class=md-nav aria-label="Track F: Modern authentication"> <ul class=md-nav__list> <li class=md-nav__item> <a href=#lab-036-totp-enrollment-and-verification class=md-nav__link> <span class=md-ellipsis> LAB-036: TOTP enrollment and verification </span> </a> </li> <li class=md-nav__item> <a href=#lab-037-recovery-and-step-up-authentication class=md-nav__link> <span class=md-ellipsis> LAB-037: Recovery and step-up authentication </span> </a> </li> <li class=md-nav__item> <a href=#lab-038-webauthnpasskeys class=md-nav__link> <span class=md-ellipsis> LAB-038: WebAuthn/passkeys </span> </a> </li> <li class=md-nav__item> <a href=#lab-039-account-abuse-defenses class=md-nav__link> <span class=md-ellipsis> LAB-039: Account abuse defenses </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#track-g-operations-and-security-assurance class=md-nav__link> <span class=md-ellipsis> Track G: Operations and security assurance </span> </a> <nav class=md-nav aria-label="Track G: Operations and security assurance"> <ul class=md-nav__list> <li class=md-nav__item> <a href=#lab-040-secrets-and-key-rotation class=md-nav__link> <span class=md-ellipsis> LAB-040: Secrets and key rotation </span> </a> </li> <li class=md-nav__item> <a href=#lab-041-security-audit-events class=md-nav__link> <span class=md-ellipsis> LAB-041: Security audit events </span> </a> </li> <li class=md-nav__item> <a href=#lab-042-security-metrics-and-tracing class=md-nav__link> <span class=md-ellipsis> LAB-042: Security metrics and tracing </span> </a> </li> <li class=md-nav__item> <a href=#lab-043-container-hardening class=md-nav__link> <span class=md-ellipsis> LAB-043: Container hardening </span> </a> </li> <li class=md-nav__item> <a href=#lab-044-kubernetes-security class=md-nav__link> <span class=md-ellipsis> LAB-044: Kubernetes security </span> </a> </li> <li class=md-nav__item> <a href=#lab-045-threat-model-and-abuse-cases class=md-nav__link> <span class=md-ellipsis> LAB-045: Threat model and abuse cases </span> </a> </li> <li class=md-nav__item> <a href=#lab-046-incident-exercise class=md-nav__link> <span class=md-ellipsis> LAB-046: Incident exercise </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#track-h-advanced-identity-and-platform-security class=md-nav__link> <span class=md-ellipsis> Track H: Advanced identity and platform security </span> </a> <nav class=md-nav aria-label="Track H: Advanced identity and platform security"> <ul class=md-nav__list> <li class=md-nav__item> <a href=#lab-047-spring-authorization-server class=md-nav__link> <span class=md-ellipsis> LAB-047: Spring Authorization Server </span> </a> </li> <li class=md-nav__item> <a href=#lab-048-scim-identity-lifecycle class=md-nav__link> <span class=md-ellipsis> LAB-048: SCIM identity lifecycle </span> </a> </li> <li class=md-nav__item> <a href=#lab-049-active-directory-and-ldaps class=md-nav__link> <span class=md-ellipsis> LAB-049: Active Directory and LDAPS </span> </a> </li> <li class=md-nav__item> <a href=#lab-050-x509-and-certificate-bound-identity class=md-nav__link> <span class=md-ellipsis> LAB-050: X.509 and certificate-bound identity </span> </a> </li> <li class=md-nav__item> <a href=#lab-051-reactive-webflux-security class=md-nav__link> <span class=md-ellipsis> LAB-051: Reactive WebFlux security </span> </a> </li> <li class=md-nav__item> <a href=#lab-052-spring-cloud-gateway-token-relay class=md-nav__link> <span class=md-ellipsis> LAB-052: Spring Cloud Gateway token relay </span> </a> </li> <li class=md-nav__item> <a href=#lab-053-external-authorization-policy class=md-nav__link> <span class=md-ellipsis> LAB-053: External authorization policy </span> </a> </li> <li class=md-nav__item> <a href=#lab-054-multi-tenant-federation class=md-nav__link> <span class=md-ellipsis> LAB-054: Multi-tenant federation </span> </a> </li> <li class=md-nav__item> <a href=#lab-055-kafka-identity-and-authorization class=md-nav__link> <span class=md-ellipsis> LAB-055: Kafka identity and authorization </span> </a> </li> <li class=md-nav__item> <a href=#lab-056-build-supply-chain-and-sbom class=md-nav__link> <span class=md-ellipsis> LAB-056: Build supply chain and SBOM </span> </a> </li> <li class=md-nav__item> <a href=#lab-057-data-protection-and-safe-diagnostics class=md-nav__link> <span class=md-ellipsis> LAB-057: Data protection and safe diagnostics </span> </a> </li> <li class=md-nav__item> <a href=#lab-058-api-and-proxy-abuse-defenses class=md-nav__link> <span class=md-ellipsis> LAB-058: API and proxy abuse defenses </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#optional-specialist-extensions class=md-nav__link> <span class=md-ellipsis> Optional specialist extensions </span> </a> </li> <li class=md-nav__item> <a href=#session-handoff-template class=md-nav__link> <span class=md-ellipsis> Session handoff template </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=../tutorials/lab-001-request-authorization/ class=md-nav__link> <span class=md-ellipsis> LAB-001 Request Authorization </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-002-secure-login/ class=md-nav__link> <span class=md-ellipsis> LAB-002 Secure Login </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-003-password-storage/ class=md-nav__link> <span class=md-ellipsis> LAB-003 Password Storage </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-004-method-security/ class=md-nav__link> <span class=md-ellipsis> LAB-004 Method Security </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-005-security-errors/ class=md-nav__link> <span class=md-ellipsis> LAB-005 Security Errors </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-006-browser-sessions/ class=md-nav__link> <span class=md-ellipsis> LAB-006 Browser Sessions </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-007-csrf/ class=md-nav__link> <span class=md-ellipsis> LAB-007 CSRF </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-008-cors-and-headers/ class=md-nav__link> <span class=md-ellipsis> LAB-008 CORS and Headers </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-009-jwt-resource-server/ class=md-nav__link> <span class=md-ellipsis> LAB-009 JWT Resource Server </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-010-local-identity-provider/ class=md-nav__link> <span class=md-ellipsis> LAB-010 Local Identity Provider </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-011-authorization-code-pkce/ class=md-nav__link> <span class=md-ellipsis> LAB-011 Authorization Code with PKCE </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-012-token-lifecycle/ class=md-nav__link> <span class=md-ellipsis> LAB-012 Token Lifecycle </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-013-opaque-token-introspection/ class=md-nav__link> <span class=md-ellipsis> LAB-013 Opaque Token Introspection </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-014-service-to-service/ class=md-nav__link> <span class=md-ellipsis> LAB-014 Service-to-Service </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-015-jwk-rotation/ class=md-nav__link> <span class=md-ellipsis> LAB-015 JWK Rotation </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-016-api-gateway/ class=md-nav__link> <span class=md-ellipsis> LAB-016 API Gateway </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-017-saml-relying-party/ class=md-nav__link> <span class=md-ellipsis> LAB-017 SAML Relying Party </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-018-oidc-sso/ class=md-nav__link> <span class=md-ellipsis> LAB-018 OIDC SSO </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-019-token-exchange/ class=md-nav__link> <span class=md-ellipsis> LAB-019 Token Exchange </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-020-bff-token-handling/ class=md-nav__link> <span class=md-ellipsis> LAB-020 BFF Token Handling </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-021-service-identity-mtls/ class=md-nav__link> <span class=md-ellipsis> LAB-021 Service Identity and mTLS </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-022-api-keys-resource-quotas/ class=md-nav__link> <span class=md-ellipsis> LAB-022 API Keys and Resource Quotas </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-023-multi-tenancy-isolation/ class=md-nav__link> <span class=md-ellipsis> LAB-023 Multi-Tenancy and Tenant Isolation </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-024-resilience-security-outages/ class=md-nav__link> <span class=md-ellipsis> LAB-024 Resilience and Security Outages </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-025-delegated-access-actor-tokens/ class=md-nav__link> <span class=md-ellipsis> LAB-025 Delegated Access and Actor Tokens </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-026-api-key-lifecycle/ class=md-nav__link> <span class=md-ellipsis> LAB-026 API Key Lifecycle </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-027-tenant-object-authorization/ class=md-nav__link> <span class=md-ellipsis> LAB-027 Tenant and Object Authorization </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-028-rate-limiting-failure-policies/ class=md-nav__link> <span class=md-ellipsis> LAB-028 Rate Limiting and Failure Policies </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-029-graphql-security/ class=md-nav__link> <span class=md-ellipsis> LAB-029 GraphQL Security </span> </a> </li> <li class=md-nav__item> <a href=../tutorials/lab-030-grpc-security/ class=md-nav__link> <span class=md-ellipsis> LAB-030 gRPC Security </span> </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--section md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_2_4> <div class="md-nav__link md-nav__container"> <a href=../quizzes/ class="md-nav__link "> <span class=md-ellipsis> Assessments </span> </a> <label class="md-nav__link " for=__nav_2_4 id=__nav_2_4_label tabindex> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_2_4_label aria-expanded=false> <label class=md-nav__title for=__nav_2_4> <span class="md-nav__icon md-icon"></span> Assessments </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../quizzes/fundamentals/ class=md-nav__link> <span class=md-ellipsis> Spring Security Internals </span> </a> </li> <li class=md-nav__item> <a href=../quizzes/federation/ class=md-nav__link> <span class=md-ellipsis> SSO and Federation </span> </a> </li> <li class=md-nav__item> <a href=../quizzes/microservices/ class=md-nav__link> <span class=md-ellipsis> Microservice Security </span> </a> </li> <li class=md-nav__item> <a href=../quizzes/operations/ class=md-nav__link> <span class=md-ellipsis> Operations and Architecture </span> </a> </li> </ul> </nav> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_3> <label class=md-nav__link for=__nav_3 id=__nav_3_label tabindex=0> <span class=md-ellipsis> Security </span> <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav data-md-level=1 aria-labelledby=__nav_3_label aria-expanded=false> <label class=md-nav__title for=__nav_3> <span class="md-nav__icon md-icon"></span> Security </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../reference/diagrams/ class=md-nav__link> <span class=md-ellipsis> Architecture & Diagrams </span> </a> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_3_2> <div class="md-nav__link md-nav__container"> <a href=../authentication/ class="md-nav__link "> <span class=md-ellipsis> Authentication </span> </a> <label class="md-nav__link " for=__nav_3_2 id=__nav_3_2_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_3_2_label aria-expanded=false> <label class=md-nav__title for=__nav_3_2> <span class="md-nav__icon md-icon"></span> Authentication </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../authentication/jdbc-auth/ class=md-nav__link> <span class=md-ellipsis> JDBC </span> </a> </li> <li class=md-nav__item> <a href=../authentication/ldap-auth/ class=md-nav__link> <span class=md-ellipsis> LDAP </span> </a> </li> <li class=md-nav__item> <a href=../authentication/oauth2-auth/ class=md-nav__link> <span class=md-ellipsis> OAuth2 </span> </a> </li> <li class=md-nav__item> <a href=../authentication/jwt-tokens/ class=md-nav__link> <span class=md-ellipsis> JWT </span> </a> </li> <li class=md-nav__item> <a href=../authentication/sso-integration/ class=md-nav__link> <span class=md-ellipsis> SSO, SAML & OIDC </span> </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_3_3> <div class="md-nav__link md-nav__container"> <a href=../security/ class="md-nav__link "> <span class=md-ellipsis> Configuration </span> </a> <label class="md-nav__link " for=__nav_3_3 id=__nav_3_3_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_3_3_label aria-expanded=false> <label class=md-nav__title for=__nav_3_3> <span class="md-nav__icon md-icon"></span> Configuration </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../security/common-security/ class=md-nav__link> <span class=md-ellipsis> Common Security </span> </a> </li> <li class=md-nav__item> <a href=../security/filter-chain/ class=md-nav__link> <span class=md-ellipsis> Filter Chain </span> </a> </li> <li class=md-nav__item> <a href=../security/authorization/ class=md-nav__link> <span class=md-ellipsis> Authorization </span> </a> </li> <li class=md-nav__item> <a href=../security/use-cases/ class=md-nav__link> <span class=md-ellipsis> Use Cases </span> </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_3_4> <label class=md-nav__link for=__nav_3_4 id=__nav_3_4_label tabindex=0> <span class=md-ellipsis> Protocols </span> <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_3_4_label aria-expanded=false> <label class=md-nav__title for=__nav_3_4> <span class="md-nav__icon md-icon"></span> Protocols </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../modules/graphql-service/ class=md-nav__link> <span class=md-ellipsis> GraphQL </span> </a> </li> </ul> </nav> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_4> <label class=md-nav__link for=__nav_4 id=__nav_4_label tabindex=0> <span class=md-ellipsis> Practice </span> <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav data-md-level=1 aria-labelledby=__nav_4_label aria-expanded=false> <label class=md-nav__title for=__nav_4> <span class="md-nav__icon md-icon"></span> Practice </label> <ul class=md-nav__list data-md-scrollfix> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_4_1> <div class="md-nav__link md-nav__container"> <a href=../api/ class="md-nav__link "> <span class=md-ellipsis> API </span> </a> <label class="md-nav__link " for=__nav_4_1 id=__nav_4_1_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_4_1_label aria-expanded=false> <label class=md-nav__title for=__nav_4_1> <span class="md-nav__icon md-icon"></span> API </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../api/rest-endpoints/ class=md-nav__link> <span class=md-ellipsis> REST Endpoints </span> </a> </li> <li class=md-nav__item> <a href=../api/auth-flow/ class=md-nav__link> <span class=md-ellipsis> Authentication Flow </span> </a> </li> <li class=md-nav__item> <a href=../api/error-handling/ class=md-nav__link> <span class=md-ellipsis> Error Handling </span> </a> </li> <li class=md-nav__item> <a href=../api/swagger/ class=md-nav__link> <span class=md-ellipsis> Swagger </span> </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_4_2> <div class="md-nav__link md-nav__container"> <a href=../examples/ class="md-nav__link "> <span class=md-ellipsis> Exercises </span> </a> <label class="md-nav__link " for=__nav_4_2 id=__nav_4_2_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_4_2_label aria-expanded=false> <label class=md-nav__title for=__nav_4_2> <span class="md-nav__icon md-icon"></span> Exercises </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../examples/testing-api/ class=md-nav__link> <span class=md-ellipsis> API Testing </span> </a> </li> <li class=md-nav__item> <a href=../examples/postman-setup/ class=md-nav__link> <span class=md-ellipsis> Postman </span> </a> </li> <li class=md-nav__item> <a href=../examples/testing-auth/ class=md-nav__link> <span class=md-ellipsis> Authentication Testing </span> </a> </li> <li class=md-nav__item> <a href=../examples/custom-providers/ class=md-nav__link> <span class=md-ellipsis> Custom Providers </span> </a> </li> <li class=md-nav__item> <a href=../examples/advanced-patterns/ class=md-nav__link> <span class=md-ellipsis> Advanced Patterns </span> </a> </li> </ul> </nav> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_5> <label class=md-nav__link for=__nav_5 id=__nav_5_label tabindex=0> <span class=md-ellipsis> Operate & Reference </span> <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav data-md-level=1 aria-labelledby=__nav_5_label aria-expanded=false> <label class=md-nav__title for=__nav_5> <span class="md-nav__icon md-icon"></span> Operate & Reference </label> <ul class=md-nav__list data-md-scrollfix> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_5_1> <div class="md-nav__link md-nav__container"> <a href=../deployment/ class="md-nav__link "> <span class=md-ellipsis> Deployment </span> </a> <label class="md-nav__link " for=__nav_5_1 id=__nav_5_1_label tabindex=0> <span class="md-nav__icon md-icon"></span> </label> </div> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_5_1_label aria-expanded=false> <label class=md-nav__title for=__nav_5_1> <span class="md-nav__icon md-icon"></span> Deployment </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../deployment/profiles/ class=md-nav__link> <span class=md-ellipsis> Profiles </span> </a> </li> <li class=md-nav__item> <a href=../deployment/production/ class=md-nav__link> <span class=md-ellipsis> Production </span> </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type=checkbox id=__nav_5_2> <label class=md-nav__link for=__nav_5_2 id=__nav_5_2_label tabindex=0> <span class=md-ellipsis> Reference </span> <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav data-md-level=2 aria-labelledby=__nav_5_2_label aria-expanded=false> <label class=md-nav__title for=__nav_5_2> <span class="md-nav__icon md-icon"></span> Reference </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../reference/modules/ class=md-nav__link> <span class=md-ellipsis> Modules </span> </a> </li> <li class=md-nav__item> <a href=../reference/testing-auth/ class=md-nav__link> <span class=md-ellipsis> Authentication Testing </span> </a> </li> <li class=md-nav__item> <a href=../reference/custom-providers/ class=md-nav__link> <span class=md-ellipsis> Custom Providers </span> </a> </li> <li class=md-nav__item> <a href=../reference/advanced-patterns/ class=md-nav__link> <span class=md-ellipsis> Advanced Patterns </span> </a> </li> <li class=md-nav__item> <a href=../reference/troubleshooting/ class=md-nav__link> <span class=md-ellipsis> Troubleshooting </span> </a> </li> </ul> </nav> </li> </ul> </nav> </li> </ul> </nav> </div> </div> </div> <div class=md-content data-md-component=content> <nav class=md-path aria-label=Navigation> <ol class=md-path__list> <li class=md-path__item> <a href=.. class=md-path__link> <span class=md-ellipsis> Home </span> </a> </li> <li class=md-path__item> <a href=../getting-started/overview/ class=md-path__link> <span class=md-ellipsis> Learn </span> </a> </li> <li class=md-path__item> <a href=./ class=md-path__link> <span class=md-ellipsis> Labs </span> </a> </li> </ol> </nav> <article class="md-content__inner md-typeset"> <h1 id=lab-roadmap>Lab Roadmap<a class=headerlink href=#lab-roadmap title="Permanent link">&para;</a></h1> <p>Use one lab per working session. Complete labs in order unless a lab explicitly says otherwise. Theory and exercises are separate: study the relevant page in the <a href=../theory/ >Theory Index</a>, then use the lab guide for Java 21 implementation and failure/attack proof. See the <a href=../learning-model/ >Learning Model</a>.</p> <h2 id=how-to-run-a-session>How to run a session<a class=headerlink href=#how-to-run-a-session title="Permanent link">&para;</a></h2> <ol> <li>Read the linked theory and inspect the current implementation.</li> <li>Write a failing positive or negative test that states the security behavior.</li> <li>Implement the smallest secure change that makes the test pass.</li> <li>Run the module test, then <code>./gradlew test</code>.</li> <li>Update the theory, coverage status, and troubleshooting notes.</li> <li>Record what was verified and select the next incomplete lab.</li> </ol> <p>A lab is complete only when its implementation, positive tests, negative tests, and documentation agree.</p> <h2 id=track-a-spring-security-foundations>Track A: Spring Security foundations<a class=headerlink href=#track-a-spring-security-foundations title="Permanent link">&para;</a></h2> <h3 id=lab-001-production-filter-chain-tests>LAB-001: Production filter-chain tests<a class=headerlink href=#lab-001-production-filter-chain-tests title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Load the real <code>MultiAuthSecurityConfig</code> instead of a test-only chain.</li> <li><strong>Prove:</strong> Public access, anonymous 401, insufficient-role 403, USER access, and ADMIN access.</li> <li><strong>Attack case:</strong> Confirm matcher ordering cannot expose <code>/api/admin/**</code>.</li> <li><strong>Done when:</strong> Tests pass against production configuration and <code>coverage.md</code> marks request authorization Verified.</li> </ul> <h3 id=lab-002-secure-usernamepassword-login>LAB-002: Secure username/password login<a class=headerlink href=#lab-002-secure-usernamepassword-login title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Authenticate through <code>AuthenticationManager</code> before issuing a token.</li> <li><strong>Prove:</strong> Valid credentials succeed; invalid username and invalid password fail uniformly.</li> <li><strong>Attack case:</strong> Verify arbitrary usernames cannot obtain tokens and responses do not enable account enumeration.</li> <li><strong>Done when:</strong> The existing unauthenticated token-minting behavior is gone.</li> </ul> <h3 id=lab-003-password-storage-and-migration>LAB-003: Password storage and migration<a class=headerlink href=#lab-003-password-storage-and-migration title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Use <code>DelegatingPasswordEncoder</code> and BCrypt-backed test users.</li> <li><strong>Prove:</strong> Encoded passwords work and plaintext passwords do not.</li> <li><strong>Attack case:</strong> Demonstrate safe upgrade from an older encoding identifier.</li> <li><strong>Done when:</strong> No demo user store depends on plaintext credentials.</li> </ul> <h3 id=lab-004-method-security>LAB-004: Method security<a class=headerlink href=#lab-004-method-security title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Enable method security and protect one service with <code>@PreAuthorize</code>.</li> <li><strong>Prove:</strong> Allowed role, denied role, and unauthenticated invocation.</li> <li><strong>Attack case:</strong> Call the service outside the controller and confirm the rule still applies.</li> <li><strong>Done when:</strong> Method security is Verified in the coverage registry.</li> </ul> <h3 id=lab-005-security-error-contract>LAB-005: Security error contract<a class=headerlink href=#lab-005-security-error-contract title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Add JSON <code>AuthenticationEntryPoint</code> and <code>AccessDeniedHandler</code> responses.</li> <li><strong>Prove:</strong> Stable 401 and 403 payloads and content types.</li> <li><strong>Attack case:</strong> Confirm errors reveal neither stack traces nor authorization internals.</li> <li><strong>Done when:</strong> API documentation matches executable response assertions.</li> </ul> <h3 id=lab-006-browser-sessions-and-session-fixation>LAB-006: Browser sessions and session fixation<a class=headerlink href=#lab-006-browser-sessions-and-session-fixation title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Add an isolated form-login session lab.</li> <li><strong>Prove:</strong> Session identifier changes after login and logout invalidates the session.</li> <li><strong>Attack case:</strong> A pre-authentication session identifier cannot be reused after authentication.</li> <li><strong>Done when:</strong> Session lifecycle behavior is documented and tested.</li> </ul> <h3 id=lab-007-csrf-protection>LAB-007: CSRF protection<a class=headerlink href=#lab-007-csrf-protection title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Protect a cookie-authenticated state-changing endpoint.</li> <li><strong>Prove:</strong> A valid CSRF token succeeds; missing and invalid tokens fail.</li> <li><strong>Attack case:</strong> Cross-site form submission cannot change state.</li> <li><strong>Done when:</strong> Documentation clearly distinguishes cookie sessions from bearer-token APIs.</li> </ul> <h3 id=lab-008-cors-and-security-headers>LAB-008: CORS and security headers<a class=headerlink href=#lab-008-cors-and-security-headers title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Allow one configured origin and add an explicit header policy.</li> <li><strong>Prove:</strong> Allowed preflight succeeds, unknown origin is rejected, and expected headers are present.</li> <li><strong>Attack case:</strong> Credentials are never combined with wildcard origins.</li> <li><strong>Done when:</strong> CORS, CSP, frame, content-type, and transport decisions are documented.</li> </ul> <h2 id=track-b-oauth2-oidc-and-token-security>Track B: OAuth2, OIDC, and token security<a class=headerlink href=#track-b-oauth2-oidc-and-token-security title="Permanent link">&para;</a></h2> <h3 id=lab-009-standard-jwt-resource-server>LAB-009: Standard JWT resource server<a class=headerlink href=#lab-009-standard-jwt-resource-server title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Replace the primary custom bearer filter with <code>oauth2ResourceServer().jwt()</code> in an isolated API path.</li> <li><strong>Prove:</strong> Signed token, scope mapping, issuer, audience, expiry, and not-before checks.</li> <li><strong>Attack case:</strong> Reject wrong issuer, wrong audience, expired token, altered signature, and unsupported algorithm.</li> <li><strong>Done when:</strong> The custom filter is labeled educational rather than recommended.</li> </ul> <h3 id=lab-010-local-identity-provider>LAB-010: Local identity provider<a class=headerlink href=#lab-010-local-identity-provider title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Add a reproducible local IdP configuration with no real credentials.</li> <li><strong>Prove:</strong> Realm or tenant, clients, users, roles, and exported configuration start consistently.</li> <li><strong>Attack case:</strong> Default administrative credentials are not used outside the isolated lab.</li> <li><strong>Done when:</strong> A new learner can start the IdP and obtain a test token from documented commands.</li> </ul> <h3 id=lab-011-oauth2-authorization-code-with-pkce>LAB-011: OAuth2 Authorization Code with PKCE<a class=headerlink href=#lab-011-oauth2-authorization-code-with-pkce title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Configure a browser client against the local IdP.</li> <li><strong>Prove:</strong> Login, callback, state, nonce, and PKCE behavior.</li> <li><strong>Attack case:</strong> Invalid state and invalid authorization response are rejected.</li> <li><strong>Done when:</strong> No client secret is required for the public-client flow.</li> </ul> <h3 id=lab-012-oidc-identity-and-authority-mapping>LAB-012: OIDC identity and authority mapping<a class=headerlink href=#lab-012-oidc-identity-and-authority-mapping title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Read ID-token/UserInfo claims and map approved groups to authorities.</li> <li><strong>Prove:</strong> Known groups map correctly and unknown claims grant nothing.</li> <li><strong>Attack case:</strong> A user-controlled claim cannot become an administrative authority.</li> <li><strong>Done when:</strong> OAuth2 authorization and OIDC authentication are explained separately.</li> </ul> <h3 id=lab-013-opaque-token-introspection>LAB-013: Opaque-token introspection<a class=headerlink href=#lab-013-opaque-token-introspection title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Add a resource-server profile using introspection.</li> <li><strong>Prove:</strong> Active, inactive, expired, and insufficient-scope tokens.</li> <li><strong>Attack case:</strong> Introspection outage follows the documented fail-closed policy.</li> <li><strong>Done when:</strong> JWT versus opaque-token trade-offs are measured and documented.</li> </ul> <h3 id=lab-014-refresh-revocation-and-logout>LAB-014: Refresh, revocation, and logout<a class=headerlink href=#lab-014-refresh-revocation-and-logout title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Demonstrate refresh rotation, revocation, local logout, and provider logout.</li> <li><strong>Prove:</strong> Rotated tokens work and reused or revoked tokens fail.</li> <li><strong>Attack case:</strong> Refresh-token replay is detected or explicitly bounded by provider behavior.</li> <li><strong>Done when:</strong> Browser session and token lifecycle diagrams match the lab.</li> </ul> <h3 id=lab-015-jwk-rotation-and-multiple-issuers>LAB-015: JWK rotation and multiple issuers<a class=headerlink href=#lab-015-jwk-rotation-and-multiple-issuers title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Rotate signing keys and add explicit trusted-issuer resolution.</li> <li><strong>Prove:</strong> Old/new overlap, unknown <code>kid</code>, trusted issuer, and untrusted issuer behavior.</li> <li><strong>Attack case:</strong> The token-controlled issuer cannot select an arbitrary JWK endpoint.</li> <li><strong>Done when:</strong> Rotation and tenant-onboarding runbooks exist.</li> </ul> <h2 id=track-c-sso-and-saml-20>Track C: SSO and SAML 2.0<a class=headerlink href=#track-c-sso-and-saml-20 title="Permanent link">&para;</a></h2> <h3 id=lab-016-two-client-oidc-sso>LAB-016: Two-client OIDC SSO<a class=headerlink href=#lab-016-two-client-oidc-sso title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Register two applications with the local IdP.</li> <li><strong>Prove:</strong> Login to the first app enables IdP-backed access to the second without credentials being re-entered.</li> <li><strong>Attack case:</strong> Logging out locally does not falsely claim to end the IdP session.</li> <li><strong>Done when:</strong> SSO is documented as an outcome rather than a protocol.</li> </ul> <h3 id=lab-017-saml-relying-party>LAB-017: SAML relying party<a class=headerlink href=#lab-017-saml-relying-party title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Add a dedicated SAML service-provider module and local test IdP registration.</li> <li><strong>Prove:</strong> Metadata exchange, signed login response, and authenticated principal.</li> <li><strong>Attack case:</strong> Unsigned or incorrectly signed responses fail.</li> <li><strong>Done when:</strong> The SAML page links to runnable code instead of standalone snippets.</li> </ul> <h3 id=lab-018-saml-attributes-and-authorization>LAB-018: SAML attributes and authorization<a class=headerlink href=#lab-018-saml-attributes-and-authorization title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Map allow-listed SAML attributes to application authorities.</li> <li><strong>Prove:</strong> Known attributes grant expected access and missing attributes fail safely.</li> <li><strong>Attack case:</strong> Unexpected assertion attributes cannot grant ADMIN.</li> <li><strong>Done when:</strong> Attribute contracts and ownership are documented.</li> </ul> <h3 id=lab-019-saml-assertion-validation>LAB-019: SAML assertion validation<a class=headerlink href=#lab-019-saml-assertion-validation title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Configure audience, recipient, time, request-correlation, and replay validation.</li> <li><strong>Prove:</strong> Valid assertion and permitted clock skew.</li> <li><strong>Attack case:</strong> Wrong audience, wrong recipient, expired assertion, invalid InResponseTo, and replay all fail.</li> <li><strong>Done when:</strong> Every assertion condition has a negative test.</li> </ul> <h3 id=lab-020-saml-logout-and-certificate-rollover>LAB-020: SAML logout and certificate rollover<a class=headerlink href=#lab-020-saml-logout-and-certificate-rollover title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Add logout behavior and overlapping signing certificates.</li> <li><strong>Prove:</strong> Local/provider logout expectations and old/new certificate transition.</li> <li><strong>Attack case:</strong> Untrusted rollover certificates are rejected.</li> <li><strong>Done when:</strong> Operational rollover and emergency-replacement instructions exist.</li> </ul> <h2 id=track-d-microservice-identity-and-authorization>Track D: Microservice identity and authorization<a class=headerlink href=#track-d-microservice-identity-and-authorization title="Permanent link">&para;</a></h2> <h3 id=lab-021-client-credentials-service-identity>LAB-021: Client Credentials service identity<a class=headerlink href=#lab-021-client-credentials-service-identity title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Secure service-to-service calls using scoped machine clients.</li> <li><strong>Prove:</strong> Correct client/scope succeeds; user token and wrong scope fail.</li> <li><strong>Attack case:</strong> One service identity cannot call unrelated privileged endpoints.</li> <li><strong>Done when:</strong> Least-privilege client registration is documented.</li> </ul> <h3 id=lab-022-user-token-relay>LAB-022: User token relay<a class=headerlink href=#lab-022-user-token-relay title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Relay an end-user access token through a gateway to a downstream service.</li> <li><strong>Prove:</strong> User identity and scope survive the call.</li> <li><strong>Attack case:</strong> The gateway does not log, persist, or return the bearer token.</li> <li><strong>Done when:</strong> Trust boundaries identify which service authorizes each resource.</li> </ul> <h3 id=lab-023-token-exchange-and-delegation>LAB-023: Token exchange and delegation<a class=headerlink href=#lab-023-token-exchange-and-delegation title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Exchange an incoming token for a narrower downstream token.</li> <li><strong>Prove:</strong> Actor, subject, audience, and reduced scope.</li> <li><strong>Attack case:</strong> Downstream tokens cannot be replayed against the gateway or another service.</li> <li><strong>Done when:</strong> Relay versus exchange selection guidance exists.</li> </ul> <h3 id=lab-024-gateway-and-bff>LAB-024: Gateway and BFF<a class=headerlink href=#lab-024-gateway-and-bff title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Keep tokens server-side and give the browser a secure session cookie.</li> <li><strong>Prove:</strong> Login, API call, CSRF protection, logout, and session expiry.</li> <li><strong>Attack case:</strong> JavaScript cannot read tokens and cross-site requests cannot mutate state.</li> <li><strong>Done when:</strong> Cookie attributes and browser threat model are tested.</li> </ul> <h3 id=lab-025-mtls-and-workload-identity>LAB-025: mTLS and workload identity<a class=headerlink href=#lab-025-mtls-and-workload-identity title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Run two services with mutual certificate authentication.</li> <li><strong>Prove:</strong> Trusted client certificate succeeds and missing/untrusted/expired certificates fail.</li> <li><strong>Attack case:</strong> Possessing an application token alone is insufficient for the mTLS route.</li> <li><strong>Done when:</strong> Issuance, rotation, revocation, and identity mapping are documented.</li> </ul> <h3 id=lab-026-api-key-lifecycle>LAB-026: API key lifecycle<a class=headerlink href=#lab-026-api-key-lifecycle title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Issue prefixed keys, store only hashes, support scopes, rotation, and revocation.</li> <li><strong>Prove:</strong> Active key succeeds and revoked/expired/wrong-scope keys fail.</li> <li><strong>Attack case:</strong> Database contents cannot be used directly as credentials.</li> <li><strong>Done when:</strong> Keys never appear in logs or query strings.</li> </ul> <h3 id=lab-027-tenant-and-object-authorization>LAB-027: Tenant and object authorization<a class=headerlink href=#lab-027-tenant-and-object-authorization title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Enforce tenant and ownership rules below the controller layer.</li> <li><strong>Prove:</strong> Owner, same-tenant non-owner, other tenant, and admin cases.</li> <li><strong>Attack case:</strong> Identifier substitution cannot cross tenant boundaries.</li> <li><strong>Done when:</strong> RBAC, scopes, ownership, and tenancy responsibilities are distinct.</li> </ul> <h3 id=lab-028-rate-limits-replay-and-failure-policy>LAB-028: Rate limits, replay, and failure policy<a class=headerlink href=#lab-028-rate-limits-replay-and-failure-policy title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Add authentication throttling, idempotency/replay controls, and IdP dependency policies.</li> <li><strong>Prove:</strong> Normal load, threshold behavior, recovery, and dependency outage.</li> <li><strong>Attack case:</strong> Brute force and request replay are bounded without global denial of service.</li> <li><strong>Done when:</strong> Fail-open/fail-closed decisions are explicit per endpoint.</li> </ul> <h2 id=track-e-protocol-specific-security>Track E: Protocol-specific security<a class=headerlink href=#track-e-protocol-specific-security title="Permanent link">&para;</a></h2> <h3 id=lab-029-graphql-authorization>LAB-029: GraphQL authorization<a class=headerlink href=#lab-029-graphql-authorization title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Protect queries, mutations, and sensitive fields at resolver/service boundaries.</li> <li><strong>Prove:</strong> Allowed fields, denied fields, and partial-result behavior.</li> <li><strong>Attack case:</strong> Aliases or batching cannot bypass field authorization.</li> <li><strong>Done when:</strong> The placeholder interceptor is removed or replaced.</li> </ul> <h3 id=lab-030-graphql-resource-controls>LAB-030: GraphQL resource controls<a class=headerlink href=#lab-030-graphql-resource-controls title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Add depth, complexity, pagination, and batching limits.</li> <li><strong>Prove:</strong> Normal query succeeds and excessive query is rejected predictably.</li> <li><strong>Attack case:</strong> Nested-query and alias amplification are bounded.</li> <li><strong>Done when:</strong> Limits and monitoring signals are documented.</li> </ul> <h3 id=lab-031-grpc-authentication-and-authorization>LAB-031: gRPC authentication and authorization<a class=headerlink href=#lab-031-grpc-authentication-and-authorization title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Add bearer metadata processing and method authorization in interceptors.</li> <li><strong>Prove:</strong> Valid metadata, absent token, invalid token, and wrong scope.</li> <li><strong>Attack case:</strong> Reflection and health endpoints follow explicit exposure rules.</li> <li><strong>Done when:</strong> gRPC status codes do not leak token details.</li> </ul> <h3 id=lab-032-grpc-mtls>LAB-032: gRPC mTLS<a class=headerlink href=#lab-032-grpc-mtls title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Combine transport identity with application authorization.</li> <li><strong>Prove:</strong> Trusted workload and authorized method access.</li> <li><strong>Attack case:</strong> Valid certificate with insufficient application authority is denied.</li> <li><strong>Done when:</strong> Certificate and token identities have a documented relationship.</li> </ul> <h3 id=lab-033-websocket-handshake-and-destinations>LAB-033: WebSocket handshake and destinations<a class=headerlink href=#lab-033-websocket-handshake-and-destinations title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Authenticate the handshake and authorize subscriptions and sends by destination.</li> <li><strong>Prove:</strong> Allowed and denied destinations and unauthenticated connection.</li> <li><strong>Attack case:</strong> A connected user cannot subscribe to another user's private destination.</li> <li><strong>Done when:</strong> Placeholder JWT validation is replaced.</li> </ul> <h3 id=lab-034-websocket-expiry-and-revocation>LAB-034: WebSocket expiry and revocation<a class=headerlink href=#lab-034-websocket-expiry-and-revocation title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Define behavior for token expiry, logout, and authority changes during a connection.</li> <li><strong>Prove:</strong> Re-authentication or disconnect occurs according to policy.</li> <li><strong>Attack case:</strong> A long-lived connection cannot preserve revoked access indefinitely.</li> <li><strong>Done when:</strong> Connection lifecycle is covered by integration tests.</li> </ul> <h3 id=lab-035-asynchronous-messaging-identity>LAB-035: Asynchronous messaging identity<a class=headerlink href=#lab-035-asynchronous-messaging-identity title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Propagate minimal identity context through a broker-backed message flow.</li> <li><strong>Prove:</strong> Authorized producer/consumer and correlation for audit.</li> <li><strong>Attack case:</strong> Untrusted message headers cannot impersonate a user or service.</li> <li><strong>Done when:</strong> Broker ACLs and application authorization are separated.</li> </ul> <h2 id=track-f-modern-authentication>Track F: Modern authentication<a class=headerlink href=#track-f-modern-authentication title="Permanent link">&para;</a></h2> <h3 id=lab-036-totp-enrollment-and-verification>LAB-036: TOTP enrollment and verification<a class=headerlink href=#lab-036-totp-enrollment-and-verification title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Replace the hardcoded OTP with secret enrollment and clock-controlled verification.</li> <li><strong>Prove:</strong> Current code succeeds; wrong, expired, and reused codes fail according to policy.</li> <li><strong>Attack case:</strong> Secrets and OTPs never appear in logs.</li> <li><strong>Done when:</strong> The placeholder service is removed.</li> </ul> <h3 id=lab-037-recovery-and-step-up-authentication>LAB-037: Recovery and step-up authentication<a class=headerlink href=#lab-037-recovery-and-step-up-authentication title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Add single-use hashed recovery codes and require recent MFA for a sensitive action.</li> <li><strong>Prove:</strong> Recovery consumption, reuse failure, and step-up freshness.</li> <li><strong>Attack case:</strong> Password-only sessions cannot invoke the sensitive action.</li> <li><strong>Done when:</strong> Recovery is not weaker than the protected account lifecycle.</li> </ul> <h3 id=lab-038-webauthnpasskeys>LAB-038: WebAuthn/passkeys<a class=headerlink href=#lab-038-webauthnpasskeys title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Implement local passkey registration and authentication.</li> <li><strong>Prove:</strong> Challenge, origin, RP ID, counter, and user-verification behavior.</li> <li><strong>Attack case:</strong> Wrong origin/RP ID, stale challenge, and cloned-authenticator signals fail.</li> <li><strong>Done when:</strong> Registration, login, credential removal, and recovery are documented.</li> </ul> <h3 id=lab-039-account-abuse-defenses>LAB-039: Account abuse defenses<a class=headerlink href=#lab-039-account-abuse-defenses title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Add enumeration-resistant responses, throttling, lockout policy, and security notifications.</li> <li><strong>Prove:</strong> Normal mistakes recover and distributed abuse is observable.</li> <li><strong>Attack case:</strong> Defenses cannot be trivially used to permanently lock out arbitrary users.</li> <li><strong>Done when:</strong> Support and incident procedures accompany the controls.</li> </ul> <h2 id=track-g-operations-and-security-assurance>Track G: Operations and security assurance<a class=headerlink href=#track-g-operations-and-security-assurance title="Permanent link">&para;</a></h2> <h3 id=lab-040-secrets-and-key-rotation>LAB-040: Secrets and key rotation<a class=headerlink href=#lab-040-secrets-and-key-rotation title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Load secrets externally and rotate a signing or client credential without downtime.</li> <li><strong>Prove:</strong> Old/new overlap and post-cutover rejection.</li> <li><strong>Attack case:</strong> Secrets do not enter Git, images, logs, or test reports.</li> <li><strong>Done when:</strong> Routine and emergency rotation runbooks pass.</li> </ul> <h3 id=lab-041-security-audit-events>LAB-041: Security audit events<a class=headerlink href=#lab-041-security-audit-events title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Emit structured authentication, authorization, administrative, and key-lifecycle events.</li> <li><strong>Prove:</strong> Success/failure events correlate without containing credentials or full tokens.</li> <li><strong>Attack case:</strong> Log injection and sensitive-claim leakage are prevented.</li> <li><strong>Done when:</strong> Event ownership and retention are documented.</li> </ul> <h3 id=lab-042-security-metrics-and-tracing>LAB-042: Security metrics and tracing<a class=headerlink href=#lab-042-security-metrics-and-tracing title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Add low-cardinality metrics and trace correlation for security dependencies.</li> <li><strong>Prove:</strong> Denials, invalid tokens, IdP latency, and JWK/introspection failures are visible.</li> <li><strong>Attack case:</strong> Attacker-controlled identifiers do not create metric-cardinality explosions.</li> <li><strong>Done when:</strong> A troubleshooting exercise can identify the failing trust boundary.</li> </ul> <h3 id=lab-043-container-hardening>LAB-043: Container hardening<a class=headerlink href=#lab-043-container-hardening title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Package a non-root, minimal runtime image with health checks.</li> <li><strong>Prove:</strong> Read-only filesystem where possible, dropped privileges, and reproducible scan.</li> <li><strong>Attack case:</strong> Runtime cannot write to application or credential locations unnecessarily.</li> <li><strong>Done when:</strong> Build and scan commands are automated.</li> </ul> <h3 id=lab-044-kubernetes-security>LAB-044: Kubernetes security<a class=headerlink href=#lab-044-kubernetes-security title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Add service account, secret injection, probes, resource limits, and network policy.</li> <li><strong>Prove:</strong> Required traffic works and unrelated east-west traffic is denied.</li> <li><strong>Attack case:</strong> Default service-account credentials and broad secret access are absent.</li> <li><strong>Done when:</strong> Deployment matches the documented trust-boundary diagram.</li> </ul> <h3 id=lab-045-threat-model-and-abuse-cases>LAB-045: Threat model and abuse cases<a class=headerlink href=#lab-045-threat-model-and-abuse-cases title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Document assets, actors, entry points, trust boundaries, threats, and mitigations for the lab system.</li> <li><strong>Prove:</strong> Every high-risk threat maps to a control and executable test or accepted risk.</li> <li><strong>Attack case:</strong> Include token theft, confused deputy, tenant escape, replay, and IdP outage.</li> <li><strong>Done when:</strong> The threat model drives at least one newly added negative test.</li> </ul> <h3 id=lab-046-incident-exercise>LAB-046: Incident exercise<a class=headerlink href=#lab-046-incident-exercise title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Run a scenario involving stolen credentials, suspicious access, or signing-key compromise.</li> <li><strong>Prove:</strong> Detection, containment, revocation, rotation, recovery, and evidence collection.</li> <li><strong>Attack case:</strong> Verify cached credentials and long-lived connections do not escape containment.</li> <li><strong>Done when:</strong> The exercise produces tested runbook corrections.</li> </ul> <h2 id=track-h-advanced-identity-and-platform-security>Track H: Advanced identity and platform security<a class=headerlink href=#track-h-advanced-identity-and-platform-security title="Permanent link">&para;</a></h2> <h3 id=lab-047-spring-authorization-server>LAB-047: Spring Authorization Server<a class=headerlink href=#lab-047-spring-authorization-server title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Add an isolated authorization-server module with registered public, confidential, and machine clients.</li> <li><strong>Prove:</strong> Authorization Code with PKCE, Client Credentials, consent, scopes, issuer metadata, JWK publication, and refresh policy.</li> <li><strong>Attack case:</strong> Reject invalid redirect URIs, public-client secrets, code replay, unsupported grants, and unauthorized scopes.</li> <li><strong>Done when:</strong> Client registration, signing-key rotation, persistence, and deployment boundaries are documented and integration-tested.</li> </ul> <h3 id=lab-048-scim-identity-lifecycle>LAB-048: SCIM identity lifecycle<a class=headerlink href=#lab-048-scim-identity-lifecycle title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Add a SCIM-style provisioning adapter or test fixture for users, groups, activation, and deactivation.</li> <li><strong>Prove:</strong> Idempotent create/update, approved group mapping, deactivation, and removal of active sessions or access.</li> <li><strong>Attack case:</strong> Replayed events, stale group membership, unauthorized provisioning clients, and attribute over-posting cannot grant access.</li> <li><strong>Done when:</strong> Provisioning, just-in-time creation, deprovisioning, ownership, and reconciliation behavior are documented.</li> </ul> <h3 id=lab-049-active-directory-and-ldaps>LAB-049: Active Directory and LDAPS<a class=headerlink href=#lab-049-active-directory-and-ldaps title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Add an LDAPS-backed profile with certificate validation and Active Directory-compatible identity/group mapping.</li> <li><strong>Prove:</strong> Trusted TLS, successful bind, nested or approved group mapping, disabled user behavior, and connection failure handling.</li> <li><strong>Attack case:</strong> Plain LDAP, untrusted certificates, referral abuse, and unexpected groups cannot authenticate or escalate privileges.</li> <li><strong>Done when:</strong> Trust-store rotation, directory outage, search-base, timeout, and least-privilege bind guidance are tested.</li> </ul> <h3 id=lab-050-x509-and-certificate-bound-identity>LAB-050: X.509 and certificate-bound identity<a class=headerlink href=#lab-050-x509-and-certificate-bound-identity title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Authenticate a client certificate and map its verified identity to a constrained application principal.</li> <li><strong>Prove:</strong> Trusted chain, expected subject/SAN, authorized certificate, expiration, and revocation policy behavior.</li> <li><strong>Attack case:</strong> Self-signed, wrong-issuer, wrong-SAN, expired, and token-only callers fail on certificate-bound routes.</li> <li><strong>Done when:</strong> Proxy certificate forwarding, trust boundaries, issuance, revocation, and rotation are explicit.</li> </ul> <h3 id=lab-051-reactive-webflux-security>LAB-051: Reactive WebFlux security<a class=headerlink href=#lab-051-reactive-webflux-security title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Add a small WebFlux service using <code>SecurityWebFilterChain</code>, reactive method security, and a reactive resource server.</li> <li><strong>Prove:</strong> Anonymous, authenticated, insufficient-scope, method-level, CSRF/CORS where applicable, and Reactor-context propagation cases.</li> <li><strong>Attack case:</strong> Blocking identity lookup, lost context across operators, and untrusted forwarded identity cannot bypass authorization.</li> <li><strong>Done when:</strong> Servlet and reactive security lifecycles are compared with executable tests.</li> </ul> <h3 id=lab-052-spring-cloud-gateway-token-relay>LAB-052: Spring Cloud Gateway token relay<a class=headerlink href=#lab-052-spring-cloud-gateway-token-relay title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Add an isolated gateway that authenticates users and relays or exchanges tokens only to approved downstream routes.</li> <li><strong>Prove:</strong> Route authorization, audience/scope preservation, header sanitization, timeout, logout, and downstream denial behavior.</li> <li><strong>Attack case:</strong> Clients cannot inject identity headers, choose arbitrary token audiences, or relay tokens to unintended hosts.</li> <li><strong>Done when:</strong> Gateway versus downstream authorization responsibilities and failure policies are tested.</li> </ul> <h3 id=lab-053-external-authorization-policy>LAB-053: External authorization policy<a class=headerlink href=#lab-053-external-authorization-policy title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Separate a policy decision point from application policy enforcement for one tenant/object decision.</li> <li><strong>Prove:</strong> Allow, deny, missing attributes, policy version change, timeout, and cache invalidation behavior.</li> <li><strong>Attack case:</strong> Stale cached allows, client-supplied attributes, policy outage, and decision tampering fail according to policy.</li> <li><strong>Done when:</strong> Local method rules versus external policy trade-offs, auditability, and fail-closed boundaries are documented.</li> </ul> <h3 id=lab-054-multi-tenant-federation>LAB-054: Multi-tenant federation<a class=headerlink href=#lab-054-multi-tenant-federation title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Resolve trusted tenant-specific OIDC issuers or SAML relying-party registrations from server-controlled configuration.</li> <li><strong>Prove:</strong> Two valid tenants, tenant-specific authorities/keys, unknown tenant, tenant removal, and configuration rotation.</li> <li><strong>Attack case:</strong> Host, path, email-domain, or token-controlled issuer input cannot select an arbitrary metadata/JWK endpoint or cross tenant caches.</li> <li><strong>Done when:</strong> Tenant discovery, onboarding, offboarding, data/cache isolation, and incident containment are integration-tested.</li> </ul> <h3 id=lab-055-kafka-identity-and-authorization>LAB-055: Kafka identity and authorization<a class=headerlink href=#lab-055-kafka-identity-and-authorization title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Secure a broker-backed producer and consumer with workload identity, topic ACLs, schema validation, and tenant-aware message handling.</li> <li><strong>Prove:</strong> Authorized produce/consume, denied topic, identity rotation, dead-letter handling, and auditable correlation.</li> <li><strong>Attack case:</strong> Forged headers, replayed messages, oversized payloads, and cross-tenant events cannot impersonate or escape isolation.</li> <li><strong>Done when:</strong> Broker ACLs, application authorization, idempotency, replay policy, and secret rotation are distinct and tested.</li> </ul> <h3 id=lab-056-build-supply-chain-and-sbom>LAB-056: Build supply chain and SBOM<a class=headerlink href=#lab-056-build-supply-chain-and-sbom title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Add Gradle dependency locking/verification, an SBOM, vulnerability scanning, and signed or attestable build output.</li> <li><strong>Prove:</strong> Reproducible dependency resolution, approved checksum changes, SBOM generation, and CI failure on a controlled policy violation.</li> <li><strong>Attack case:</strong> Dependency substitution, mutable versions, leaked CI credentials, and untrusted pull-request publishing are prevented.</li> <li><strong>Done when:</strong> Upgrade, exception, provenance, artifact signing, and emergency patch procedures are documented.</li> </ul> <h3 id=lab-057-data-protection-and-safe-diagnostics>LAB-057: Data protection and safe diagnostics<a class=headerlink href=#lab-057-data-protection-and-safe-diagnostics title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Classify sensitive fields, apply envelope or field-level encryption to one record, and add centralized log redaction.</li> <li><strong>Prove:</strong> Authorized decrypt, unauthorized denial, key rotation, backup/restore behavior, and redacted HTTP/security diagnostics.</li> <li><strong>Attack case:</strong> Tokens, assertions, cookies, credentials, private keys, and sensitive identity data cannot enter logs, caches, or error responses.</li> <li><strong>Done when:</strong> Key ownership, retention, deletion, backup encryption, and privacy-safe troubleshooting are tested.</li> </ul> <h3 id=lab-058-api-and-proxy-abuse-defenses>LAB-058: API and proxy abuse defenses<a class=headerlink href=#lab-058-api-and-proxy-abuse-defenses title="Permanent link">&para;</a></h3> <ul> <li><strong>Build:</strong> Add bounded request/body/upload handling, trusted forwarded-header configuration, SSRF controls, redirect allow lists, and ownership-aware idempotency.</li> <li><strong>Prove:</strong> Valid proxy traffic and normal payloads succeed while limits produce stable, observable errors.</li> <li><strong>Attack case:</strong> Host-header poisoning, open redirect, SSRF, mass assignment, oversized payload, malicious upload, and stolen idempotency key fail safely.</li> <li><strong>Done when:</strong> Application, gateway, ingress, and service-mesh responsibilities are documented with negative integration tests.</li> </ul> <h2 id=optional-specialist-extensions>Optional specialist extensions<a class=headerlink href=#optional-specialist-extensions title="Permanent link">&para;</a></h2> <p>After LAB-058, add focused labs only when relevant to the target environment: Kerberos/SPNEGO, OAuth Device Authorization Grant, CIBA, PAR/JAR/JARM, DPoP, certificate-bound OAuth tokens, financial-grade API profiles, RSocket security, and cloud-provider workload identity.</p> <h2 id=session-handoff-template>Session handoff template<a class=headerlink href=#session-handoff-template title="Permanent link">&para;</a></h2> <p>At the end of each session, record:</p> <div class="language-text highlight"><pre><span></span><code><span id=__span-0-1><a id=__codelineno-0-1 name=__codelineno-0-1 href=#__codelineno-0-1></a>Lab:
+</span><span id=__span-0-2><a id=__codelineno-0-2 name=__codelineno-0-2 href=#__codelineno-0-2></a>Status: Planned | Theory | Implemented | Verified | Operational
+</span><span id=__span-0-3><a id=__codelineno-0-3 name=__codelineno-0-3 href=#__codelineno-0-3></a>Implemented:
+</span><span id=__span-0-4><a id=__codelineno-0-4 name=__codelineno-0-4 href=#__codelineno-0-4></a>Tests added:
+</span><span id=__span-0-5><a id=__codelineno-0-5 name=__codelineno-0-5 href=#__codelineno-0-5></a>Commands run:
+</span><span id=__span-0-6><a id=__codelineno-0-6 name=__codelineno-0-6 href=#__codelineno-0-6></a>Security behavior proved:
+</span><span id=__span-0-7><a id=__codelineno-0-7 name=__codelineno-0-7 href=#__codelineno-0-7></a>Known limitations:
+</span><span id=__span-0-8><a id=__codelineno-0-8 name=__codelineno-0-8 href=#__codelineno-0-8></a>Documentation updated:
+</span><span id=__span-0-9><a id=__codelineno-0-9 name=__codelineno-0-9 href=#__codelineno-0-9></a>Next lab:
+</span></code></pre></div><div id=quiz-progress-sidebar aria-label="Quiz Progress" style="display: none;"> <!-- mkdocs-quiz progress sidebar (desktop) --> <label class=md-nav__title> <span class="md-nav__icon md-icon"></span> Quiz Progress </label> <ul class=md-nav__list data-md-component=quiz-progress> <li class=md-nav__item> <div class=md-nav__link> <span class=md-ellipsis> Answered: <span class=quiz-progress-answered>0</span> / <span class=quiz-progress-total>0</span> (<span class=quiz-progress-answered-percentage>0%</span>) </span> </div> </li> <li class=md-nav__item> <div class=md-nav__link> <div class=quiz-progress-bar> <div class=quiz-progress-bar-incorrect style="width: 0%"></div> <div class=quiz-progress-bar-correct style="width: 0%"></div> </div> </div> </li> <li class=md-nav__item> <div class="md-nav__link quiz-correct-reset"> <span class=md-ellipsis> Correct: <span class=quiz-progress-score>0</span> / <span class=quiz-progress-score-total>0</span> (<span class=quiz-progress-score-percentage>0%</span>) </span> <a href=# class=quiz-reset-all-link style="color: var(--md-primary-fg-color); text-decoration: none;"> Reset </a> </div> </li> </ul> </div> <nav id=quiz-progress-mobile class="quiz-progress-mobile md-nav" aria-label="Quiz Progress" style="display: none;"> <!-- mkdocs-quiz progress sidebar (mobile) --> <div class=quiz-progress-bar> <div class=quiz-progress-bar-incorrect style="width: 0%"></div> <div class=quiz-progress-bar-correct style="width: 0%"></div> </div> <div data-md-component=quiz-progress> <div class=quiz-correct-reset> <span class=md-ellipsis> Answered: <span class=quiz-progress-answered>0</span> / <span class=quiz-progress-total>0</span> </span> <span class=md-ellipsis> Correct: <span class=quiz-progress-score>0</span> / <span class=quiz-progress-score-total>0</span> </span> <a href=# class=quiz-reset-all-link style="color: var(--md-primary-fg-color); text-decoration: none;"> Reset </a> </div> </div> </nav><style type=text/css>.quiz {
+  border: 1px solid black;
+  padding: 1rem;
+  margin: 1rem 0;
+  position: relative;
+}
+/* Set margin-top of first quiz child (skip the header link) */
+.quiz > .quiz-question:first-of-type {
+  margin-top: 0;
+}
+/* Remove top margin from first element inside quiz-question */
+.quiz-question > *:first-child {
+  margin-top: 0;
+}
+.quiz .hidden {
+  display: none;
+}
+
+.quiz form button {
+  background-color: var(--md-primary-fg-color);
+  border: none;
+  color: var(--md-primary-bg-color);
+  padding: 0.5rem 1rem;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition:
+    opacity 0.2s,
+    background-color 0.2s;
+}
+
+.quiz form button:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.quiz form button:disabled {
+  background-color: var(--md-default-fg-color--lighter, #ccc);
+  color: var(--md-default-fg-color--light, #666);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.wrong label,
+.wrong label * {
+  color: #dc3545;
+  text-decoration: line-through;
+}
+.correct label,
+.correct label * {
+  color: #198754;
+  font-weight: bold;
+}
+
+fieldset {
+  border: none;
+  display: flex;
+  flex-direction: column;
+}
+fieldset input {
+  margin: 0 10px;
+}
+fieldset label {
+  margin: 0 10px;
+}
+
+input[type="radio"].correct {
+  accent-color: #198754;
+}
+input[type="radio"].wrong {
+  accent-color: #dc3545;
+}
+.content {
+  margin: 10px;
+}
+
+/* Quiz feedback container */
+.quiz-feedback {
+  margin: 0.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Individual feedback box (one per answer) */
+.quiz-feedback-item {
+  position: relative;
+  padding: 0.75rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.quiz-feedback-item.correct {
+  background-color: #d1e7dd;
+  border: 1px solid #a3cfbb;
+  color: #198754;
+}
+
+.quiz-feedback-item.incorrect {
+  background-color: #f8d7da;
+  border: 1px solid #f1aeb5;
+  color: #dc3545;
+}
+
+[data-md-color-scheme="slate"] .quiz-feedback-item.correct {
+  background-color: #051b11;
+  border: 1px solid #0f5132;
+}
+
+[data-md-color-scheme="slate"] .quiz-feedback-item.incorrect {
+  background-color: #2c0b0e;
+  border: 1px solid #842029;
+}
+
+/* Answer label badge overlapping top-left of feedback box */
+.quiz-feedback-badge {
+  position: absolute;
+  top: -0.55rem;
+  left: 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  max-width: 14rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quiz-feedback-item.correct .quiz-feedback-badge {
+  background-color: #a3cfbb;
+  color: #0f5132;
+}
+
+.quiz-feedback-item.incorrect .quiz-feedback-badge {
+  background-color: #f1aeb5;
+  color: #842029;
+}
+
+[data-md-color-scheme="slate"] .quiz-feedback-item.correct .quiz-feedback-badge {
+  background-color: #0f5132;
+  color: #a3cfbb;
+}
+
+[data-md-color-scheme="slate"] .quiz-feedback-item.incorrect .quiz-feedback-badge {
+  background-color: #842029;
+  color: #f1aeb5;
+}
+
+/* When badge is present, add top padding to prevent content overlap */
+.quiz-feedback-badge + .quiz-feedback-item-content {
+  margin-top: 0.25rem;
+}
+
+/* Quiz header link styling - positioned in top right corner */
+.quiz-header-link {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  opacity: 0;
+  font-size: 1rem;
+  text-decoration: none;
+  color: var(--md-default-fg-color--light, #888);
+  transition: opacity 0.2s;
+  padding: 0.25rem 0.5rem;
+}
+.quiz:hover .quiz-header-link,
+.quiz-header-link:focus-visible {
+  opacity: 1;
+}
+
+/* Focus indicators for keyboard navigation */
+.quiz input:focus-visible {
+  outline: 2px solid var(--md-accent-fg-color, #448aff);
+  outline-offset: 2px;
+}
+
+/* Quiz number header styling */
+.quiz-number {
+  margin-top: 0 !important;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+/* Quiz Progress Sidebar - Progress bar styling */
+/* Most styling comes from Material's .md-nav classes */
+#quiz-progress-sidebar {
+  margin-top: 1.5rem;
+}
+/* if config progress_sidebar_position is top, need top padding instead of bottom */
+.md-nav--secondary > #quiz-progress-sidebar:first-child {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+@media screen and (min-width: 59.9375em) {
+  #quiz-progress-sidebar .md-nav__list {
+    border-left: 3px solid var(--md-default-fg-color--lightest);
+  }
+}
+
+.quiz-progress-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--md-default-fg-color--lightest, rgba(0, 0, 0, 0.07));
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 0.2rem 0;
+  display: flex;
+}
+
+.quiz-progress-bar-incorrect {
+  height: 100%;
+  background: rgba(244, 67, 54, 0.8);
+  transition: width 0.3s ease;
+}
+
+.quiz-progress-bar-correct {
+  height: 100%;
+  background: #4caf50;
+  transition: width 0.3s ease;
+}
+
+.quiz-correct-reset {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Mobile Quiz Progress Tracker */
+/* Shows under navbar on mobile, hidden on desktop */
+.quiz-progress-mobile {
+  display: none; /* Hidden by default on desktop */
+  background-color: var(--md-default-bg-color);
+  border-bottom: 1px solid var(--md-default-fg-color--lightest, rgba(0, 0, 0, 0.07));
+  padding: 0.8rem;
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+  position: sticky;
+  top: 48px;
+  z-index: 3; /* Below Material header (z-index: 4) but above page content */
+}
+
+/* Show the mobile tracker only when the secondary sidebar (and its progress
+   widget) is hidden. Material reveals .md-sidebar--secondary at min-width: 60em,
+   so the mobile tracker must stop at 60em - 1px to avoid showing both at once. */
+@media screen and (max-width: 59.9375em) {
+  .quiz-progress-mobile {
+    display: block;
+  }
+}
+
+/* Mobile tracker styling adjustments */
+.quiz-progress-mobile .md-nav__list {
+  padding: 0;
+  margin: 0;
+  max-width: 61rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 0.8rem;
+  padding-right: 0.8rem;
+}
+
+.quiz-progress-mobile .md-nav__item {
+  margin: 0.3rem 0;
+}
+
+.quiz-progress-mobile .md-nav__link {
+  padding: 0.2rem 0;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.quiz-progress-mobile .quiz-progress-bar {
+  margin: 0.3rem 0;
+}
+
+.quiz-progress-mobile .md-ellipsis {
+  flex: 1;
+}
+
+/* Quiz Intro */
+.quiz-intro {
+  margin: 1rem 0;
+}
+
+.quiz-intro p {
+  margin: 0 0 0.5rem 0;
+}
+
+/* Quiz Results End Screen */
+.quiz-results {
+  border: 1px solid black;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  background-color: var(--md-default-bg-color);
+  transition: all 0.3s ease;
+}
+
+/* Progress state - subtle styling */
+.quiz-results-progress {
+  text-align: center;
+  color: var(--md-default-fg-color--light);
+}
+
+.quiz-results-progress h3 {
+  margin-top: 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--md-default-fg-color);
+}
+
+.quiz-results-stats,
+.quiz-results-correct-stats {
+  font-size: 0.95rem;
+  margin: 0.5rem 0;
+}
+
+.quiz-results-answered,
+.quiz-results-correct,
+.quiz-results-total,
+.quiz-results-percentage {
+  font-weight: 600;
+  color: var(--md-default-fg-color);
+}
+
+/* Complete state - bold and prominent styling */
+.quiz-results-complete {
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.quiz-results-complete.hidden {
+  display: none;
+}
+
+.quiz-results-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 1.5rem 0;
+  color: var(--md-default-fg-color);
+}
+
+.quiz-results-score-display {
+  margin: 1.5rem 0;
+}
+
+.quiz-results-score-value {
+  font-size: 4rem;
+  font-weight: 800;
+  line-height: 1;
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+/* Score color coding */
+.quiz-results-score-excellent {
+  color: #198754;
+  background-color: rgba(25, 135, 84, 0.1);
+}
+
+.quiz-results-score-good {
+  color: #28a745;
+  background-color: rgba(40, 167, 69, 0.1);
+}
+
+.quiz-results-score-average {
+  color: #ffc107;
+  background-color: rgba(255, 193, 7, 0.1);
+}
+
+.quiz-results-score-poor {
+  color: #fd7e14;
+  background-color: rgba(253, 126, 20, 0.1);
+}
+
+.quiz-results-score-fail {
+  color: #dc3545;
+  background-color: rgba(220, 53, 69, 0.1);
+}
+
+.quiz-results-message {
+  font-size: 1.3rem;
+  font-weight: 500;
+  margin: 1rem 0 2rem 0;
+  color: var(--md-default-fg-color);
+}
+
+/* Dark mode adjustments */
+[data-md-color-scheme="slate"] .quiz-results-score-excellent {
+  color: #4caf50;
+  background-color: rgba(76, 175, 80, 0.15);
+}
+
+[data-md-color-scheme="slate"] .quiz-results-score-good {
+  color: #66bb6a;
+  background-color: rgba(102, 187, 106, 0.15);
+}
+
+[data-md-color-scheme="slate"] .quiz-results-score-average {
+  color: #ffeb3b;
+  background-color: rgba(255, 235, 59, 0.15);
+}
+
+[data-md-color-scheme="slate"] .quiz-results-score-poor {
+  color: #ff9800;
+  background-color: rgba(255, 152, 0, 0.15);
+}
+
+[data-md-color-scheme="slate"] .quiz-results-score-fail {
+  color: #f44336;
+  background-color: rgba(244, 67, 54, 0.15);
+}
+
+/* Fill-in-the-blank quiz styles */
+.quiz-blank-input {
+  border: none;
+  border-bottom: 2px solid var(--md-default-fg-color--light, #999);
+  background-color: transparent;
+  padding: 0.2rem 0.5rem;
+  font-size: inherit;
+  font-family: inherit;
+  color: var(--md-default-fg-color);
+  transition:
+    border-color 0.2s,
+    background-color 0.2s;
+  /* min-width is set via inline style based on answer length */
+}
+
+.quiz-blank-input:focus {
+  border-bottom-color: var(--md-primary-fg-color, #1976d2);
+  background-color: var(--md-default-bg-color--light, rgba(0, 0, 0, 0.02));
+}
+
+.quiz-blank-input.correct {
+  border-bottom-color: #198754;
+  background-color: rgba(25, 135, 84, 0.1);
+  color: #198754;
+}
+
+.quiz-blank-input.wrong {
+  border-bottom-color: #dc3545;
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+.quiz-blank-input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Dark mode adjustments for fill-in-the-blank */
+[data-md-color-scheme="slate"] .quiz-blank-input {
+  border-bottom-color: rgba(255, 255, 255, 0.3);
+}
+
+[data-md-color-scheme="slate"] .quiz-blank-input:focus {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-md-color-scheme="slate"] .quiz-blank-input.correct {
+  border-bottom-color: #4caf50;
+  background-color: rgba(76, 175, 80, 0.15);
+  color: #4caf50;
+}
+
+[data-md-color-scheme="slate"] .quiz-blank-input.wrong {
+  border-bottom-color: #f44336;
+  background-color: rgba(244, 67, 54, 0.15);
+  color: #f44336;
+}
+</style><script type=text/javascript>
+window.mkdocsQuizTranslations = {};
+</script><script type=text/javascript>
+window.mkdocsQuizConfig = {
+  confetti: false,
+  showProgress: true,
+  progressSidebarPosition: "top"
+};
+</script><script type=text/javascript defer>// Wrap everything in an IIFE to avoid variable redeclaration issues
+// when Material theme instant navigation reloads the page
+(function () {
+  // Constants
+  const STORAGE_KEY_PREFIX = "quiz_progress_";
+
+  // Translation helper function
+  function t(key, params = {}) {
+    let text = window.mkdocsQuizTranslations?.[key] || key;
+    // Simple template replacement for {n} and {key} style placeholders
+    return text.replace(/{(\w+)}/g, (_, k) => (params[k] !== undefined ? params[k] : `{${k}}`));
+  }
+
+  // Confetti instance (will be initialized if enabled)
+  let jsConfetti = null;
+
+  // Store event listeners for cleanup
+  let eventListeners = [];
+
+  // Initialize confetti if enabled
+  if (window.mkdocsQuizConfig && window.mkdocsQuizConfig.confetti) {
+    if (typeof JSConfetti !== "undefined") {
+      jsConfetti = new JSConfetti();
+    }
+  }
+
+  // Function to move quiz progress sidebar into TOC sidebar
+  // This needs to run on every page load for Material instant navigation
+  function repositionSidebar() {
+    // Use requestAnimationFrame to ensure DOM is ready
+    requestAnimationFrame(() => {
+      const sidebar = document.getElementById("quiz-progress-sidebar");
+      const tocSidebar = document.querySelector(".md-sidebar--secondary .md-sidebar__inner .md-nav--secondary");
+
+      if (sidebar && tocSidebar) {
+        // Check if sidebar is already in the correct position
+        // by seeing if it's already a child of tocSidebar
+        if (!tocSidebar.contains(sidebar)) {
+          // Get position from config (default: "top")
+          const position =
+            window.mkdocsQuizConfig && window.mkdocsQuizConfig.progressSidebarPosition
+              ? window.mkdocsQuizConfig.progressSidebarPosition
+              : "top";
+
+          // Move sidebar based on configured position
+          if (position === "bottom") {
+            // Append to the end (below TOC)
+            tocSidebar.appendChild(sidebar);
+          } else {
+            // Default: insert at the top (above TOC)
+            if (tocSidebar.firstChild) {
+              tocSidebar.insertBefore(sidebar, tocSidebar.firstChild);
+            } else {
+              tocSidebar.appendChild(sidebar);
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // Cleanup function to remove event listeners and prevent memory leaks
+  function cleanup() {
+    eventListeners.forEach(({ element, event, handler }) => {
+      element.removeEventListener(event, handler);
+    });
+    eventListeners = [];
+  }
+
+  // Helper function to add tracked event listeners
+  function addTrackedEventListener(element, event, handler) {
+    element.addEventListener(event, handler);
+    eventListeners.push({ element, event, handler });
+  }
+
+  // Global quiz tracker
+  const quizTracker = {
+    quizzes: {},
+    totalQuizzes: 0,
+    answeredQuizzes: 0,
+    correctQuizzes: 0,
+
+    init: function () {
+      this.totalQuizzes = document.querySelectorAll(".quiz").length;
+      this.loadFromStorage();
+      // Initialize wasCompleted based on restored state to prevent confetti on page load
+      // Only fire confetti when completing quizzes in the current session, not from localStorage
+      const progress = this.getProgress();
+      this.wasCompleted = progress.answered === progress.total && progress.total > 0;
+      this.updateDisplay();
+    },
+
+    markQuiz: function (quizId, isCorrect, selectedValues = []) {
+      const wasAnswered = !!this.quizzes[quizId];
+      const wasCorrect = this.wasPreviouslyCorrect(quizId);
+
+      if (!wasAnswered) {
+        this.answeredQuizzes++;
+      }
+
+      this.quizzes[quizId] = {
+        answered: true,
+        correct: isCorrect,
+        selectedValues: selectedValues,
+      };
+
+      if (isCorrect && !wasCorrect) {
+        this.correctQuizzes++;
+      } else if (!isCorrect && wasCorrect) {
+        this.correctQuizzes--;
+      }
+
+      this.saveToStorage();
+      this.updateDisplay();
+    },
+
+    wasPreviouslyCorrect: function (quizId) {
+      return this.quizzes[quizId] && this.quizzes[quizId].correct;
+    },
+
+    resetQuiz: function (quizId) {
+      if (this.quizzes[quizId]) {
+        if (this.quizzes[quizId].correct) {
+          this.correctQuizzes--;
+        }
+        this.answeredQuizzes--;
+        delete this.quizzes[quizId];
+        this.saveToStorage();
+        this.updateDisplay();
+      }
+    },
+
+    resetAllQuiz: function () {
+      this.quizzes = {};
+      this.answeredQuizzes = 0;
+      this.correctQuizzes = 0;
+      this.saveToStorage();
+      this.updateDisplay();
+
+      // Reset all quiz forms on the page
+      document.querySelectorAll(".quiz").forEach((quiz) => {
+        const form = quiz.querySelector("form");
+        const fieldset = form.querySelector("fieldset");
+        const submitButton = form.querySelector('button[type="submit"]');
+        const resetButton = form.querySelector(".quiz-reset-button");
+        const feedbackDiv = form.querySelector(".quiz-feedback");
+        const section = quiz.querySelector("section");
+
+        // Clear all selections
+        const allInputs = fieldset.querySelectorAll('input[name="answer"]');
+        allInputs.forEach((input) => {
+          input.checked = false;
+          input.disabled = false;
+        });
+
+        // Reset colors
+        resetFieldset(fieldset);
+
+        // Hide content section
+        if (section) {
+          section.classList.add("hidden");
+        }
+
+        // Hide feedback container
+        feedbackDiv.classList.add("hidden");
+        feedbackDiv.innerHTML = "";
+
+        // Show submit button, hide reset button
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.classList.remove("hidden");
+        }
+        if (resetButton) {
+          resetButton.classList.add("hidden");
+        }
+      });
+    },
+
+    getProgress: function () {
+      return {
+        total: this.totalQuizzes,
+        answered: this.answeredQuizzes,
+        correct: this.correctQuizzes,
+        percentage: this.totalQuizzes > 0 ? Math.round((this.answeredQuizzes / this.totalQuizzes) * 100) : 0,
+        score: this.totalQuizzes > 0 ? Math.round((this.correctQuizzes / this.totalQuizzes) * 100) : 0,
+      };
+    },
+
+    saveToStorage: function () {
+      try {
+        const pageKey = STORAGE_KEY_PREFIX + window.location.pathname;
+        const data = JSON.stringify(this.quizzes);
+
+        // Check size limit (50KB max to prevent quota issues)
+        if (data.length > 50000) {
+          console.warn("Quiz progress data exceeds size limit, not saving to localStorage");
+          this.showStorageWarning("Quiz progress is too large to save");
+          return;
+        }
+
+        localStorage.setItem(pageKey, data);
+      } catch (e) {
+        // Handle quota exceeded or localStorage disabled
+        console.error("Failed to save quiz progress:", e);
+        this.showStorageWarning(
+          "Unable to save quiz progress. Your browser may have storage disabled or quota exceeded.",
+        );
+      }
+    },
+
+    loadFromStorage: function () {
+      try {
+        const pageKey = STORAGE_KEY_PREFIX + window.location.pathname;
+        const stored = localStorage.getItem(pageKey);
+
+        if (stored) {
+          // Validate size before parsing (50KB max)
+          if (stored.length > 50000) {
+            console.warn("Stored quiz data exceeds size limit, clearing corrupted data");
+            localStorage.removeItem(pageKey);
+            return;
+          }
+
+          const parsed = JSON.parse(stored);
+
+          // Validate structure: should be an object
+          if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+            console.warn("Invalid quiz data structure, clearing corrupted data");
+            localStorage.removeItem(pageKey);
+            return;
+          }
+
+          this.quizzes = parsed;
+
+          // Recalculate counts and validate quiz data structure
+          this.answeredQuizzes = 0;
+          this.correctQuizzes = 0;
+          for (let key in this.quizzes) {
+            const quiz = this.quizzes[key];
+            // Validate each quiz entry has expected structure
+            if (typeof quiz !== "object" || typeof quiz.answered !== "boolean" || typeof quiz.correct !== "boolean") {
+              console.warn("Invalid quiz entry structure, clearing corrupted data");
+              this.quizzes = {};
+              localStorage.removeItem(pageKey);
+              return;
+            }
+
+            if (quiz.answered) {
+              this.answeredQuizzes++;
+            }
+            if (quiz.correct) {
+              this.correctQuizzes++;
+            }
+          }
+        }
+      } catch (e) {
+        // Handle parsing errors or localStorage unavailable
+        console.error("Failed to load quiz progress:", e);
+        const pageKey = STORAGE_KEY_PREFIX + window.location.pathname;
+        try {
+          localStorage.removeItem(pageKey); // Clear corrupted data
+        } catch (cleanupError) {
+          // localStorage might be completely unavailable
+        }
+      }
+    },
+
+    updateDisplay: function () {
+      const progress = this.getProgress();
+      const wasComplete = this.wasCompleted;
+      const isComplete = progress.answered === progress.total && progress.total > 0;
+
+      // Dispatch custom event for sidebar/other UI components
+      window.dispatchEvent(
+        new CustomEvent("quizProgressUpdate", {
+          detail: progress,
+        }),
+      );
+      // Update sidebar if it exists
+      this.updateSidebar();
+      // Update results div if it exists
+      this.updateResultsDiv(progress, isComplete, wasComplete);
+
+      // Track completion state
+      this.wasCompleted = isComplete;
+    },
+
+    updateResultsDiv: function (progress, isComplete, wasComplete) {
+      const resultsDiv = document.getElementById("quiz-results");
+      if (!resultsDiv) return;
+
+      // Update progress section
+      const answeredEl = resultsDiv.querySelector(".quiz-results-answered");
+      const totalEl = resultsDiv.querySelector(".quiz-results-total");
+      const percentageEl = resultsDiv.querySelector(".quiz-results-percentage");
+      const correctEl = resultsDiv.querySelector(".quiz-results-correct");
+
+      if (answeredEl) answeredEl.textContent = progress.answered;
+      if (totalEl) totalEl.textContent = progress.total;
+      if (percentageEl) percentageEl.textContent = progress.percentage + "%";
+      if (correctEl) correctEl.textContent = progress.correct;
+
+      // Handle completion state
+      const progressSection = resultsDiv.querySelector(".quiz-results-progress");
+      const completeSection = resultsDiv.querySelector(".quiz-results-complete");
+
+      if (isComplete) {
+        // Hide progress, show complete
+        if (progressSection) progressSection.classList.add("hidden");
+        if (completeSection) {
+          completeSection.classList.remove("hidden");
+
+          // Update score display
+          const scoreValue = resultsDiv.querySelector(".quiz-results-score-value");
+          const scoreMessage = resultsDiv.querySelector(".quiz-results-message");
+
+          if (scoreValue) {
+            scoreValue.textContent = progress.score + "%";
+
+            // Remove all score classes
+            scoreValue.classList.remove(
+              "quiz-results-score-excellent",
+              "quiz-results-score-good",
+              "quiz-results-score-average",
+              "quiz-results-score-poor",
+              "quiz-results-score-fail",
+            );
+
+            // Add appropriate score class and message
+            let message = "";
+            if (progress.score >= 90) {
+              scoreValue.classList.add("quiz-results-score-excellent");
+              message = t("Outstanding! You aced it!");
+            } else if (progress.score >= 75) {
+              scoreValue.classList.add("quiz-results-score-good");
+              message = t("Great job! You really know your stuff!");
+            } else if (progress.score >= 60) {
+              scoreValue.classList.add("quiz-results-score-average");
+              message = t("Good effort! Keep learning!");
+            } else if (progress.score >= 40) {
+              scoreValue.classList.add("quiz-results-score-poor");
+              message = t("Not bad, but there's room for improvement!");
+            } else {
+              scoreValue.classList.add("quiz-results-score-fail");
+              message = t("Better luck next time! Keep trying!");
+            }
+
+            if (scoreMessage) scoreMessage.textContent = message;
+          }
+
+          // Trigger confetti and scroll on first completion
+          if (!wasComplete) {
+            // Scroll to results div
+            resultsDiv.scrollIntoView({ behavior: "smooth", block: "center" });
+
+            // Fire confetti if enabled and score is good
+            if (jsConfetti && progress.score >= 10) {
+              setTimeout(() => {
+                jsConfetti.addConfetti();
+              }, 500);
+            }
+          }
+        }
+      } else {
+        // Show progress, hide complete
+        if (progressSection) progressSection.classList.remove("hidden");
+        if (completeSection) completeSection.classList.add("hidden");
+      }
+    },
+
+    updateSidebar: function () {
+      // Update both desktop and mobile sidebars
+      const sidebars = [
+        document.getElementById("quiz-progress-sidebar"),
+        document.getElementById("quiz-progress-mobile"),
+      ];
+
+      sidebars.forEach((sidebar) => {
+        if (sidebar) {
+          const progress = this.getProgress();
+
+          // Update answered count
+          const answeredEl = sidebar.querySelector(".quiz-progress-answered");
+          if (answeredEl) {
+            answeredEl.textContent = progress.answered;
+          }
+
+          // Update answered percentage - desktop only
+          const answeredPercentageEl = sidebar.querySelector(".quiz-progress-answered-percentage");
+          if (answeredPercentageEl && sidebar.id == "quiz-progress-sidebar") {
+            answeredPercentageEl.textContent = progress.percentage + "%";
+          }
+
+          // Update all .quiz-progress-total elements
+          const totalElements = sidebar.querySelectorAll(".quiz-progress-total");
+          totalElements.forEach((el) => {
+            el.textContent = progress.total;
+          });
+
+          // Update correct count
+          const scoreEl = sidebar.querySelector(".quiz-progress-score");
+          if (scoreEl) {
+            scoreEl.textContent = progress.correct;
+          }
+
+          // Update correct denominator (answered count)
+          const scoreTotalEl = sidebar.querySelector(".quiz-progress-score-total");
+          if (scoreTotalEl) {
+            scoreTotalEl.textContent = progress.answered;
+          }
+
+          // Update correct percentage (based on answered quizzes, not total) - desktop only
+          const scorePercentageEl = sidebar.querySelector(".quiz-progress-score-percentage");
+          if (scorePercentageEl && sidebar.id == "quiz-progress-sidebar") {
+            const scorePercentage =
+              progress.answered > 0 ? Math.round((progress.correct / progress.answered) * 100) : 0;
+            scorePercentageEl.textContent = scorePercentage + "%";
+          }
+
+          // Update progress bars (incorrect and correct)
+          const correctBar = sidebar.querySelector(".quiz-progress-bar-correct");
+          const incorrectBar = sidebar.querySelector(".quiz-progress-bar-incorrect");
+
+          if (correctBar && incorrectBar) {
+            const incorrectCount = progress.answered - progress.correct;
+            const correctPercentage = progress.total > 0 ? (progress.correct / progress.total) * 100 : 0;
+            const incorrectPercentage = progress.total > 0 ? (incorrectCount / progress.total) * 100 : 0;
+
+            incorrectBar.style.width = incorrectPercentage + "%";
+            correctBar.style.width = correctPercentage + "%";
+          }
+        }
+      });
+    },
+
+    createSidebar: function () {
+      // Check if progress tracking is enabled
+      const showProgress = window.mkdocsQuizConfig && window.mkdocsQuizConfig.showProgress !== false;
+
+      // Only show sidebar if progress tracking is enabled and there are quizzes
+      if (!showProgress || this.totalQuizzes === 0) {
+        return;
+      }
+
+      // Show both desktop and mobile sidebars
+      const desktopSidebar = document.getElementById("quiz-progress-sidebar");
+      const mobileSidebar = document.getElementById("quiz-progress-mobile");
+
+      if (desktopSidebar) {
+        desktopSidebar.style.display = "";
+      }
+      if (mobileSidebar) {
+        mobileSidebar.style.display = "";
+      }
+
+      // Initialize reset button event listeners
+      const resetLinks = document.querySelectorAll(".quiz-reset-all-link");
+      resetLinks.forEach((resetLink) => {
+        const handler = (e) => {
+          e.preventDefault();
+          if (confirm(t("Are you sure you want to reset the quiz? This will clear your progress."))) {
+            quizTracker.resetAllQuiz();
+          }
+        };
+        addTrackedEventListener(resetLink, "click", handler);
+      });
+
+      // Update the sidebar with initial values
+      this.updateSidebar();
+    },
+
+    showStorageWarning: function (message) {
+      // Show a warning banner in the progress tracker if it exists
+      const progressSidebar = document.getElementById("quiz-progress-sidebar");
+      if (progressSidebar) {
+        // Check if warning already exists
+        let warningEl = progressSidebar.querySelector(".quiz-storage-warning");
+        if (!warningEl) {
+          warningEl = document.createElement("div");
+          warningEl.className = "quiz-storage-warning";
+          warningEl.style.cssText =
+            "background: #fff3cd; color: #856404; padding: 8px; margin: 8px 0; border-radius: 4px; font-size: 12px; border: 1px solid #ffeaa7;";
+          progressSidebar.insertBefore(warningEl, progressSidebar.firstChild);
+        }
+        warningEl.textContent = message;
+      }
+    },
+  };
+
+  // Truncate text to a maximum length, adding ellipsis if needed
+  function truncateText(text, maxLength) {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength).trimEnd() + "\u2026";
+  }
+
+  // Collect feedback HTML from a NodeList of input elements.
+  // Returns an array of {label, html} objects (one per answer that has feedback).
+  function collectFeedbackFromNodeList(nodeList) {
+    var items = [];
+    nodeList.forEach(function (input) {
+      var fb = input.parentElement.querySelector(".answer-feedback");
+      if (fb && fb.innerHTML.trim()) {
+        var label = input.parentElement.querySelector("label");
+        var labelText = label ? label.textContent.trim() : "";
+        items.push({ label: labelText, html: fb.innerHTML });
+      }
+    });
+    return items;
+  }
+
+  // Try to collect feedback from selected inputs, falling back to correct inputs if configured.
+  // Returns an array of {label, html} objects.
+  function collectFeedbackForSelectedOrCorrect(fieldset, quiz) {
+    var items = collectFeedbackFromNodeList(fieldset.querySelectorAll('input[name="answer"]:checked'));
+    if (!items.length && quiz.hasAttribute("data-show-correct")) {
+      items = collectFeedbackFromNodeList(fieldset.querySelectorAll('input[name="answer"][data-correct="true"]'));
+    }
+    return items;
+  }
+
+  // Build feedback container HTML from an array of {label, html} items.
+  // Each item becomes its own styled feedback box with a badge showing the answer label.
+  function buildFeedbackHTML(items, cssClass) {
+    if (!items.length) return "";
+    var maxBadgeLen = 30;
+    var result = "";
+    items.forEach(function (item) {
+      var badge = "";
+      if (item.label) {
+        var escaped = item.label
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+        badge =
+          '<span class="quiz-feedback-badge" title="' + escaped + '">' + truncateText(escaped, maxBadgeLen) + "</span>";
+      }
+      result +=
+        '<div class="quiz-feedback-item ' +
+        cssClass +
+        '">' +
+        badge +
+        '<div class="quiz-feedback-item-content">' +
+        item.html +
+        "</div></div>";
+    });
+    return result;
+  }
+
+  // Wrap content in a single feedback item div with the given CSS class
+  function wrapFeedbackItem(cssClass, content) {
+    return (
+      '<div class="quiz-feedback-item ' +
+      cssClass +
+      '"><div class="quiz-feedback-item-content">' +
+      content +
+      "</div></div>"
+    );
+  }
+
+  // Get default feedback message based on submission correctness and retry status
+  function getDefaultFeedbackMessage(isCorrect, canRetry) {
+    if (isCorrect) return t("Correct answer!");
+    return canRetry ? t("Incorrect answer. Please try again.") : t("Incorrect answer.");
+  }
+
+  // Mark answer elements with correct/wrong classes based on selection and correctness
+  function markAnswers(selectedAnswers, correctAnswers, quiz, isCorrect) {
+    selectedAnswers.forEach((answer) => {
+      if (isCorrect) {
+        // All selected answers are correct (since it's multiple correct)
+        answer.parentElement.classList.add("correct");
+      } else {
+        // Mark selected wrong answers, keep correct ones highlighted
+        const isAnswerCorrect = answer.hasAttribute("data-correct");
+        answer.parentElement.classList.toggle("wrong", !isAnswerCorrect);
+        answer.parentElement.classList.toggle("correct", isAnswerCorrect);
+      }
+    });
+
+    // If show-correct is enabled, also highlight unselected correct answers on incorrect submission
+    if (!isCorrect && quiz.hasAttribute("data-show-correct")) {
+      correctAnswers.forEach((a) => a.parentElement.classList.add("correct"));
+    }
+  }
+
+  // Display feedback message and styling after quiz submission
+  function showFeedback(feedbackDiv, isCorrect, selectedAnswers, correctAnswers, fieldset, quiz) {
+    feedbackDiv.classList.remove("hidden");
+
+    // Collect per-answer feedback items
+    var cssClass = isCorrect ? "correct" : "incorrect";
+    var items = isCorrect
+      ? collectFeedbackForSelectedOrCorrect(fieldset, quiz)
+      : collectFeedbackFromNodeList(selectedAnswers);
+
+    var html = buildFeedbackHTML(items, cssClass);
+    if (html) {
+      feedbackDiv.innerHTML = html;
+    } else {
+      // No per-answer feedback — show a single default message box
+      var canRetry = !quiz.hasAttribute("data-disable-after-submit");
+      feedbackDiv.innerHTML = wrapFeedbackItem(cssClass, getDefaultFeedbackMessage(isCorrect, canRetry));
+    }
+  }
+
+  // Initialize results div reset button
+  function initializeResultsDiv() {
+    const resultsDiv = document.getElementById("quiz-results");
+    if (!resultsDiv) return;
+
+    const resetButton = resultsDiv.querySelector(".quiz-results-reset");
+    if (resetButton) {
+      const handler = () => {
+        if (confirm(t("Are you sure you want to reset the quiz? This will clear your progress."))) {
+          quizTracker.resetAllQuiz();
+        }
+      };
+      addTrackedEventListener(resetButton, "click", handler);
+    }
+  }
+
+  // Initialize intro reset buttons
+  function initializeIntroResetButtons() {
+    const introResetButtons = document.querySelectorAll(".quiz-intro-reset");
+    introResetButtons.forEach((button) => {
+      const handler = () => {
+        if (confirm(t("Are you sure you want to reset the quiz? This will clear your progress."))) {
+          quizTracker.resetAllQuiz();
+        }
+      };
+      addTrackedEventListener(button, "click", handler);
+    });
+  }
+
+  // Shuffle an array using Fisher-Yates algorithm
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  // Shuffle the answer elements in a fieldset
+  function shuffleAnswers(fieldset) {
+    const answerDivs = Array.from(fieldset.querySelectorAll(":scope > div"));
+    if (answerDivs.length <= 1) return;
+
+    // Shuffle the array of elements
+    shuffleArray(answerDivs);
+
+    // Re-append elements in shuffled order
+    answerDivs.forEach((div) => fieldset.appendChild(div));
+  }
+
+  // Initialize all quiz elements on the page
+  function initializeQuizzes() {
+    document.querySelectorAll(".quiz").forEach((quiz) => {
+      let form = quiz.querySelector("form");
+      let fieldset = form.querySelector("fieldset");
+      let submitButton = form.querySelector('button[type="submit"]');
+      let feedbackDiv = form.querySelector(".quiz-feedback");
+
+      // Shuffle answers if enabled (before any state restoration)
+      if (quiz.hasAttribute("data-shuffle-answers")) {
+        shuffleAnswers(fieldset);
+      }
+
+      // Get quiz ID from the quiz div itself
+      const quizId = quiz.id;
+
+      // Check if this is a fill-in-the-blank quiz
+      const isFillBlank = quiz.hasAttribute("data-quiz-type") && quiz.getAttribute("data-quiz-type") === "fill-blank";
+
+      // Prevent anchor link from triggering page navigation/reload
+      const headerLink = quiz.querySelector(".quiz-header-link");
+      if (headerLink) {
+        const handler = (e) => {
+          // Let the browser handle the anchor navigation normally
+          // This prevents Material themes from intercepting it as a page navigation
+          e.stopPropagation();
+        };
+        addTrackedEventListener(headerLink, "click", handler);
+      }
+
+      // Create reset button (initially hidden)
+      let resetButton = document.createElement("button");
+      resetButton.type = "button";
+      resetButton.className = "quiz-button quiz-reset-button hidden";
+      resetButton.textContent = t("Try Again");
+      if (submitButton) {
+        submitButton.parentNode.insertBefore(resetButton, submitButton.nextSibling);
+      } else {
+        form.appendChild(resetButton);
+      }
+
+      // Helper function to normalize answers (trim whitespace, case-insensitive)
+      function normalizeAnswer(answer) {
+        return answer.trim().toLowerCase();
+      }
+
+      // Restore quiz state from localStorage if available
+      if (quizId && quizTracker.quizzes[quizId]) {
+        const savedState = quizTracker.quizzes[quizId];
+        const section = quiz.querySelector("section");
+
+        if (isFillBlank) {
+          // Restore fill-in-the-blank quiz state
+          const blankInputs = quiz.querySelectorAll(".quiz-blank-input");
+
+          if (savedState.answered) {
+            // Restore input values based on saved values
+            if (savedState.selectedValues && savedState.selectedValues.length > 0) {
+              blankInputs.forEach((input, index) => {
+                if (savedState.selectedValues[index] !== undefined) {
+                  input.value = savedState.selectedValues[index];
+                }
+              });
+            }
+
+            if (savedState.correct) {
+              // Show correct feedback
+              if (section) {
+                section.classList.remove("hidden");
+              }
+              feedbackDiv.classList.remove("hidden");
+              feedbackDiv.innerHTML = wrapFeedbackItem("correct", getDefaultFeedbackMessage(true, false));
+
+              // Mark all inputs as correct
+              blankInputs.forEach((input) => {
+                input.classList.add("correct");
+              });
+
+              // Disable inputs if disable-after-submit is enabled
+              if (quiz.hasAttribute("data-disable-after-submit")) {
+                blankInputs.forEach((input) => {
+                  input.disabled = true;
+                });
+                if (submitButton) {
+                  submitButton.disabled = true;
+                }
+                resetButton.classList.add("hidden");
+              } else {
+                resetButton.classList.remove("hidden");
+                if (submitButton) {
+                  submitButton.classList.add("hidden");
+                }
+              }
+            } else {
+              // Restore incorrect answer state
+              if (section) {
+                section.classList.remove("hidden");
+              }
+
+              // Mark wrong/correct inputs
+              blankInputs.forEach((input) => {
+                const userAnswer = normalizeAnswer(input.value);
+                const correctAnswer = normalizeAnswer(input.getAttribute("data-answer"));
+
+                if (userAnswer === correctAnswer) {
+                  input.classList.add("correct");
+                } else {
+                  input.classList.add("wrong");
+                }
+              });
+
+              // Show incorrect feedback with detailed list
+              feedbackDiv.classList.remove("hidden");
+              var canRetryRestore = !quiz.hasAttribute("data-disable-after-submit");
+              var feedbackTextRestore = getDefaultFeedbackMessage(false, canRetryRestore);
+
+              // Show correct answers if show-correct is enabled
+              if (quiz.hasAttribute("data-show-correct")) {
+                var fillRestoreHTML = feedbackTextRestore + "<ul>";
+                blankInputs.forEach(function (input) {
+                  if (!input.classList.contains("correct")) {
+                    var userAnswer = input.value.trim();
+                    var correctAnswer = input.getAttribute("data-answer");
+                    fillRestoreHTML +=
+                      "<li><del>" + (userAnswer || t("(empty)")) + "</del> \u2192 " + correctAnswer + "</li>";
+                    // Also show in placeholder
+                    input.placeholder = correctAnswer;
+                  }
+                });
+                fillRestoreHTML += "</ul>";
+                feedbackDiv.innerHTML = wrapFeedbackItem("incorrect", fillRestoreHTML);
+              } else {
+                feedbackDiv.innerHTML = wrapFeedbackItem("incorrect", feedbackTextRestore);
+              }
+
+              // Disable inputs if disable-after-submit is enabled
+              if (quiz.hasAttribute("data-disable-after-submit")) {
+                blankInputs.forEach((input) => {
+                  input.disabled = true;
+                });
+                if (submitButton) {
+                  submitButton.disabled = true;
+                }
+                resetButton.classList.add("hidden");
+              } else {
+                // Keep submit button visible for editing and resubmission
+                resetButton.classList.remove("hidden");
+              }
+            }
+          }
+        } else {
+          // Restore multiple-choice quiz state (existing code)
+          const allAnswers = fieldset.querySelectorAll('input[name="answer"]');
+          const correctAnswers = fieldset.querySelectorAll('input[name="answer"][data-correct="true"]');
+
+          if (savedState.answered) {
+            // Restore selected answers based on saved values
+            if (savedState.selectedValues && savedState.selectedValues.length > 0) {
+              allAnswers.forEach((input) => {
+                if (savedState.selectedValues.includes(input.value)) {
+                  input.checked = true;
+                }
+              });
+            }
+
+            if (savedState.correct) {
+              // Show the content section
+              if (section) {
+                section.classList.remove("hidden");
+              }
+
+              // Only mark the correct answers in green (don't highlight wrong answers)
+              allAnswers.forEach((input) => {
+                if (input.hasAttribute("data-correct")) {
+                  input.parentElement.classList.add("correct");
+                }
+              });
+
+              // Show correct feedback - prefer per-answer feedback if present
+              feedbackDiv.classList.remove("hidden");
+              var correctItems = collectFeedbackForSelectedOrCorrect(fieldset, quiz);
+              var correctFeedbackHTML = buildFeedbackHTML(correctItems, "correct");
+              feedbackDiv.innerHTML =
+                correctFeedbackHTML || wrapFeedbackItem("correct", getDefaultFeedbackMessage(true, false));
+
+              // Disable inputs if disable-after-submit is enabled
+              if (quiz.hasAttribute("data-disable-after-submit")) {
+                allAnswers.forEach((input) => {
+                  input.disabled = true;
+                });
+                if (submitButton) {
+                  submitButton.disabled = true;
+                }
+                resetButton.classList.add("hidden");
+              } else {
+                // Show reset button, hide submit button
+                resetButton.classList.remove("hidden");
+                if (submitButton) {
+                  submitButton.classList.add("hidden");
+                }
+              }
+            } else {
+              // Restore incorrect answer state
+              const selectedAnswers = Array.from(allAnswers).filter((input) =>
+                savedState.selectedValues.includes(input.value),
+              );
+
+              // Show the content section for incorrect answers too
+              if (section) {
+                section.classList.remove("hidden");
+              }
+
+              // Mark selected answers
+              selectedAnswers.forEach((input) => {
+                if (input.hasAttribute("data-correct")) {
+                  input.parentElement.classList.add("correct");
+                } else {
+                  input.parentElement.classList.add("wrong");
+                }
+              });
+
+              // Show correct answers if show-correct is enabled
+              if (quiz.hasAttribute("data-show-correct")) {
+                correctAnswers.forEach((input) => {
+                  input.parentElement.classList.add("correct");
+                });
+              }
+
+              // Show incorrect feedback - prefer per-answer feedback for selected answers
+              feedbackDiv.classList.remove("hidden");
+              var canRetry = !quiz.hasAttribute("data-disable-after-submit");
+              var incorrectItems = collectFeedbackFromNodeList(
+                fieldset.querySelectorAll('input[name="answer"]:checked'),
+              );
+              var incorrectFeedbackHTML = buildFeedbackHTML(incorrectItems, "incorrect");
+              feedbackDiv.innerHTML =
+                incorrectFeedbackHTML || wrapFeedbackItem("incorrect", getDefaultFeedbackMessage(false, canRetry));
+
+              // Disable inputs if disable-after-submit is enabled
+              if (quiz.hasAttribute("data-disable-after-submit")) {
+                allAnswers.forEach((input) => {
+                  input.disabled = true;
+                });
+                if (submitButton) {
+                  submitButton.disabled = true;
+                }
+                resetButton.classList.add("hidden");
+              } else {
+                // Show reset button, hide submit button
+                resetButton.classList.remove("hidden");
+                if (submitButton) {
+                  submitButton.classList.add("hidden");
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Auto-submit on radio button change if enabled (not for fill-in-blank)
+      if (!isFillBlank && quiz.hasAttribute("data-auto-submit")) {
+        let radioButtons = fieldset.querySelectorAll('input[type="radio"]');
+        radioButtons.forEach((radio) => {
+          const handler = (e) => {
+            e.preventDefault(); // Prevent page scroll to top
+            // Trigger form submission with proper event options
+            form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+          };
+          addTrackedEventListener(radio, "change", handler);
+        });
+      }
+
+      // Reset button handler
+      const resetHandler = () => {
+        if (isFillBlank) {
+          // Clear fill-in-the-blank inputs
+          const blankInputs = quiz.querySelectorAll(".quiz-blank-input");
+          blankInputs.forEach((input) => {
+            input.value = "";
+            input.disabled = false;
+            input.classList.remove("correct", "wrong");
+            input.placeholder = "";
+          });
+        } else {
+          // Clear all selections
+          const allInputs = fieldset.querySelectorAll('input[name="answer"]');
+          allInputs.forEach((input) => {
+            input.checked = false;
+            input.disabled = false;
+          });
+          // Reset colors
+          resetFieldset(fieldset);
+        }
+        // Hide content section
+        let section = quiz.querySelector("section");
+        if (section) {
+          section.classList.add("hidden");
+        }
+        // Hide feedback container
+        feedbackDiv.classList.add("hidden");
+        feedbackDiv.innerHTML = "";
+        // Show submit button, hide reset button
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.classList.remove("hidden");
+        }
+        resetButton.classList.add("hidden");
+        // Update tracker
+        if (quizId) {
+          quizTracker.resetQuiz(quizId);
+        }
+      };
+      addTrackedEventListener(resetButton, "click", resetHandler);
+
+      const submitHandler = (event) => {
+        event.preventDefault();
+        event.stopPropagation(); // Prevent Material themes from intercepting form submission
+        let is_correct = false;
+        let selectedValues = [];
+        let section = quiz.querySelector("section");
+
+        if (isFillBlank) {
+          // Handle fill-in-the-blank quiz
+          const blankInputs = quiz.querySelectorAll(".quiz-blank-input");
+          is_correct = true;
+
+          // Collect user answers and validate
+          blankInputs.forEach((input) => {
+            const userAnswer = normalizeAnswer(input.value);
+            const correctAnswer = normalizeAnswer(input.getAttribute("data-answer"));
+            selectedValues.push(input.value); // Save original value, not normalized
+
+            // Remove previous classes
+            input.classList.remove("correct", "wrong");
+
+            if (userAnswer === correctAnswer) {
+              input.classList.add("correct");
+            } else {
+              input.classList.add("wrong");
+              is_correct = false;
+            }
+          });
+
+          // Always show the content section after submission
+          if (section) {
+            section.classList.remove("hidden");
+          }
+
+          if (is_correct) {
+            // Show correct feedback
+            feedbackDiv.classList.remove("hidden");
+            feedbackDiv.innerHTML = wrapFeedbackItem("correct", getDefaultFeedbackMessage(true, false));
+          } else {
+            // Show incorrect feedback with detailed list
+            feedbackDiv.classList.remove("hidden");
+            var canRetryFill = !quiz.hasAttribute("data-disable-after-submit");
+            var feedbackTextFill = getDefaultFeedbackMessage(false, canRetryFill);
+
+            // Show correct answers if show-correct is enabled
+            if (quiz.hasAttribute("data-show-correct")) {
+              var fillHTML = feedbackTextFill + "<ul>";
+              blankInputs.forEach(function (input) {
+                if (!input.classList.contains("correct")) {
+                  var userAnswer = input.value.trim();
+                  var correctAnswer = input.getAttribute("data-answer");
+                  fillHTML += "<li><del>" + (userAnswer || "(empty)") + "</del> \u2192 " + correctAnswer + "</li>";
+                  // Also show in placeholder
+                  input.placeholder = correctAnswer;
+                }
+              });
+              fillHTML += "</ul>";
+              feedbackDiv.innerHTML = wrapFeedbackItem("incorrect", fillHTML);
+            } else {
+              feedbackDiv.innerHTML = wrapFeedbackItem("incorrect", feedbackTextFill);
+            }
+          }
+
+          // Disable quiz after submission if option is enabled
+          if (quiz.hasAttribute("data-disable-after-submit")) {
+            blankInputs.forEach((input) => {
+              input.disabled = true;
+            });
+            if (submitButton) {
+              submitButton.disabled = true;
+            }
+            resetButton.classList.add("hidden");
+          } else {
+            // For fill-in-blank, keep submit button visible so users can edit and resubmit
+            // Only show reset button as an alternative
+            resetButton.classList.remove("hidden");
+          }
+        } else {
+          // Handle multiple-choice quiz (existing code)
+          let selectedAnswers = form.querySelectorAll('input[name="answer"]:checked');
+          let correctAnswers = fieldset.querySelectorAll('input[name="answer"][data-correct="true"]');
+          // Check if all correct answers are selected
+          is_correct = selectedAnswers.length === correctAnswers.length;
+          Array.from(selectedAnswers).forEach((answer) => {
+            if (!answer.hasAttribute("data-correct")) {
+              is_correct = false;
+            }
+          });
+
+          // Always show the content section after submission
+          if (section) {
+            section.classList.remove("hidden");
+          }
+
+          if (is_correct) {
+            resetFieldset(fieldset);
+            markAnswers(selectedAnswers, correctAnswers, quiz, true);
+            showFeedback(feedbackDiv, true, selectedAnswers, correctAnswers, fieldset, quiz);
+          } else {
+            resetFieldset(fieldset);
+            markAnswers(selectedAnswers, correctAnswers, quiz, false);
+            showFeedback(feedbackDiv, false, selectedAnswers, correctAnswers, fieldset, quiz);
+          }
+
+          // Get selected values to save
+          selectedValues = Array.from(selectedAnswers).map((input) => input.value);
+
+          // Disable quiz after submission if option is enabled
+          if (quiz.hasAttribute("data-disable-after-submit")) {
+            const allInputs = fieldset.querySelectorAll('input[name="answer"]');
+            allInputs.forEach((input) => {
+              input.disabled = true;
+            });
+            if (submitButton) {
+              submitButton.disabled = true;
+            }
+            // Hide reset button if disable-after-submit is enabled
+            resetButton.classList.add("hidden");
+          } else {
+            // Show reset button and hide submit button
+            resetButton.classList.remove("hidden");
+            if (submitButton) {
+              submitButton.classList.add("hidden");
+            }
+          }
+        }
+
+        // Move focus to feedback div for screen readers and keyboard users
+        if (feedbackDiv) {
+          feedbackDiv.setAttribute("tabindex", "-1");
+          feedbackDiv.focus();
+        }
+
+        // Update tracker
+        if (quizId) {
+          quizTracker.markQuiz(quizId, is_correct, selectedValues);
+        }
+      };
+      addTrackedEventListener(form, "submit", submitHandler);
+    });
+  }
+
+  function resetFieldset(fieldset) {
+    Array.from(fieldset.children).forEach((child) => {
+      child.classList.remove("wrong", "correct");
+    });
+  }
+
+  // Main initialization function that sets up everything on a page
+  function initializePage() {
+    // Initialize tracker
+    quizTracker.init();
+
+    // Reposition sidebar for Material theme TOC integration
+    repositionSidebar();
+
+    // Create sidebar
+    quizTracker.createSidebar();
+
+    // Initialize results div and intro buttons
+    initializeResultsDiv();
+    initializeIntroResetButtons();
+
+    // Initialize all quiz elements
+    initializeQuizzes();
+  }
+
+  // Run initialization when DOM is ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializePage);
+  } else {
+    initializePage();
+  }
+
+  // Material theme instant navigation support
+  // Cleanup and reinitialize when navigating between pages
+  if (typeof document$ !== "undefined") {
+    // Unsubscribe from any previous subscription to prevent duplicate handlers
+    // This is needed because the script re-runs on each page navigation,
+    // which would otherwise accumulate subscriptions
+    if (window._mkdocsQuizSubscription) {
+      window._mkdocsQuizSubscription.unsubscribe();
+    }
+
+    // A Material theme with instant navigation is active
+    window._mkdocsQuizSubscription = document$.subscribe(() => {
+      cleanup(); // Remove old event listeners to prevent memory leaks
+      // Reinitialize everything for the new page
+      initializePage();
+    });
+  }
+})(); // End of IIFE
+</script><script type=text/javascript>
+document.addEventListener("DOMContentLoaded", function() {
+  var article = document.querySelector("article") || document.querySelector("main") || document.body;
+  article.classList.add("quiz-auto-number");
+});
+</script> </article> </div> <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script> </div> <button type=button class="md-top md-icon" data-md-component=top hidden> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg> Back to top </button> </main> <footer class=md-footer> <div class="md-footer-meta md-typeset"> <div class="md-footer-meta__inner md-grid"> <div class=md-copyright> Made with <a href=https://squidfunk.github.io/mkdocs-material/ target=_blank rel=noopener> Material for MkDocs </a> </div> <div class=md-social> <a href=https://github.com/nitinkc target=_blank rel=noopener title=github.com class=md-social__link> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 512 512"><!-- Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg> </a> </div> </div> </div> </footer> </div> <div class=md-dialog data-md-component=dialog> <div class="md-dialog__inner md-typeset"></div> </div> <script id=__config type=application/json>{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.path", "navigation.indexes", "toc.follow", "toc.integrate", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script> <script src=../assets/javascripts/bundle.d7400e89.min.js></script> </body> </html>
